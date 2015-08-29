@@ -4,9 +4,8 @@ function Soda.Button:init(t)
     local shape = t.shape or Soda.roundedRect
     Soda.Frame.init(self, t)
     self.mesh = {
-        Soda.Mesh{parent = self, style = t.style, shape = shape, shapeArgs = t.shapeArgs, highlightable = true, label = 
-            Soda.Label{parent = self, x=0.5, y=0.5, style = t.style, text = t.title}
-        }}
+        Soda.Mesh{parent = self, style = t.style, shape = shape, shapeArgs = t.shapeArgs, highlightable = true, label = { x=0.5, y=0.5, text = t.title}}
+    }
      self.mesh[2] = Soda.Shadow{parent = self}
 end
 

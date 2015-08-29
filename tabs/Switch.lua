@@ -9,12 +9,11 @@ function Soda.Switch:init(t)
     Soda.Frame.init(self, t)
     self.mesh = {
         --Soda.Mesh{parent = self, shape = Soda.ellipse, shapeArgs = {x = 20, y = 20, w=40, h=40}},
-        Soda.Mesh{parent = self, style = Soda.style.switch, shape = Soda.roundedRect, shapeArgs = {w = 70, h = 36, r = 18, x = 0, y = 2}, highlightable = true, label = 
-            Soda.Label{parent = self, x=-20, y=0.5, style = t.style, text = t.title}
-        }} --tw*0.7
+        Soda.Mesh{parent = self, style = Soda.style.switch, shape = Soda.roundedRect, shapeArgs = {w = 70, h = 36, r = 18, x = 0, y = 2}, highlightable = true, label = {x=80, y=0.5, text = t.title}}
+    } --tw*0.7
     
         self.handle = Soda.Frame{parent = self, x = 0, y = 0.5, w=40, h=40}
-    self.handle.mesh = {Soda.Mesh{parent = self.handle, shape = Soda.ellipse}}
+    self.handle.mesh = {Soda.Mesh{parent = self.handle, shape = Soda.ellipse, style = Soda.style.switch}}
     self.handle.mesh[2] = Soda.Shadow{parent = self.handle}
 
 end

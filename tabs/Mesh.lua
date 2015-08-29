@@ -1,17 +1,21 @@
 Soda.Mesh = class(Soda.Base)
 
 function Soda.Mesh:init(t)
-    self.parameters = t
-    self.parent = t.parent
+ --   self.parameters = t
+    Soda.Base.init(self, t)
+    --self.parent = t.parent
     self.style = t.style or Soda.style.default
     self.shape = t.shape or null
     self.shapeArgs = t.shapeArgs or {}
-    self.label = t.label
-    self.highlightable = t.highlightable
+    if t.label then 
+        self.label.w, self.label.h = self:getTextSize()  
+    end
+   -- self.highlightable = t.highlightable
     self:setImage()
     if t.mask then
         self.draw = null
         self.setMesh = null
+      --  self.setRect = null
     else
          self:setMesh()  
     end
@@ -19,46 +23,41 @@ function Soda.Mesh:init(t)
 end
 
 function Soda.Mesh:setImage()
-    self:setPosition()
     self.image = {self:drawImage(self.style)}
     if self.highlightable then
-        self.image[2] = self:drawImage(self.style.highlight, true)
-    end
-    
+        self.image[2] = self:drawImage(self.style.highlight)
+    end   
 end
 
-
-function Soda.Mesh:setPosition()
-    
-    local t = self.parameters
-    local p = self.parent
-    self.x = t.x or p.x
-    self.y = t.y or p.y
-    self.w = t.w or p.w
-    self.h = t.h or p.h    
-    
+function Soda.Mesh:getTextSize()
+    pushStyle()
+    self:setStyle(Soda.style.default.text)
+    self:setStyle(self.style.text)
+    local w,h = textSize(self.label.text)
+    popStyle()
+    return w,h
 end
-
-
+    
 function Soda.Mesh:setMesh()
 
     local m=mesh()
     m.texture = self.image[1]
-
-    local r = m:addRect(self.x, self.y, self.w, self.h) 
+    local p = self.parent
+  --  local r = m:addRect(self.x, self.y, self.w, self.h) 
+    m:addRect(p.x, p.y, p.w, p.h) 
     self.mesh = m
    -- return m
 end
 
+--[[
 function Soda.Mesh:setRect()
-    
-    --[[
-    self.mesh:setRect(1,self.x, self.y, self.w, self.h) 
+    local p = self.parent
     self.mesh.texture = self.image[self.currentImage]
-      ]]
+  --  self.mesh:setRect(1,p.x, p.y, p.w, p.h) 
 end
+  ]]
 
-function Soda.Mesh:drawImage(sty, highlight)
+function Soda.Mesh:drawImage(sty)
         local p = self.parent
     local x,y = p.x, p.y
     local w,h = p.w, p.h
@@ -71,7 +70,7 @@ function Soda.Mesh:drawImage(sty, highlight)
     self:setStyle(self.style.shape)
     self:setStyle(sty.shape)
 
-    self:shape(self.shapeArgs, highlight)
+    self:shape(self.shapeArgs)
     popStyle()
 
     pushStyle()
@@ -80,7 +79,9 @@ function Soda.Mesh:drawImage(sty, highlight)
         self:setStyle(Soda.style.default.text)
         self:setStyle(self.style.text)
         self:setStyle(sty.text)
-        self.label:draw(sty.text) 
+         local x = self:parseCoord(self.label.x,self.label.w,0,w)
+        local y = self:parseCoord(self.label.y,self.label.h,0,h)
+        text(self.label.text, x,y)
     end
     
     popStyle()
@@ -89,7 +90,7 @@ function Soda.Mesh:drawImage(sty, highlight)
 end
 
 function Soda.Mesh:draw()
-    self.mesh:setRect(1, self.parent.x, self.parent.y, self.w, self.h)
+    self.mesh:setRect(1, self.parent.x, self.parent.y, self.parent.w, self.parent.h)
     self.mesh:draw()
 end
 

@@ -56,6 +56,8 @@ end
 
 function Soda.Blur:setImage() end
 
+-- function Soda.Blur:setRect() end
+
 function Soda.Blur:draw()
     local p = self.parent
     self.mesh:setRect(1, p.x + self.off, p.y - self.off, self.ww, self.hh)
@@ -73,15 +75,12 @@ end
 
 function Soda.Shadow:drawImage()
     pushStyle()
-    tint(20,120)
+    tint(20,100)
    -- spriteMode(CORNER)
     sprite(self.parent.mesh[1].image[1], self.ww * 0.5, self.hh * 0.5)
    -- sprite(self.parent.image[1])
     popStyle()
 end
-
-
-
 
 
 profiler={}

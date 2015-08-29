@@ -14,7 +14,6 @@ function setup()
        choose = Soda.Segment{parent = box, text = {"Several different","options", "to choose", "between"}, x=0.5, y=0.6, w=0.8, h = 40} --"options", 
        switch = Soda.Switch{parent = box, title = "Wings fall off", x = 20, y = -20}
 
-
 end
 
 function draw()

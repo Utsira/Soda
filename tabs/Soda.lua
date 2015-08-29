@@ -16,6 +16,9 @@ Soda.style = {
             shape = {fill = color(0, 97, 255, 255),},
         }
     },
+    borderless = {
+        shape = {strokeWidth = 0},
+        text = {fill = color(255)}},
     warning = {
         shape = {fill = color(255,0,0, 255),
             stroke = color(69, 69, 69, 255),
@@ -27,17 +30,18 @@ Soda.style = {
             text = { fill = color(255,0,0)}}
     },
     switch = {
+        shape = {stroke = color(180, 180, 180, 255)},
+        text = {fill = color(255)},
         highlight = {
-             text = { fill = color(0, 97, 255, 255),},
+             text = {},
              shape = {fill = color(0, 255, 77, 255)}
             }
     },
---[[
-    switchOn = {
-        shape = {fill = color(0, 255, 77, 255)}}
-  ]]
+    dark = {
+        shape = {},
+        text = { fill = color(255)}}
 }
-Soda.style.switch.shape, Soda.style.switch.text = Soda.style.default.shape, Soda.style.default.text
+--Soda.style.switch.shape, Soda.style.switch.text = Soda.style.default.shape, Soda.style.default.text
 --[[
 function Soda.fill(sty)
     fill(sty.fill)
@@ -84,11 +88,13 @@ function Soda.Base:right()
 end
 
 function Soda:rect()
-    rect(0,0, self.w, self.h)
+    rect(0,0, self.w or self.parent.w, self.h or self.parent.h)
 end
 
 function Soda:ellipse()
-    ellipse(self.w*0.5, self.h * 0.5, self.w)
+    local w = self.w or self.parent.w
+    local h = self.h or self.parent.h    
+    ellipse(w*0.5, h * 0.5, w)
 end
 
 local function rRect(x,y,w,h,r,edge) 
@@ -107,8 +113,8 @@ local function rRect(x,y,w,h,r,edge)
 end
 
 function Soda:roundedRect(t) --edge, x, y, w, h, r: omit edge for all corners rounded. edge = RIGHT hard right edge. edge = LEFT for hard left edge.
-    local w = t.w or self.w
-    local h = t.h or self.h
+    local w = t.w or self.w or self.parent.w
+    local h = t.h or self.h or self.parent.h
     local r = t.r or 6
     local x = t.x or 0
     local y = t.y or 0
@@ -156,7 +162,6 @@ function Soda.Base:parseSize(v, edge)
     return v
 end
 
---[[
 function Soda.Base:setPosition()
     local t = self.parameters
     local origin = vec2(0,0)
@@ -170,16 +175,18 @@ function Soda.Base:setPosition()
         edge = vec2(self.parent:right(), self.parent:top()) 
     end
     
+    --[[
  local ok, err = xpcall(function() self.w = self:parseSize(w, edge.x) end, function(trace) return debug.traceback(trace) end) 
     if not ok then print(err) end
     local ok, err = xpcall(function() self.h = self:parseSize(h, edge.y) end, function(trace) return debug.traceback(trace) end) 
     if not ok then print(err) end
-    --self.w = self:parseSize(t.w, edge.x)
-   -- self.h = self:parseSize(t.h, edge.y)
+      ]]
+    self.w = self:parseSize(w, edge.x)
+    self.h = self:parseSize(h, edge.y)
     self.x = self:parseCoord(x, self.w, origin.x, edge.x)
     self.y = self:parseCoord(y, self.h, origin.y, edge.y)
 end
-  ]]
+
 
 function orientationChanged()
     for i,v in ipairs(Soda.items) do

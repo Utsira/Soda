@@ -51,13 +51,7 @@ function Soda.Frame:setPosition()
         origin = vec2(self.parent:left(), self.parent:bottom()) 
         edge = vec2(self.parent:right(), self.parent:top()) 
     end
-    
-    --[[
- local ok, err = xpcall(function() self.w = self:parseSize(w, edge.x) end, function(trace) return debug.traceback(trace) end) 
-    if not ok then print(err) end
-    local ok, err = xpcall(function() self.h = self:parseSize(h, edge.y) end, function(trace) return debug.traceback(trace) end) 
-    if not ok then print(err) end
-      ]]
+
     self.w = self:parseSize(t.w, edge.x)
     self.h = self:parseSize(t.h, edge.y)
     self.x = self:parseCoord(t.x, self.w, origin.x, edge.x)
