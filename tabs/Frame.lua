@@ -6,14 +6,15 @@ function Soda.Frame:init(t)
     self.callback = t.callback or null
     
     self.child = {}
-    if t.parent then
-        t.parent.child[#t.parent.child+1] = self
-    end
+
     self:setPosition()  
    -- if not self.label then self.label = Soda.Label{parent = self, x=0.5, y=-20, text = t.title} end
   --  self:setImage()
-    
-    table.insert( Soda.items, self)
+    if t.parent then
+        t.parent.child[#t.parent.child+1] = self
+    else
+        table.insert( Soda.items, self)
+    end
 end
 
 --[[
@@ -52,38 +53,49 @@ function Soda.Frame:setPosition()
         edge = vec2(self.parent:right(), self.parent:top()) 
     end
 
-    self.w = self:parseSize(t.w, edge.x)
-    self.h = self:parseSize(t.h, edge.y)
-    self.x = self:parseCoord(t.x, self.w, origin.x, edge.x)
-    self.y = self:parseCoord(t.y, self.h, origin.y, edge.y)
+    self.w = self:parseSize(t.w or 0.4, origin.x, edge.x)
+    self.h = self:parseSize(t.h or 0.3, origin.y, edge.y)
+    self.x = self:parseCoord(t.x or 0.5, self.w, origin.x, edge.x)
+    self.y = self:parseCoord(t.y or 0.5, self.h, origin.y, edge.y)
 end
 
 function Soda.Frame:draw(exception)
-    if self==exception then return end
+    if self==exception then return true end
    -- spriteMode(self.rectMode) --draw frame before children
   --  sprite(self.image[self.currentImage], self.x, self.y)
   --  if self.shadowMesh then self.shadowMesh:draw() end
    -- self.mesh:draw()
+    if self.alert then
+        pushStyle()
+        noStroke()
+        fill(0,128)
+        rect(0,0,WIDTH,HEIGHT)
+        popStyle()
+    end
     for i = #self.mesh, 1, -1 do
         self.mesh[i]:draw()
     end
-    for _, v in pairs(self.child) do
+    for _, v in ipairs(self.child) do
         v:draw()
     end
 end
 
 function Soda.Frame:touched(t)
-    for _, v in pairs(self.child) do --children take priority over frame for touch
+    for _, v in ipairs(self.child) do --children take priority over frame for touch
        if v:touched(t) then return true end
     end   
+    if self.alert or self:pointIn(t.x,t.y) then return true end
 end
 
 function Soda.Frame:orientationChanged()
     self:setPosition()
-    for i,v in ipairs(self.mesh) do
+    for _,v in ipairs(self.mesh) do
         v:setImage()
        -- v:setRect()
         v:setMesh()
+    end
+    for _,v in ipairs(self.child) do
+        v:orientationChanged()
     end
 end
 

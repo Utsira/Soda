@@ -12,7 +12,7 @@ function Soda.Switch:init(t)
         Soda.Mesh{parent = self, style = Soda.style.switch, shape = Soda.roundedRect, shapeArgs = {w = 70, h = 36, r = 18, x = 0, y = 2}, highlightable = true, label = {x=80, y=0.5, text = t.title}}
     } --tw*0.7
     
-        self.handle = Soda.Frame{parent = self, x = 0, y = 0.5, w=40, h=40}
+    self.handle = Soda.Frame{parent = self, x = 0, y = 0.5, w=40, h=40}
     self.handle.mesh = {Soda.Mesh{parent = self.handle, shape = Soda.ellipse, style = Soda.style.switch}}
     self.handle.mesh[2] = Soda.Shadow{parent = self.handle}
 
@@ -43,8 +43,7 @@ function Soda.Switch:unHighlight()
   --  self.mesh[1]:unHighlight() 
 end
 
-function Soda.Switch:touched(t)
-    Soda.Frame.touched(self, t)
+function Soda.Switch:touched(t)   
     if t.state == BEGAN then
         if self:pointIn(t.x, t.y) then
             self.touchId = t.id
@@ -67,5 +66,5 @@ function Soda.Switch:touched(t)
         end
         
     end
-    
+    if Soda.Frame.touched(self, t) then return true end
 end

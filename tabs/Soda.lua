@@ -9,7 +9,7 @@ Soda.style = {
             strokeWidth = 2},
         text = {
             fill = color(0, 97, 255, 255),
-            font = [["HelveticaNeue-Light"]],
+            font = "HelveticaNeue-Light",
             fontSize = 20},
         highlight = {
             text = { fill = color(255)},
@@ -19,6 +19,16 @@ Soda.style = {
     borderless = {
         shape = {strokeWidth = 0},
         text = {fill = color(255)}},
+        highlight = {shape = {}, text = {}},
+    transparent = {
+        shape = {noFill = "()", --color(0,0),
+                stroke = color(0)},
+        text = { fill = color(255)},
+        highlight = { 
+        shape = {fill = color(255,128)},
+        text = {fill = color(0,0)}
+        }
+    },
     warning = {
         shape = {fill = color(255,0,0, 255),
             stroke = color(69, 69, 69, 255),
@@ -38,25 +48,45 @@ Soda.style = {
             }
     },
     dark = {
-        shape = {},
-        text = { fill = color(255)}}
+        shape = { stroke = color(255),
+                strokeWidth = 1},
+        text = { fill = color(0, 97, 255, 255)},
+        highlight = {
+            shape = {},
+            text = {fill = color(255)}
+        }
+    },
+    
 }
---Soda.style.switch.shape, Soda.style.switch.text = Soda.style.default.shape, Soda.style.default.text
---[[
-function Soda.fill(sty)
-    fill(sty.fill)
+
+
+function Soda:fill(v)
+    fill(v)
 end
 
-function Soda.stroke(sty)
-    stroke(sty.stroke)
+function Soda:stroke(v)
+    stroke(v)
 end
 
-function Soda.font(sty)
-    font(sty.font)
+function Soda:font(v)
+    font(v)
 end
 
-function Soda.textColor
-  ]]
+function Soda:fontSize(v)
+    fontSize(v)
+end
+
+function Soda:textWrap()
+    
+end
+
+function Soda:strokeWidth(v)
+    strokeWidth(v)
+end
+
+function Soda:noFill()
+    noFill()
+end
 
 Soda.Base = class()
 
@@ -96,15 +126,46 @@ function Soda:ellipse()
     local h = self.h or self.parent.h    
     ellipse(w*0.5, h * 0.5, w)
 end
+LEFTEDGE, TOPEDGE, RIGHTEDGE, BOTTOMEDGE = 1,2,4,8
+function Soda:outline(t) --edge 1=left, 2 = top, 4 = right, 8 = bottom
+    local edge = t.edge or 15
+    local s = strokeWidth() --* 0.5
+    local x,y,u,v = 0,0, self.parent.w-s, self.parent.h-s
+    local p = {vec2(x,y), vec2(x,v), vec2(u,v), vec2(u,y)}
+    for i = 0,3 do
+        local f = 2^i
+        if edge & f == f then
+            local a,b = p[i+1], p[((i+1)%4)+1]
+            line(a.x,a.y,b.x,b.y)
+        end
+    end
+end
 
-local function rRect(x,y,w,h,r,edge) 
-    local widthTrim = 2
-    if edge then widthTrim = 1 end
-    local edge = edge or 0
-    edge = (1-edge) * r
+local function rRect(x,y,w,h,r,edge) --X,edgeY
+    local edge = edge or 15
+    local widthTrim, heightTrim = 1,1
+    local edgeX, edgeY = r,r
+ --   if edgeX then widthTrim = 1 end
+ --   if edgeY then heightTrim = 1 end
+    if edge & 5 == 5 then --both left and right are rounded
+        widthTrim = 2
+    elseif edge & RIGHTEDGE == RIGHTEDGE then --right NOT left are rounded
+        edgeX = 0
+    end
+    if edge & 10 == 10 then --top and bottom rounded
+        heightTrim = 2
+    elseif edge & TOPEDGE == TOPEDGE then --top rounded NOT bottom
+        edgeY = 0
+    end
+    --[[
+    local edgeX = edgeX or 0
+    edgeX = (1-edgeX) * r
+    local edgeY = edgeY or 1
+    edgeY = edgeY * r
+      ]]
     translate(x,y)
-    rect(edge,0,w-widthTrim*r,h)
-    rect(0,r,w,h-2*r)
+    rect(edgeX,0,w-widthTrim*r,h)
+    rect(0,edgeY,w,h-heightTrim*r)
     ellipse(r  ,r,r*2)
     ellipse(w-r,r,r*2)
     ellipse(r  ,h-r,r*2)
@@ -112,7 +173,7 @@ local function rRect(x,y,w,h,r,edge)
     translate(-x,-y)
 end
 
-function Soda:roundedRect(t) --edge, x, y, w, h, r: omit edge for all corners rounded. edge = RIGHT hard right edge. edge = LEFT for hard left edge.
+function Soda:roundedRect(t) --edge, x, y, w, h, r: omit edge for all corners rounded. edge = RIGHT rounded right edge. edge = LEFT for rounded left edge.
     local w = t.w or self.w or self.parent.w
     local h = t.h or self.h or self.parent.h
     local r = t.r or 6
@@ -124,20 +185,27 @@ function Soda:roundedRect(t) --edge, x, y, w, h, r: omit edge for all corners ro
     local ds = math.max(s-1,0)
     pushStyle()
    -- resetStyle()
-    noStroke()
-    fill(oldStroke)
-    rRect(x,y,w,h,r,t.edge)
-    fill(oldFill)
-    rRect(x+ds, y+ds, w-ds*2, h-ds*2, r-ds,t.edge)
+    if s==0 then
+        rRect(x,y,w,h,r,t.edge) --X, t.edgeY
+    else
+        noStroke()
+        fill(oldStroke)
+        rRect(x,y,w,h,r,t.edge) --X, t.edgeY
+        fill(oldFill)
+        rRect(x+ds, y+ds, w-ds*2, h-ds*2, r-ds,t.edge) --X, t.edgeY
+    end
     popStyle()
 end
 
 function Soda.Base:setStyle(sty)
     for k,v in pairs(sty) do
+        --[[
         local str = tostring(v)
         if not str:match("%(.-%)") then str = "("..str..")" end
        -- print(str)
         loadstring(k..str)()
+          ]]
+        Soda[k](self, v)
     end
 end
 
@@ -157,11 +225,12 @@ function Soda.Base:parseCoord(v, len, origin, edge)
     return origin + (edge-origin) * v  --proportional
 end
 
-function Soda.Base:parseSize(v, edge)
-    if v>=0 and v<=1 then return v * edge end
+function Soda.Base:parseSize(v, origin, edge)
+    if v>=0 and v<=1 then return (edge-origin) * v end --v * edge
     return v
 end
 
+--[[
 function Soda.Base:setPosition()
     local t = self.parameters
     local origin = vec2(0,0)
@@ -174,18 +243,13 @@ function Soda.Base:setPosition()
         origin = vec2(self.parent:left(), self.parent:bottom()) 
         edge = vec2(self.parent:right(), self.parent:top()) 
     end
-    
-    --[[
- local ok, err = xpcall(function() self.w = self:parseSize(w, edge.x) end, function(trace) return debug.traceback(trace) end) 
-    if not ok then print(err) end
-    local ok, err = xpcall(function() self.h = self:parseSize(h, edge.y) end, function(trace) return debug.traceback(trace) end) 
-    if not ok then print(err) end
-      ]]
+
     self.w = self:parseSize(w, edge.x)
     self.h = self:parseSize(h, edge.y)
     self.x = self:parseCoord(x, self.w, origin.x, edge.x)
     self.y = self:parseCoord(y, self.h, origin.y, edge.y)
 end
+  ]]
 
 
 function orientationChanged()

@@ -5,7 +5,6 @@ function Soda.SubSegment:init(t)
 end
 
 function Soda.SubSegment:touched(t)
-        Soda.Frame.touched(self, t)
     if t.state == BEGAN then
         if self:pointIn(t.x, t.y) then
             self.touchId = t.id
@@ -26,6 +25,6 @@ function Soda.SubSegment:touched(t)
             self.parent:toggleOthers(self)
             return true
         end
-        
     end
+    if Soda.Frame.touched(self, t) then return true end
 end

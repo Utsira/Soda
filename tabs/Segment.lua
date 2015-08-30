@@ -6,18 +6,18 @@ function Soda.Segment:init(t)
     self.mesh = {}
     local n = #t.text
     local w = 1/n
-    local ww = 0.85/n --1/(n+0.5)
+  --  local ww = 0.85/n --1/(n+0.5)
 
     for i=1,n do
-        local edge
+        local edge = TOPEDGE | BOTTOMEDGE
         local shape = Soda.roundedRect
-        if i==1 then edge = LEFT
-        elseif i==n then edge = RIGHT
+        if i==1 then edge = edge | LEFTEDGE
+        elseif i==n then edge = edge | RIGHTEDGE
         else
             shape = Soda.rect
         end
        local x = (i-0.5)*w
-        Soda.SubSegment{parent = self, title = t.text[i], x = x, y = 0.5, w = ww, h=t.h, shape = shape, shapeArgs={edge=edge}}  --self.h * 0.5, 
+        Soda.SubSegment{parent = self, title = t.text[i], x = x, y = 0.5, w = w+0.005, h=t.h, shape = shape, shapeArgs={edge=edge}}  --self.h * 0.5, 
             
     end
 end

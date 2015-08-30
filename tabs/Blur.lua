@@ -68,6 +68,7 @@ Soda.Shadow = class(Soda.Blur)
 
 function Soda.Shadow:init(t)
     self.parent = t.parent
+    self.mask = t.mask or self.parent.mesh[1]
      self.falloff = 1.3
     self.off = math.max(1.5, self.parent.w * 0.015, self.parent.h * 0.015)
     self:setMesh()    
@@ -77,7 +78,7 @@ function Soda.Shadow:drawImage()
     pushStyle()
     tint(20,100)
    -- spriteMode(CORNER)
-    sprite(self.parent.mesh[1].image[1], self.ww * 0.5, self.hh * 0.5)
+    sprite(self.mask.image[1], self.ww * 0.5, self.hh * 0.5)
    -- sprite(self.parent.image[1])
     popStyle()
 end

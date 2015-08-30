@@ -2,6 +2,7 @@ Soda.Frosted = class(Soda.Blur)
 
 function Soda.Frosted:init(t)
     self.parent = t.parent
+    self.mask = t.mask or self.parent.mesh[1]
     self.falloff = 1
     self.off = 0
     self.draw = Soda.Frosted.firstPass
@@ -12,7 +13,7 @@ function Soda.Frosted:firstPass() --just run on first pass
     self.draw = Soda.Frosted.secondPass
     self:setMesh()
     self.mesh.shader = shader(maskShader.vert, maskShader.frag)
-    self.mesh.shader.texture2 = p.mesh[1].image[1]
+    self.mesh.shader.texture2 = self.mask.image[1]
     self.mesh:setRect(1, p.x, p.y, p.w, p.h)
     local d = math.max(p.w, p.h)
     local texW, texH = p.w/d, p.h/d
@@ -120,9 +121,12 @@ varying highp vec2 vTexCoord;
 
 void main()
 {
-    lowp vec4 col = (vec4(0.1, 0.1, 0.1, 0.) + texture2D( texture, vTexCoord )) * texture2D( texture2, vTexCoord ); 
+    lowp vec4 col = texture2D( texture, vTexCoord ); //(vec4(0.9, 0.9, 0.9, 1.) * texture2D( texture, vTexCoord )-vec4(0.1, 0.1, 0.1, 0.)) 
+    col.rgb *= 0.9;
+     col.rgb -= vec3(0.1);
+    lowp vec4 mask = texture2D( texture2, vTexCoord );
 
-    gl_FragColor = col;
+    gl_FragColor = col*mask;
 }
 ]]
 }

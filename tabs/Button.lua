@@ -4,13 +4,16 @@ function Soda.Button:init(t)
     local shape = t.shape or Soda.roundedRect
     Soda.Frame.init(self, t)
     self.mesh = {
-        Soda.Mesh{parent = self, style = t.style, shape = shape, shapeArgs = t.shapeArgs, highlightable = true, label = { x=0.5, y=0.5, text = t.title}}
+        Soda.Mesh{parent = self, style = t.style, shape = shape, shapeArgs = t.shapeArgs, highlightable = true, label = { x=0.5, y=0.5, text = t.title}, mask = t.frosted}
     }
-     self.mesh[2] = Soda.Shadow{parent = self}
+        if t.frosted then
+        self.mesh[2] = Soda.Frosted{parent = self}
+    end
+     table.insert(self.mesh, Soda.Shadow{parent = self})
+
 end
 
 function Soda.Button:touched(t)
-    Soda.Frame.touched(self, t)
     if t.state == BEGAN then
         if self:pointIn(t.x, t.y) then
             self.mesh[1]:highlight()
@@ -31,5 +34,6 @@ function Soda.Button:touched(t)
             return true
         end
     end
+    if Soda.Frame.touched(self, t) then return true end
 end
 
