@@ -75,9 +75,13 @@ function Soda.Frame:draw(exception)
     for i = #self.mesh, 1, -1 do
         self.mesh[i]:draw()
     end
+  --  if #self.child > 0 then
+ --   clip(self:left(), self:bottom(), self.w, self.h)
     for _, v in ipairs(self.child) do
         v:draw()
     end
+   -- clip()
+   -- end
 end
 
 function Soda.Frame:touched(t)

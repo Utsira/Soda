@@ -18,6 +18,7 @@
 		<string>Switch</string>
 		<string>SubSegment</string>
 		<string>Segment</string>
+		<string>List</string>
 	</array>
 	<key>Description</key>
 	<string>No description available</string>

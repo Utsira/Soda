@@ -17,6 +17,8 @@ function Soda.Mesh:init(t)
         self.setMesh = null
       --  self.setRect = null
     else
+        self.mesh=mesh()
+          self.mesh:addRect(0,0,0,0)
          self:setMesh()  
     end
     
@@ -40,13 +42,11 @@ end
     
 function Soda.Mesh:setMesh()
 
-    local m=mesh()
-    m.texture = self.image[1]
+    self.mesh.texture = self.image[1]
+  --  self.mesh:clear()
     local p = self.parent
-  --  local r = m:addRect(self.x, self.y, self.w, self.h) 
-    m:addRect(p.x, p.y, p.w, p.h) 
-    self.mesh = m
-   -- return m
+   -- self.mesh:addRect(p.x, p.y, p.w, p.h) 
+    self.mesh:setRect(1, p.x, p.y, p.w, p.h) 
 end
 
 --[[

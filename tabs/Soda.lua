@@ -59,6 +59,9 @@ Soda.style = {
     
 }
 
+function Soda.Assets()
+    Soda.darken = { mesh = mesh(), image = image(1,1)}
+end
 
 function Soda:fill(v)
     fill(v)
@@ -128,6 +131,7 @@ function Soda:ellipse()
 end
 LEFTEDGE, TOPEDGE, RIGHTEDGE, BOTTOMEDGE = 1,2,4,8
 function Soda:outline(t) --edge 1=left, 2 = top, 4 = right, 8 = bottom
+    background(fill())
     local edge = t.edge or 15
     local s = strokeWidth() --* 0.5
     local x,y,u,v = 0,0, self.parent.w-s, self.parent.h-s
@@ -256,4 +260,5 @@ function orientationChanged()
     for i,v in ipairs(Soda.items) do
         v:orientationChanged()
     end
+    collectgarbage()
 end

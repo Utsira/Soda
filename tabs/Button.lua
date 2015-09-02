@@ -9,8 +9,9 @@ function Soda.Button:init(t)
         if t.frosted then
         self.mesh[2] = Soda.Frosted{parent = self}
     end
+    if t.shadow then
      table.insert(self.mesh, Soda.Shadow{parent = self})
-
+    end
 end
 
 function Soda.Button:touched(t)
