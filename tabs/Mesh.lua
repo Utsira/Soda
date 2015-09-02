@@ -1,11 +1,11 @@
+--[[
 Soda.Mesh = class(Soda.Base)
 
 function Soda.Mesh:init(t)
  --   self.parameters = t
     Soda.Base.init(self, t)
     --self.parent = t.parent
-    self.style = t.style or Soda.style.default
-    self.shape = t.shape or null
+
     self.shapeArgs = t.shapeArgs or {}
     if t.label then 
         self.label.w, self.label.h = self:getTextSize()  
@@ -49,13 +49,13 @@ function Soda.Mesh:setMesh()
     self.mesh:setRect(1, p.x, p.y, p.w, p.h) 
 end
 
---[[
+--[==[
 function Soda.Mesh:setRect()
     local p = self.parent
     self.mesh.texture = self.image[self.currentImage]
   --  self.mesh:setRect(1,p.x, p.y, p.w, p.h) 
 end
-  ]]
+  ]==]
 
 function Soda.Mesh:drawImage(sty)
         local p = self.parent
@@ -104,11 +104,12 @@ function Soda.Mesh:unHighlight()
     self.mesh.texture = self.image[self.currentImage]
 end
 
---[[
+--[==[
 function Soda.Frame:drawMovingParts(...)
     for _,m in ipairs({self.shadowMesh.mesh, self.mesh}) do
        -- m:setRect(1, self.x, self.y, self.w, self.h)
         m:draw()
     end
 end
+  ]==]
   ]]

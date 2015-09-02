@@ -5,7 +5,7 @@ Soda.items = {}
 Soda.style = {
     default = {
         shape = {fill = color(255),
-            stroke = color(69, 69, 69, 255),
+            stroke = color(152, 152, 152, 255),
             strokeWidth = 2},
         text = {
             fill = color(0, 97, 255, 255),
@@ -43,24 +43,43 @@ Soda.style = {
         shape = {stroke = color(180, 180, 180, 255)},
         text = {fill = color(255)},
         highlight = {
-             text = {},
+             text = {fill = color(255)},
              shape = {fill = color(0, 255, 77, 255)}
             }
     },
-    dark = {
-        shape = { stroke = color(255),
+    darkBlurred = {
+        shape = { stroke = color(70, 128),
                 strokeWidth = 1},
-        text = { fill = color(0, 97, 255, 255)},
+        text = { fill = color(255)},
         highlight = {
-            shape = {},
-            text = {fill = color(255)}
+            shape = {fill = color(200, 223, 255, 255)},
+            text = {fill = color(60, 60, 60, 255)}
         }
     },
-    
+    dark = {
+        shape = { stroke = color(70, 128),
+                fill = color(40,40),
+                strokeWidth = 1},
+        text = { fill = color(255)},
+        highlight = {
+            shape = {fill = color(200, 223, 255, 255)},
+            text = {fill = color(60, 60, 60, 255)}
+        }
+    },
+    shadow = {shape = { fill = color(20, 100), stroke = color(20, 100)}} --a special style used to produce shadows
 }
 
 function Soda.Assets()
-    Soda.darken = { mesh = mesh(), image = image(1,1)}
+    --used to darken underlying interface elements when alert flag is set.
+    local m = mesh()
+    local img = image(1,1)
+    setContext(img)
+    background(0,128)
+    setContext()
+    m.texture = img
+    local s = math.max(WIDTH, HEIGHT)
+    m:addRect(s/2, s/2, s, s)
+    Soda.darken = m
 end
 
 function Soda:fill(v)
@@ -94,9 +113,21 @@ end
 Soda.Base = class()
 
 function Soda.Base:init(t)
-    self.parameters = t --remember initial settings
+    self.parameters = {}
     for k,v in pairs(t) do
-        self[k] = v
+        
+        if k =="label" or k=="shapeArgs" then
+            self[k] = {}
+            self.parameters[k] = {}
+            for a,b in pairs(v) do
+                self[k][a] = b
+                self.parameters[k][a] = b
+            end
+        else
+            self.parameters[k] = v
+            self[k] = v
+        end
+        
     end
 end
 
@@ -120,21 +151,22 @@ function Soda.Base:right()
     return self.x + self.w * 0.5
 end
 
-function Soda:rect()
-    rect(0,0, self.w or self.parent.w, self.h or self.parent.h)
+function Soda:rect(t)
+  --  rect(0, 0, self.w or self.parent.w, self.h or self.parent.h)
+    rect(t.x, t.y, t.w, t.h)
 end
 
-function Soda:ellipse()
-    local w = self.w or self.parent.w
-    local h = self.h or self.parent.h    
-    ellipse(w*0.5, h * 0.5, w)
+function Soda:ellipse(t)
+    ellipse(t.x, t.y, t.w)
+ --   ellipse(0, 0, self.w or self.parent.w)
 end
 LEFTEDGE, TOPEDGE, RIGHTEDGE, BOTTOMEDGE = 1,2,4,8
 function Soda:outline(t) --edge 1=left, 2 = top, 4 = right, 8 = bottom
-    background(fill())
+  --  background(fill())
     local edge = t.edge or 15
     local s = strokeWidth() --* 0.5
-    local x,y,u,v = 0,0, self.parent.w-s, self.parent.h-s
+    local w, h = (self.w - s) * 0.5, (self.h - s) * 0.5
+    local x,y,u,v = -w, -h, w, h
     local p = {vec2(x,y), vec2(x,v), vec2(u,v), vec2(u,y)}
     for i = 0,3 do
         local f = 2^i

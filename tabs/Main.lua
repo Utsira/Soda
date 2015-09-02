@@ -6,22 +6,24 @@ function setup()
     Soda.Assets()
     strokeWidth(2)
     textAlign(CENTER)
+    textMode(CENTER)
+    rectMode(CENTER)
     print("centre=", CENTER) --2
     print("corner=", CORNER) --0
     print("left", LEFT) --0
     print("right", RIGHT) --1
     local t = ElapsedTime
     local box = --create a temporary handle "box" so that we can define other buttons as children
-    Soda.Control{title = "Settings", w = 0.8, h = 0.8, frosted = true}
+    Soda.Control{title = "Settings", w = 0.6, h = 0.6, blurred = true, style = Soda.style.darkBlurred} --
      --320
       --  instruction = Label(instruction, x+20, y+160, 640, 120),
      --   field = TextField(textfield, x+20, y+80, 640.0, 40, default, 1, test_Clicked),
 
       local   ok = Soda.Button{parent = box, title = "OK", x = 20, y = 20, w = 0.3, h = 40}
-      local  cancel = Soda.Button{parent = box, title = "Do not press", style = Soda.style.warning, x = -20, y = 20, w = 0.3, h = 40, callback = function() Soda.Alert1{title = "CONGRATULATIONS!\n\nYou held out\n"..(ElapsedTime - t).." seconds"} end}
-     local  choose = Soda.Segment{parent = box, text = {"Several different","options", "to choose", "between"}, x=0.5, y=-60, w=0.9, h = 40} --"options", 
+       local  cancel = Soda.Button{parent = box, title = "Do not press", style = Soda.style.warning, x = -20, y = 20, w = 0.3, h = 40, callback = function() Soda.Alert1{title = "CONGRATULATIONS!\n\nYou held out\n"..(ElapsedTime - t).." seconds", alert = true, style = Soda.style.darkBlurred, blurred = true} end} --blurred = true
+    local  choose = Soda.Segment{parent = box, text = {"Several","options", "to choose", "between"}, x=0.5, y=-60, w=0.9, h = 40} --"options", 
     local   switch = Soda.Switch{parent = box, title = "Wings fall off", x = 20, y = -120}
-    local list = Soda.List{parent = box, x = -20, y = -120, w = 0.4, text = {"Washington", "Adams", "Jefferson", "Madison", "Monroe", "Adams", "Jackson", "Van Buren", "Harrison", "Tyler", "Polk", "Taylor", "Fillmore", "Pierce", "Buchanan", "Lincoln", "Johnson", "Grant"} }
+    local list = Soda.List{parent = box, x = -20, y = -120, w = 0.4, h=0.6, text = {"Washington", "Adams", "Jefferson", "Madison", "Monroe", "Adams", "Jackson", "Van Buren", "Harrison", "Tyler", "Polk", "Taylor", "Fillmore", "Pierce", "Buchanan", "Lincoln", "Johnson", "Grant"} }
     profiler.init()
 end
 
@@ -43,8 +45,9 @@ function drawing(exception)
 end
 
 function touched(t)
+    local tpos = vec2(t.x, t.y)
     for i = #Soda.items, 1, -1 do --test most recent item first
-        if Soda.items[i]:touched(t) then return end
+        if Soda.items[i]:touched(t, tpos) then return end
     end
 end
 

@@ -1,34 +1,28 @@
-Soda.Segment = class(Soda.Frame)
+Soda.Segment = class(Soda.Frame) --horizontally segmented set of selectors
 
 function Soda.Segment:init(t)   
 
     Soda.Frame.init(self, t)
-    self.mesh = {}
+   -- self.mesh = {}
     local n = #t.text
     local w = 1/n
   --  local ww = 0.85/n --1/(n+0.5)
 
     for i=1,n do
-        local edge = TOPEDGE | BOTTOMEDGE
-        local shape = Soda.roundedRect
-        if i==1 then edge = edge | LEFTEDGE
-        elseif i==n then edge = edge | RIGHTEDGE
+        local corners
+        local shape = Soda.RoundedRectangle
+        if i==1 then corners = 1 | 2
+        elseif i==n then corners = 4 | 8
         else
             shape = Soda.rect
         end
        local x = (i-0.5)*w
-        Soda.SubSegment{parent = self, title = t.text[i], x = x, y = 0.5, w = w+0.005, h=t.h, shape = shape, shapeArgs={edge=edge}}  --self.h * 0.5, 
+        Soda.Selector{parent = self, title = t.text[i], x = x, y = 0.5, w = w+0.002, h=t.h, shape = shape, shapeArgs={corners=corners}}  --self.h * 0.5, w+0.001
             
     end
 end
 
 function Soda.Segment:toggleOthers(child)
-    for i,v in ipairs(self.child) do
-        if v == child then 
-            self.selected = i
-        else
-            v.on = false 
-            v.mesh[1]:unHighlight()
-        end         
-    end
+    if self.selected then self.selected.highlighted = false end
+    self.selected = child
 end

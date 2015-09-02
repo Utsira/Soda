@@ -8,15 +8,16 @@
 	<array>
 		<string>Main</string>
 		<string>Soda</string>
+		<string>RRect</string>
 		<string>Mesh</string>
 		<string>Blur</string>
-		<string>Frosted</string>
 		<string>Frame</string>
-		<string>Control</string>
 		<string>Button</string>
-		<string>Alert</string>
+		<string>Knob</string>
 		<string>Switch</string>
-		<string>SubSegment</string>
+		<string>Selector</string>
+		<string>Control</string>
+		<string>Alert</string>
 		<string>Segment</string>
 		<string>List</string>
 	</array>
