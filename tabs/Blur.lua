@@ -5,7 +5,7 @@ Soda.Gaussian = class() --a component for nice effects like shadows and blur
 function Soda.Gaussian:setImage()
     local p = self.parent
     
-    local ww,hh = p.w * self.falloff, p.h * self.falloff
+    local ww,hh = p.w * self.falloff, p.h * self.falloff -- shadow image needs to be larger than the one casting hte shadow, in order to capture the blurry shadow falloff
     self.ww, self.hh = ww,hh
  
     local d = math.max(ww, hh)
@@ -15,38 +15,38 @@ function Soda.Gaussian:setImage()
 
    -- self.d = d
 
-    local downSample = 0.5 -- going down to 0.25 actually looks pretty good!
+    local downSample = 0.25 -- going down to 0.25 actually looks pretty good!
  --   local ww, hh = t.w * 1.3, t.h * 1.3
 
-    local dimensions = {
-    vec2(ww, hh), --full size
-    vec2(ww, hh) * downSample --down sampled
-    }
-    local blur = {} --images
-    local blurred = {} --meshes
+    local dimensions = vec2(ww, hh) * downSample --down sampled
+    
+    local blurTex = {} --images
+    local blurMesh = {} --meshes
     for i=1,2 do --2 passes, one for horizontal, one vertical
-        blur[i]=image(dimensions[i].x, dimensions[i].y)
-        blurred[i]=mesh()
-        blurred[i].texture=blur[i]
-        local j=3-i
-        blurred[i]:addRect(dimensions[j].x/2, dimensions[j].y/2,dimensions[j].x, dimensions[j].y)
-        blurred[i].shader=shader(Soda.Gaussian.shader.vert[i], Soda.Gaussian.shader.frag)
+        blurTex[i]=image(dimensions.x, dimensions.y)
+        local m = mesh()
+        m.texture=blurTex[i]
+        m:addRect(dimensions.x/2, dimensions.y/2,dimensions.x, dimensions.y)
+        m.shader=shader(Soda.Gaussian.shader.vert[i], Soda.Gaussian.shader.frag)
       --  blurred[i].shader.am = falloff
-        blurred[i].shader.am = aspect
+        m.shader.am = aspect
+        blurMesh[i] = m
     end
-    local imgOut = image(ww, hh)
+    local imgOut = image(dimensions.x, dimensions.y)
         pushStyle()
     pushMatrix()
-    setContext(blur[1])
+    setContext(blurTex[1])
+    scale(downSample)
     self:drawImage()
-    setContext(blur[2])
-    blurred[1]:draw() --pass one, offscreen
+    popMatrix()
+    popStyle()   
+    
+    setContext(blurTex[2])
+    blurMesh[1]:draw() --pass one
     setContext(imgOut)
-    blurred[2]:draw() --pass two
+    blurMesh[2]:draw() --pass two, to output
     setContext()
 
-    popMatrix()
-    popStyle()    
     return imgOut
 end
 
@@ -68,21 +68,22 @@ function Soda.Blur:init(t)
     self.parent = t.parent
     self.falloff = 1
     self.off = 0
-        local p = self.parent
-  --  self.image = image(p.w, p.h) --dummy image to trigger texCoord creation in roundedRectangle
     --[[
+        local p = self.parent
+  self.image = image(p.w, p.h) --dummy image to trigger texCoord creation in roundedRectangle  
     setContext(self.image)
     background(255,255) --fill it with white so that shadow renders
     setContext()
       ]]
-  --  self.draw = Soda.Blur.firstPass --have to defer creation of blurred image until all other elements have been setup
+    
+  self.draw = Soda.Blur.firstPass --have to defer creation of blurred image until all other elements have been setup
     self:setMesh()
 end
 
 function Soda.Blur:draw() end
 
 function Soda.Blur:setMesh() --just run on first pass
-  --  self.draw = null --Soda.Blur.secondPass
+   -- self.draw = null --Soda.Blur.secondPass
     self.image = self:setImage()
     self.parent.shapeArgs.tex = self.image
     self.parent.shapeArgs.resetTex = self.image
@@ -94,17 +95,19 @@ function Soda.Blur:secondPass() --second pass
 end
   ]]
 
+
 --[[
 function Soda.Blur:setMesh() --this is only called on orientation changed
     self.draw = Soda.Blur.firstPass
 end
   ]]
 
+
 function Soda.Blur:drawImage()
    -- self.draw = Soda.Blur.firstPass
     pushMatrix()
     translate(-self.parent:left(), -self.parent:bottom())
-    drawing(self.parent)
+    drawing(self.parent  ) -- image = function() setContext(img) scale(0.25) translate(-self.parent:left(), -self.parent:bottom()) end}
     popMatrix()
 end
 
@@ -116,8 +119,8 @@ function Soda.Shadow:init(t)
     self.parent = t.parent
 
      self.falloff = 1.3
-    self.off = math.max(1.5, self.parent.w * 0.015, self.parent.h * 0.015)
-
+    self.off = math.max(2, self.parent.w * 0.015, self.parent.h * 0.015)
+    print(self.parent.title, "offset", self.off)
     self.mesh = mesh()
     self.mesh:addRect(0,0,0,0)
     self:setMesh()
@@ -125,7 +128,8 @@ end
 
 function Soda.Shadow:setMesh()
     self.mesh.texture = self:setImage()
-    self.mesh:setRect(1, self.parent.x + self.off,self.parent.y - self.off,self.ww, self.hh)       
+   -- sound(SOUND_BLIT, 27872)
+   -- self.mesh:setRect(1, self.parent.x + self.off,self.parent.y - self.off,self.ww, self.hh)   --nb, rect is set in draw function, for animation purposes
 end
 
 function Soda.Shadow:drawImage()
@@ -135,7 +139,7 @@ function Soda.Shadow:drawImage()
    -- sprite(self.mask.image[1], self.ww * 0.5, self.hh * 0.5)
     pushMatrix()
    -- translate(self.ww * 0.5, self.hh * 0.5)
-    translate((self.ww-self.parent.w)*0.5, (self.hh-self.parent.h)*0.5)
+    translate((self.ww-self.parent.w)*0.45, (self.hh-self.parent.h)*0.45)
     self.parent:drawShape(Soda.style.shadow)
     popMatrix()
    -- sprite(self.parent.image[1])

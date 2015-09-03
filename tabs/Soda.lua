@@ -21,12 +21,12 @@ Soda.style = {
         text = {fill = color(255)}},
         highlight = {shape = {}, text = {}},
     transparent = {
-        shape = {noFill = "()", --color(0,0),
-                stroke = color(0)},
+        shape = {noFill = true, --color(0,0),
+                stroke = color(20, 20)},
         text = { fill = color(255)},
         highlight = { 
-        shape = {fill = color(255,128)},
-        text = {fill = color(0,0)}
+        shape = {fill = color(150, 201, 255, 100)},
+        text = {fill = color(140)}
         }
     },
     warning = {
@@ -44,11 +44,12 @@ Soda.style = {
         text = {fill = color(255)},
         highlight = {
              text = {fill = color(255)},
-             shape = {fill = color(0, 255, 77, 255)}
+             shape = {fill = color(0, 97, 255, 255)}
             }
     },
     darkBlurred = {
         shape = { stroke = color(70, 128),
+                fill = color(210),
                 strokeWidth = 1},
         text = { fill = color(255)},
         highlight = {

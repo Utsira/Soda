@@ -23,6 +23,6 @@ end
 function Soda.Alert1(t)
     t.h = t.h or 0.25
     local this = Soda.Control(t) --alert = true
-    local ok = Soda.Button{parent = this, title = "OK", x = 0, y = 0, w = 1, h = 50, shapeArgs = {corners = 1 | 8, radius = 25}, callback = function() this.kill = true end, blurred = t.blurred, style = t.style} --style = Soda.style.transparent,
+    local ok = Soda.Button{parent = this, title = "OK", x = 0, y = 0, w = 1, h = 50, shapeArgs = {corners = 1 | 8, radius = 25}, callback = function() this.kill = true end,  style = Soda.style.transparent} --style = Soda.style.transparent,blurred = t.blurred,
     return this
 end

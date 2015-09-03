@@ -19,9 +19,12 @@
 		<string>Control</string>
 		<string>Alert</string>
 		<string>Segment</string>
+		<string>Scroll</string>
 		<string>List</string>
 	</array>
 	<key>Description</key>
 	<string>No description available</string>
+	<key>Icon</key>
+	<string>Icon.png</string>
 </dict>
 </plist>

@@ -21,8 +21,3 @@ function Soda.Segment:init(t)
             
     end
 end
-
-function Soda.Segment:toggleOthers(child)
-    if self.selected then self.selected.highlighted = false end
-    self.selected = child
-end
