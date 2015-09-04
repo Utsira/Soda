@@ -2,6 +2,7 @@
 displayMode(OVERLAY)
 displayMode(FULLSCREEN)
 -- Use this function to perform your initial setup
+--an arbitrary change
 function setup()
     Soda.Assets()
     strokeWidth(2)
@@ -30,8 +31,9 @@ function setup()
     
     local   switch = Soda.Switch{parent = box, title = "Wings fall off", x = 20, y = -120}
     
-    local list = Soda.List{parent = box, x = -20, y = -120, w = 0.4, h=0.6, text = {"Washington", "Adams", "Jefferson", "Madison", "Monroe", "Adams", "Jackson", "Van Buren", "Harrison", "Tyler", "Polk", "Taylor", "Fillmore", "Pierce", "Buchanan", "Lincoln", "Johnson", "Grant"} }
-     
+  local list = Soda.List{parent = box, x = -20, y = -120, w = 0.4, h=0.5, text = {"Washington", "Adams", "Jefferson", "Madison", "Monroe", "Adams", "Jackson", "Van Buren", "Harrison", "Tyler", "Polk", "Taylor", "Fillmore", "Pierce", "Buchanan", "Lincoln", "Johnson", "Grant"} }
+    
+    local inkey = Soda.TextEntry{parent = box, title = "Nick-name:", x=20, y=80, w=0.7, h=40} 
     profiler.init()
 end
 
@@ -42,6 +44,7 @@ end
 
 function drawing(breakPoint)
     background(40, 40, 50)
+    translate(0, Soda.UIoffset)
     sprite("Dropbox:mountainScape2", WIDTH*0.5, HEIGHT*0.5, WIDTH, HEIGHT)
     for i,v in ipairs(Soda.items) do --draw most recent item last
         if v.kill then
@@ -53,9 +56,16 @@ function drawing(breakPoint)
 end
 
 function touched(t)
-    local tpos = vec2(t.x, t.y)
+    local tpos = vec2(t.x, t.y-Soda.UIoffset)
     for i = #Soda.items, 1, -1 do --test most recent item first
         if Soda.items[i]:touched(t, tpos) then return end
+    end
+end
+
+function keyboard(key)
+
+    if Soda.keyboardEntity then
+        Soda.keyboardEntity:keyboard(key)
     end
 end
 

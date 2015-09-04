@@ -4,7 +4,7 @@ function Soda.Scroll:init(t)
     t.h = t.h or math.min(HEIGHT*0.8, #t.text * 20)
     t.shape = Soda.RoundedRectangle --need to add a rect class that can accept a texture
     t.shadow = true
-    Soda.Base.init(self, t)
+    self:storeParameters(t)
     self:setPosition()
     self.image = image(self.w, self.h)
     setContext(self.image) background(255) setContext()
@@ -45,7 +45,7 @@ function Soda.Scroll:draw(breakPoint)
         setContext(self.image)
         background(40, 40) --40,40 self.style.shape.stroke
         
-        translate(-self:left(), self.scrollY-self:bottom())
+        translate(-self:left(), self.scrollY-self:bottom()-Soda.UIoffset)
         
         for _, v in ipairs(self.child) do
             v:draw()

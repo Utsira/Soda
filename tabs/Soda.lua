@@ -67,100 +67,67 @@ Soda.style = {
             text = {fill = color(60, 60, 60, 255)}
         }
     },
-    shadow = {shape = { fill = color(20, 100), stroke = color(20, 100)}} --a special style used to produce shadows
+    shadow = {shape = { fill = color(0, 90), stroke = color(0, 90)}}, --a special style used to produce shadows 20, 100
+ textEntry = {fill = color(0), font = "Inconsolata", fontSize = 24}, --a special style for user input in text entry fields. Must be a fixed-width (monotype) font
 }
 
 function Soda.Assets()
     --used to darken underlying interface elements when alert flag is set.
-    local m = mesh()
-    local img = image(1,1)
-    setContext(img)
-    background(0,128)
-    setContext()
-    m.texture = img
+    Soda.darken = mesh()
     local s = math.max(WIDTH, HEIGHT)
-    m:addRect(s/2, s/2, s, s)
-    Soda.darken = m
-end
-
-function Soda:fill(v)
-    fill(v)
-end
-
-function Soda:stroke(v)
-    stroke(v)
-end
-
-function Soda:font(v)
-    font(v)
-end
-
-function Soda:fontSize(v)
-    fontSize(v)
-end
-
-function Soda:textWrap()
+    Soda.darken:addRect(s/2, s/2, s, s)
+    Soda.darken:setColors(color(0,128))
     
+    --used to scroll up screen when keyboard appears
+    Soda.UIoffset = 0
 end
 
-function Soda:strokeWidth(v)
-    strokeWidth(v)
-end
+function Soda.setStyle(sty)
+    for k,v in pairs(sty) do
 
-function Soda:noFill()
-    noFill()
-end
-
-Soda.Base = class()
-
-function Soda.Base:init(t)
-    self.parameters = {}
-    for k,v in pairs(t) do
-        
-        if k =="label" or k=="shapeArgs" then
-            self[k] = {}
-            self.parameters[k] = {}
-            for a,b in pairs(v) do
-                self[k][a] = b
-                self.parameters[k][a] = b
-            end
-        else
-            self.parameters[k] = v
-            self[k] = v
-        end
-        
+        Soda[k](v)
     end
 end
 
-function Soda.Base:bottom()
-  --  if self.rectMode == CORNER then return self.y end
-    return self.y - self.h * 0.5
+function Soda.fill(v)
+    fill(v)
 end
 
-function Soda.Base:top()
-   -- if self.rectMode == CORNER then return self.y + self.h end
-    return self.y + self.h * 0.5
+function Soda.stroke(v)
+    stroke(v)
 end
 
-function Soda.Base:left()
-  --  if self.rectMode == CORNER then return self.x end
-    return self.x - self.w * 0.5
+function Soda.font(v)
+    font(v)
 end
 
-function Soda.Base:right()
-   -- if self.rectMode == CORNER then return self.x + self.w end
-    return self.x + self.w * 0.5
+function Soda.fontSize(v)
+    fontSize(v)
 end
 
-function Soda:rect(t)
+function Soda.textWrap()
+    
+end
+
+function Soda.strokeWidth(v)
+    strokeWidth(v)
+end
+
+function Soda.noFill()
+    noFill()
+end
+
+function Soda.rect(t)
   --  rect(0, 0, self.w or self.parent.w, self.h or self.parent.h)
     rect(t.x, t.y, t.w, t.h)
 end
 
-function Soda:ellipse(t)
+function Soda.ellipse(t)
     ellipse(t.x, t.y, t.w)
  --   ellipse(0, 0, self.w or self.parent.w)
 end
+
+--[[
 LEFTEDGE, TOPEDGE, RIGHTEDGE, BOTTOMEDGE = 1,2,4,8
 function Soda:outline(t) --edge 1=left, 2 = top, 4 = right, 8 = bottom
   --  background(fill())
@@ -177,73 +144,19 @@ function Soda:outline(t) --edge 1=left, 2 = top, 4 = right, 8 = bottom
         end
     end
 end
+  ]]
 
-local function rRect(x,y,w,h,r,edge) --X,edgeY
-    local edge = edge or 15
-    local widthTrim, heightTrim = 1,1
-    local edgeX, edgeY = r,r
- --   if edgeX then widthTrim = 1 end
- --   if edgeY then heightTrim = 1 end
-    if edge & 5 == 5 then --both left and right are rounded
-        widthTrim = 2
-    elseif edge & RIGHTEDGE == RIGHTEDGE then --right NOT left are rounded
-        edgeX = 0
-    end
-    if edge & 10 == 10 then --top and bottom rounded
-        heightTrim = 2
-    elseif edge & TOPEDGE == TOPEDGE then --top rounded NOT bottom
-        edgeY = 0
-    end
-    --[[
-    local edgeX = edgeX or 0
-    edgeX = (1-edgeX) * r
-    local edgeY = edgeY or 1
-    edgeY = edgeY * r
-      ]]
-    translate(x,y)
-    rect(edgeX,0,w-widthTrim*r,h)
-    rect(0,edgeY,w,h-heightTrim*r)
-    ellipse(r  ,r,r*2)
-    ellipse(w-r,r,r*2)
-    ellipse(r  ,h-r,r*2)
-    ellipse(w-r,h-r,r*2)
-    translate(-x,-y)
+--assume everything is rectMode centre (cos of mesh rect)
+function Soda.parseCoord(v, len, origin, edge)
+    local half = len * 0.5
+    if v==0 or v>1 then return origin + v + half end --standard coordinate
+    if v<0 then return edge - half + v end --eg WIDTH - 40
+    return origin + (edge-origin) * v  --proportional
 end
 
-function Soda:roundedRect(t) --edge, x, y, w, h, r: omit edge for all corners rounded. edge = RIGHT rounded right edge. edge = LEFT for rounded left edge.
-    local w = t.w or self.w or self.parent.w
-    local h = t.h or self.h or self.parent.h
-    local r = t.r or 6
-    local x = t.x or 0
-    local y = t.y or 0
-    local oldFill = color( fill() )
-    local oldStroke = color( stroke() )
-    local s = strokeWidth()
-    local ds = math.max(s-1,0)
-    pushStyle()
-   -- resetStyle()
-    if s==0 then
-        rRect(x,y,w,h,r,t.edge) --X, t.edgeY
-    else
-        noStroke()
-        fill(oldStroke)
-        rRect(x,y,w,h,r,t.edge) --X, t.edgeY
-        fill(oldFill)
-        rRect(x+ds, y+ds, w-ds*2, h-ds*2, r-ds,t.edge) --X, t.edgeY
-    end
-    popStyle()
-end
-
-function Soda.Base:setStyle(sty)
-    for k,v in pairs(sty) do
-        --[[
-        local str = tostring(v)
-        if not str:match("%(.-%)") then str = "("..str..")" end
-       -- print(str)
-        loadstring(k..str)()
-          ]]
-        Soda[k](self, v)
-    end
+function Soda.parseSize(v, origin, edge)
+    if v>=0 and v<=1 then return (edge-origin) * v end --v * edge
+    return v
 end
 
 function null() end
@@ -253,40 +166,6 @@ function smoothstep(t,a,b)
     local t = math.min(1,math.max(0,(t-a)/(b-a)))
     return t * t * (3 - 2 * t)
 end
-
---assume everything is rectMode centre (cos of mesh rect)
-function Soda.Base:parseCoord(v, len, origin, edge)
-    local half = len * 0.5
-    if v==0 or v>1 then return origin + v + half end --standard coordinate
-    if v<0 then return edge - half + v end --eg WIDTH - 40
-    return origin + (edge-origin) * v  --proportional
-end
-
-function Soda.Base:parseSize(v, origin, edge)
-    if v>=0 and v<=1 then return (edge-origin) * v end --v * edge
-    return v
-end
-
---[[
-function Soda.Base:setPosition()
-    local t = self.parameters
-    local origin = vec2(0,0)
-    local edge = vec2(WIDTH, HEIGHT)
-    local w = t.w or 1
-    local h = t.h or 1
-    local x = t.x or 0.5
-    local y = t.y or 0.5
-    if self.parent then 
-        origin = vec2(self.parent:left(), self.parent:bottom()) 
-        edge = vec2(self.parent:right(), self.parent:top()) 
-    end
-
-    self.w = self:parseSize(w, edge.x)
-    self.h = self:parseSize(h, edge.y)
-    self.x = self:parseCoord(x, self.w, origin.x, edge.x)
-    self.y = self:parseCoord(y, self.h, origin.y, edge.y)
-end
-  ]]
 
 
 function orientationChanged()
