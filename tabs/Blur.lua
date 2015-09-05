@@ -120,7 +120,7 @@ function Soda.Shadow:init(t)
 
      self.falloff = 1.3
     self.off = math.max(2, self.parent.w * 0.015, self.parent.h * 0.015)
-    print(self.parent.title, "offset", self.off)
+   -- print(self.parent.title, "offset", self.off)
     self.mesh = mesh()
     self.mesh:addRect(0,0,0,0)
     self:setMesh()
