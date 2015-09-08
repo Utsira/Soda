@@ -114,6 +114,12 @@ function Soda.Frame:hide(direction)
     end
 end
 
+function Soda.Frame:toggle(direction)
+    if self.inactive then self:show(direction)
+    else self:hide(direction)
+    end
+end
+
 function Soda.Frame:draw(breakPoint)
     if breakPoint and breakPoint == self then return true end
     if self.hidden then return end

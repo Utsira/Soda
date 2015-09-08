@@ -17,7 +17,7 @@ function demo1()
     
     --the main panel
     
-    local panel = Soda.Control{ --give parent a local handle, in this case "panel", to define children, callbacks
+    local panel = Soda.Control{ --give parent a local handle, in this case "panel", to define children
         title = "Demonstration", 
         hidden = true, --not visible or active initially
         x=0.7, y=0.5, w=0, h=0.7, 
@@ -116,7 +116,7 @@ function demo1()
         style = Soda.style.default,
         x = -10, y = -10,
         shapeArgs = {corners = 4 | 8}, --only round the right-hand corners
-        callback = function() counties:show() end
+        callback = function() counties:toggle() end
     }
     
     --the button panel:

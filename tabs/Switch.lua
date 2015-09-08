@@ -36,7 +36,7 @@ function Soda.Switch:touched(t, tpos)
         end
         
     end
-    return Soda.Frame.touched(self, t, tpos) 
+   -- return Soda.Frame.touched(self, t, tpos) ---switch shouldn't have children
 end
 
 --animates the switch handle flicking back and forth

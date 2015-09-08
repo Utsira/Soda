@@ -29,7 +29,7 @@ function Soda.Button:touched(t, tpos)
             return true
         end
     end
-    return Soda.Frame.touched(self, t, tpos) 
+   -- return Soda.Frame.touched(self, t, tpos) --a button shouldn't have children
 end
 
 ----- Some button factories:
