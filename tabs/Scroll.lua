@@ -1,4 +1,4 @@
-Soda.Scroll = class(Soda.Frame)
+Soda.Scroll = class(Soda.Frame) --touch methods for scrolling classes, including distinguishing scroll gesture from touching a button within the scroll area, and elastic bounce back
 
 function Soda.Scroll:init(t)
     self.scrollHeight = t.scrollHeight

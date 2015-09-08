@@ -5,20 +5,8 @@ displayMode(FULLSCREEN)
 -- 
 
 function setup()
-    parameter.watch("#Soda.items")
-    Soda.Assets()
-    Soda.theme = Soda.themes.default
-    strokeWidth(2)
-    textAlign(CENTER)
-    textMode(CENTER)
-    rectMode(CENTER)
-    --[[
-    print("centre=", CENTER) --2
-    print("corner=", CORNER) --0
-    print("left", LEFT) --0
-    print("right", RIGHT) --1
-      ]]
-    demo2()
+    Soda.setup()
+    demo1()
     profiler.init()
 end
 
@@ -27,37 +15,28 @@ function draw()
     profiler.draw()
 end
 
-function drawing(breakPoint)
+function drawing(breakPoint) --in order for gaussian blur to work, do all your drawing here
+    Soda.camera()
     background(40, 40, 50)
-    if not isKeyboardShowing() then
-        Soda.UIoffset = Soda.UIoffset * 0.9
-        Soda.keyboardEntity = nil --catch when user presses "hide keyboard key"
-    end
-    translate(0, Soda.UIoffset)
-    sprite("Dropbox:mountainScape2", WIDTH*0.5, HEIGHT*0.5, WIDTH, HEIGHT)
-    for i,v in ipairs(Soda.items) do --draw most recent item last
-        if v.kill then
-            table.remove(Soda.items, i)
-        else
-            if v:draw(breakPoint) then return end
-        end
-    end
+    sprite("Cargo Bot:Game Area", WIDTH*0.5, HEIGHT*0.5, WIDTH, HEIGHT)
+    Soda.draw(breakPoint)
 end
 
-function touched(t)
-    local tpos = vec2(t.x, t.y-Soda.UIoffset)
-    for i = #Soda.items, 1, -1 do --test most recent item first
-        local v = Soda.items[i] 
-        if v:touched(t, tpos) then return end
-    end
+--user inputs:
+
+function touched(touch)
+    Soda.touched(touch)
 end
 
 function keyboard(key)
-
-    if Soda.keyboardEntity then
-        Soda.keyboardEntity:keyboard(key)
-    end
+    Soda.keyboard(key)
 end
+
+function orientationChanged(ori)
+    Soda.orientationChanged(ori)
+end
+
+--measure performance:
 
 profiler={}
 

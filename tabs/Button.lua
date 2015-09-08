@@ -17,7 +17,7 @@ function Soda.Button:touched(t, tpos)
         end
     elseif self.touchId and self.touchId == t.id then
         if t.state == MOVING then
-            if not self:pointIn(tpos.x, tpos.y) then --cancelled
+            if not self:pointIn(tpos.x, tpos.y) then --if a touch begins within the element, but then drifts off it, it is cancelled. ie the user can change their mind. This is the same as on iOS.
                 self.highlighted = false
                 self.touchId = nil
                 return true
@@ -42,9 +42,9 @@ function Soda.MenuButton(t)
 end
 
 function Soda.BackButton(t)
-    t.title = "\u{ff1c}" --full-width less-than symbol
+    t.title = "\u{ff1c}" -- full-width less-than symbol. alt \u{276e}
     if  t.direction == RIGHT then
-        t.title = "\u{ff1e}" --greater-than, in case you need a right-facing back button
+        t.title = "\u{ff1e}" --greater-than, in case you need a right-facing back button. alt \u{276f}
     end
     t.w, t.h = 40, 40
     t.style = t.style or Soda.style.darkIcon
@@ -53,6 +53,13 @@ end
 
 function Soda.CloseButton(t)
     t.title = "\u{ff38}" --full-width X
+    t.w, t.h = 40, 40
+    t.style = t.style or Soda.style.darkIcon
+    return Soda.Button(t)
+end
+
+function Soda.DropdownButton(t)
+    t.title = "\u{25bc}" --down triangle
     t.w, t.h = 40, 40
     t.style = t.style or Soda.style.darkIcon
     return Soda.Button(t)

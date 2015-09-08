@@ -1,18 +1,17 @@
-Soda.Frame = class()
+Soda.Frame = class() --the master class for all UI elements. I know that some people are down on inheritance, but I think it works very well when used like this, ie wide but shallow
 
 function Soda.Frame:init(t)
     t.shapeArgs = t.shapeArgs or {}
     t.style = t.style or Soda.style.default
     self:storeParameters(t)
  
-    self.callback = t.callback or null
+    self.callback = t.callback or null --null = function() end. ie no need to test if callback then callback()
     
-    self.child = {}
+    self.child = {} --hold any children
     
     self:setPosition()
-    -- if not self.label then self.label = Soda.Label{parent = self, x=0.5, y=-20, text = t.title} end
-    --  self:setImage()
-    self.mesh = {}
+
+    self.mesh = {} --holds additional effects, such as shadow and blur
     if t.blurred then
         self.mesh[#self.mesh+1] = Soda.Blur{parent = self}
         self.shapeArgs.tex = self.mesh[#self.mesh].image
@@ -22,11 +21,12 @@ function Soda.Frame:init(t)
     end
     
     if t.parent then
-        t.parent.child[#t.parent.child+1] = self
+        t.parent.child[#t.parent.child+1] = self --if this has a parent, add it to the parent's list of children
     else
-        table.insert( Soda.items, self)
+        table.insert( Soda.items, self) --no parent = top-level, added to Soda.items table
     end
-    self.inactive = self.hidden --elements that are defined as hidden are also inactive at initialisation
+    
+    self.inactive = self.hidden --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
 end
 
 function Soda.Frame:storeParameters(t)
@@ -48,6 +48,32 @@ function Soda.Frame:storeParameters(t)
     end
 end
 
+function Soda.Frame:setPosition() --all elements defined relative to their parents. This is recalculated when orientation changes
+    local t = self.parameters
+    local edge = vec2(WIDTH, HEIGHT)
+    if self.parent then
+        edge = vec2(self.parent.w, self.parent.h)
+    end
+    
+    self.x, self.w = Soda.parseCoordSize(t.x or 0.5, t.w or 0.4, edge.x)
+    self.y, self.h = Soda.parseCoordSize(t.y or 0.5, t.h or 0.3, edge.y)
+    if t.label then
+        self.label.w, self.label.h = self:getTextSize()
+        
+        self.label.x = Soda.parseCoord(t.label.x,self.label.w,self.w)
+        self.label.y = Soda.parseCoord(t.label.y,self.label.h,self.h)
+
+    end
+    if self.shapeArgs then
+        local s = self.shapeArgs
+        s.w = t.shapeArgs.w or self.w
+        s.h = t.shapeArgs.h or self.h
+
+        s.x = Soda.parseCoord(t.shapeArgs.x or 0, s.w, self.w)
+        s.y = Soda.parseCoord(t.shapeArgs.y or 0, s.h, self.h)
+    end
+end
+
 function Soda.Frame:getTextSize(sty, tex)
     pushStyle()
     Soda.setStyle(Soda.style.default.text)
@@ -57,51 +83,9 @@ function Soda.Frame:getTextSize(sty, tex)
     return w,h
 end
 
-function Soda.Frame:setPosition()
-    local t = self.parameters
-    local origin = vec2(0,0)
-    local edge = vec2(WIDTH, HEIGHT)
-    if self.parent then
-       -- origin = vec2(self.parent:left(), self.parent:bottom())
-       -- edge = vec2(self.parent:right(), self.parent:top())
-        edge = vec2(self.parent.w, self.parent.h)
-    end
-    
-    --[[
-    self.w = Soda.parseSize(t.w or 0.4, origin.x, edge.x)
-    self.h = Soda.parseSize(t.h or 0.3, origin.y, edge.y)
-    self.x = Soda.parseCoord(t.x or 0.5, self.w, origin.x, edge.x)
-    self.y = Soda.parseCoord(t.y or 0.5, self.h, origin.y, edge.y)
-      ]]
-    self.x, self.w = Soda.parseCoordSize(t.x or 0.5, t.w or 0.4, edge.x)
-    self.y, self.h = Soda.parseCoordSize(t.y or 0.5, t.h or 0.3, edge.y)
-    if t.label then
-        self.label.w, self.label.h = self:getTextSize()
-        
-        --  self.label.x = Soda.parseCoord(t.label.x,self.label.w,self:left(),self:right())
-        --  self.label.y = Soda.parseCoord(t.label.y,self.label.h,self:bottom(),self:top())
-        self.label.x = Soda.parseCoord(t.label.x,self.label.w,0,self.w)
-        self.label.y = Soda.parseCoord(t.label.y,self.label.h,0,self.h)
-        --[[
-        for k,v in pairs(self.label) do
-        print(k, v)
-    end
-        ]]
-    end
-    if self.shapeArgs then
-        local s = self.shapeArgs
-        s.w = t.shapeArgs.w or self.w
-        s.h = t.shapeArgs.h or self.h
-        --   s.x = Soda.parseCoord(t.shapeArgs.x or 0, s.w, self:left(),self:right())
-        --   s.y = Soda.parseCoord(t.shapeArgs.y or 0, s.h, self:bottom(),self:top())
-        s.x = Soda.parseCoord(t.shapeArgs.x or 0, s.w, 0,self.w)
-        s.y = Soda.parseCoord(t.shapeArgs.y or 0, s.h, 0, self.h)
-    end
-end
-
 function Soda.Frame:show(direction)
     self.hidden = false --so that we can see animation
-    if direction then
+    if direction then --animation
         self:setPosition()
         local targetX = self.x
         if direction==LEFT then
@@ -110,7 +94,7 @@ function Soda.Frame:show(direction)
             self.x = WIDTH + self.w * 0.5
         end
         tween(0.4, self, {x=targetX}, tween.easing.cubicInOut, function() self.inactive=false end) --user cannot touch buttons until animation completes
-    else
+    else --no animation
         self.inactive = false
     end
 end
@@ -135,12 +119,13 @@ function Soda.Frame:draw(breakPoint)
     if self.hidden then return end
     
     if self.alert then
-        Soda.darken.draw()
+        Soda.darken.draw() --darken underlying interface elements
     end
     
     for i = #self.mesh, 1, -1 do
-        self.mesh[i]:draw()
+        self.mesh[i]:draw() --draw shadow
     end
+    
     local sty = self.style
     if self.highlighted and self.highlightable then
         sty = self.style.highlight or Soda.style.default.highlight
@@ -162,7 +147,7 @@ function Soda.Frame:draw(breakPoint)
         popStyle()
     end
     
-    for i, v in ipairs(self.child) do --children are drawn with parent's transformation
+    for i, v in ipairs(self.child) do --nb children are drawn with parent's transformation
         --[[
         local ok, err = xpcall(function()  v:draw(breakPoint) end, function(trace) return debug.traceback(trace) end)
         if not ok then print(v.title, err) end
@@ -171,7 +156,6 @@ function Soda.Frame:draw(breakPoint)
             table.remove(self.child, i)
         else
             if v:draw(breakPoint) then return true end
-            --  v:draw(breakPoint)
         end
     end
     popMatrix()
@@ -210,7 +194,7 @@ end
 
 function Soda.Frame:touched(t, tpos)
     if self.inactive then return end
-    local trans = tpos - vec2(self:left(), self:bottom())
+    local trans = tpos - vec2(self:left(), self:bottom()) --translate the touch position
     for i = #self.child, 1, -1 do --children take priority over frame for touch
         local v = self.child[i]
         if v:touched(t, trans) then 
@@ -250,8 +234,6 @@ function Soda.Frame:orientationChanged()
     self:setPosition()
     
     for _,v in ipairs(self.mesh) do
-        --v:setImage()
-        -- v:setRect()
         v:setMesh()
     end
     

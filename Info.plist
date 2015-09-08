@@ -9,6 +9,7 @@
 		<string>Demo</string>
 		<string>Main</string>
 		<string>Soda</string>
+		<string>Style</string>
 		<string>RoundRect</string>
 		<string>Blur</string>
 		<string>FRAME</string>
@@ -21,8 +22,7 @@
 		<string>ScrollShape</string>
 		<string>TextScroll</string>
 		<string>List</string>
-		<string>Control</string>
-		<string>Alert</string>
+		<string>Windows</string>
 	</array>
 	<key>Description</key>
 	<string>No description available</string>

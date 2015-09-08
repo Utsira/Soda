@@ -5,13 +5,11 @@ function Soda.TextEntry:init(t)
     t.label = {text = t.title, x=10, y=0.5} 
     Soda.Frame.init(self, t)
     
-
     self.offset = vec2(self.label.w + 15, (self.h-self.label.h)*0.5) --bottom corner of text-entry (because left-aligned text needs to be drawn in CORNER mode)
     
-    self.characterW = self:getTextSize(Soda.style.textEntry, "a") --width of a character (nb fixed-width font only)
+    self.characterW = self:getTextSize(Soda.style.textEntry, "a") --width of a character (nb fixed-width font only, because this massively simplifies creation of touchable text)
     
-        self:inputString(t.default or "")
- 
+    self:inputString(t.default or "")
 end
 
 function Soda.TextEntry:inputString(txt)
@@ -86,8 +84,8 @@ function Soda.TextEntry:touched(t, tpos)
     end
 end
 
-function Soda.TextEntry:getCursorPos()
-        local beforeCursor = table.concat(self.input, "", self.start, self.cursor-1)
+function Soda.TextEntry:getCursorPos() --this method works with non-fixed width too
+    local beforeCursor = table.concat(self.input, "", self.start, self.cursor-1)
     self.cursorPos = self:getTextSize(Soda.style.textEntry, beforeCursor)
 end
 

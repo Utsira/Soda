@@ -5,7 +5,7 @@ Soda.Gaussian = class() --a component for nice effects like shadows and blur
 function Soda.Gaussian:setImage()
     local p = self.parent
     
-    local ww,hh = p.w * self.falloff, p.h * self.falloff -- shadow image needs to be larger than the one casting hte shadow, in order to capture the blurry shadow falloff
+    local ww,hh = p.w * self.falloff, p.h * self.falloff -- shadow image needs to be larger than the element casting the shadow, in order to capture the blurry shadow falloff
     self.ww, self.hh = ww,hh
  
     local d = math.max(ww, hh)
@@ -13,10 +13,7 @@ function Soda.Gaussian:setImage()
     local aspect = vec2(d/ww, d/hh) * blurRad --work out the inverse aspect ratio
    -- print(p.title, "aspect", aspect)
 
-   -- self.d = d
-
-    local downSample = 0.25 -- going down to 0.25 actually looks pretty good!
- --   local ww, hh = t.w * 1.3, t.h * 1.3
+    local downSample = 0.25 
 
     local dimensions = vec2(ww, hh) * downSample --down sampled
     
@@ -33,7 +30,7 @@ function Soda.Gaussian:setImage()
         blurMesh[i] = m
     end
     local imgOut = image(dimensions.x, dimensions.y)
-        pushStyle()
+    pushStyle()
     pushMatrix()
     setContext(blurTex[1])
     scale(downSample)
@@ -50,10 +47,6 @@ function Soda.Gaussian:setImage()
     return imgOut
 end
 
---function Soda.Gaussian:setImage() end
-
--- function Soda.Gaussian:setRect() end
-
 function Soda.Gaussian:draw()
     local p = self.parent
     self.mesh:setRect(1, p.x + self.off, p.y - self.off, self.ww, self.hh)
@@ -68,46 +61,22 @@ function Soda.Blur:init(t)
     self.parent = t.parent
     self.falloff = 1
     self.off = 0
-    --[[
-        local p = self.parent
-  self.image = image(p.w, p.h) --dummy image to trigger texCoord creation in roundedRectangle  
-    setContext(self.image)
-    background(255,255) --fill it with white so that shadow renders
-    setContext()
-      ]]
-    
-  self.draw = Soda.Blur.firstPass --have to defer creation of blurred image until all other elements have been setup
+
     self:setMesh()
 end
 
 function Soda.Blur:draw() end
 
-function Soda.Blur:setMesh() --just run on first pass
-   -- self.draw = null --Soda.Blur.secondPass
+function Soda.Blur:setMesh() 
     self.image = self:setImage()
     self.parent.shapeArgs.tex = self.image
     self.parent.shapeArgs.resetTex = self.image
 end
 
---[[
-function Soda.Blur:secondPass() --second pass
-    self.draw = Soda.Gaussian.draw
-end
-  ]]
-
-
---[[
-function Soda.Blur:setMesh() --this is only called on orientation changed
-    self.draw = Soda.Blur.firstPass
-end
-  ]]
-
-
 function Soda.Blur:drawImage()
-   -- self.draw = Soda.Blur.firstPass
     pushMatrix()
     translate(-self.parent:left(), -self.parent:bottom())
-    drawing(self.parent  ) -- image = function() setContext(img) scale(0.25) translate(-self.parent:left(), -self.parent:bottom()) end}
+    drawing(self.parent) --draw all elements to the blur image, with the parent set as the breakpoint (so that the parent window itself does not show up in the blurred image)
     popMatrix()
 end
 
@@ -128,21 +97,17 @@ end
 
 function Soda.Shadow:setMesh()
     self.mesh.texture = self:setImage()
-   -- sound(SOUND_BLIT, 27872)
    -- self.mesh:setRect(1, self.parent.x + self.off,self.parent.y - self.off,self.ww, self.hh)   --nb, rect is set in draw function, for animation purposes
 end
 
 function Soda.Shadow:drawImage()
     pushStyle()
-   -- tint(20,100)
-   -- spriteMode(CORNER)
-   -- sprite(self.mask.image[1], self.ww * 0.5, self.hh * 0.5)
     pushMatrix()
-   -- translate(self.ww * 0.5, self.hh * 0.5)
+
     translate((self.ww-self.parent.w)*0.45, (self.hh-self.parent.h)*0.45)
     self.parent:drawShape(Soda.style.shadow)
     popMatrix()
-   -- sprite(self.parent.image[1])
+
     popStyle()
 end
 

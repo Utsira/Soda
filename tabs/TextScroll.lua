@@ -9,7 +9,6 @@ function Soda.TextScroll:init(t)
     local lines = {}
     local boxW = self.w//self.characterW --how many characters can we fit in?
     for lin in t.text:gmatch("[^\n\r]+") do
-       -- local sublin = lin
         local prefix = ""
         while lin:len()>boxW do --wrap the lines
             lines[#lines+1] = prefix..lin:sub(1, boxW)
@@ -25,8 +24,8 @@ function Soda.TextScroll:init(t)
     local n = #lines//10
     for i = 0,n do
         local start = (i * 10)+1
-        local stop = math.min(#lines, start + 9) --nb concat range is inclusive
-        self.chunk[i+1] = {y = self.h - stop * self.characterH, text= table.concat(lines, "\n", start, stop)}
+        local stop = math.min(#lines, start + 9) --nb concat range is inclusive, hence +9
+        self.chunk[i+1] = {y = self.h - stop * self.characterH, text = table.concat(lines, "\n", start, stop)}
     end
 
 end
@@ -50,10 +49,8 @@ function Soda.TextScroll:draw()
     -- if CurrentOrientation == PORTRAIT or CurrentOrientation == PORTRAIT_UPSIDE_DOWN then d
     local n = math.min(#self.chunk, chunkStart + 5)
     for i = chunkStart, n, 1 do
-       -- local j = (i % 6) + 1
         text(self.chunk[i].text, 0, self.chunk[i].y)
     end
- --   text(self.text, 0, -self.characterH + self.scrollY%self.characterH ) -- lineStart*self.characterH
     clip()
     popStyle()
     popMatrix()
