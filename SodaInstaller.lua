@@ -19,7 +19,7 @@ function demo1()
     
     --the main panel
     
-    local panel = Soda.Control{ --give parent a local handle, in this case "panel", to define children, callbacks
+    local panel = Soda.Control{ --give parent a local handle, in this case "panel", to define children
         title = "Demonstration", 
         hidden = true, --not visible or active initially
         x=0.7, y=0.5, w=0, h=0.7, 
@@ -118,7 +118,7 @@ function demo1()
         style = Soda.style.default,
         x = -10, y = -10,
         shapeArgs = {corners = 4 | 8}, --only round the right-hand corners
-        callback = function() counties:show() end
+        callback = function() counties:toggle() end
     }
     
     --the button panel:
@@ -1104,6 +1104,12 @@ function Soda.Frame:hide(direction)
     end
 end
 
+function Soda.Frame:toggle(direction)
+    if self.inactive then self:show(direction)
+    else self:hide(direction)
+    end
+end
+
 function Soda.Frame:draw(breakPoint)
     if breakPoint and breakPoint == self then return true end
     if self.hidden then return end
@@ -1264,7 +1270,7 @@ function Soda.Button:touched(t, tpos)
             return true
         end
     end
-    return Soda.Frame.touched(self, t, tpos) 
+   -- return Soda.Frame.touched(self, t, tpos) --a button shouldn't have children
 end
 
 ----- Some button factories:
@@ -1362,7 +1368,7 @@ function Soda.Switch:touched(t, tpos)
         end
         
     end
-    return Soda.Frame.touched(self, t, tpos) 
+   -- return Soda.Frame.touched(self, t, tpos) ---switch shouldn't have children
 end
 
 --animates the switch handle flicking back and forth
@@ -1545,7 +1551,7 @@ function Soda.Selector:touched(t, tpos)
             return true
         end
     end
-    return Soda.Frame.touched(self, t, tpos) 
+   -- return Soda.Frame.touched(self, t, tpos) --a selector shouldn't have children
 end
 --# Segment
 Soda.Segment = class(Soda.Frame) --horizontally segmented set of selectors
