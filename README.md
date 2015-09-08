@@ -72,7 +72,7 @@ Copy the contents of /SodaInstaller.lua. It is easiest to do this from the RAW p
 
 (Taken from /tabs/Demo.lua )
 
-```
+```lua
     --[[
     You only need to give an element a temporary handle (a local variable name) if it is the parent of other elements, or you need to refer to it in a callback
     
