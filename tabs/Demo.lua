@@ -37,6 +37,12 @@ function demo1()
         callback = function() panel:hide(RIGHT) menu:show(RIGHT) end --this callback does not reference itself, so can be included in {} constructor
     } 
     
+    Soda.QueryButton{ --a button to open the help readme
+        parent = panel,
+        x = 20, y = -20,
+        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
+    }
+    
     --three panels to hold various elements. All hidden initially.
     
     local buttonPanel = Soda.Frame{
