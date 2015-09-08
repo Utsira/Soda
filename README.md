@@ -44,13 +44,13 @@ I'm calling it Soda as it is inspired by Cider (but is not a fork).
   
 + Roadmap
  
- + Sliders.
+  + Sliders.
  
- + Improvements to TextEntry:
+  + Improvements to TextEntry:
  
-   + Be able to select a word with a double-tap, or the entire field with a triple-tap.
+    + Be able to select a word with a double-tap, or the entire field with a triple-tap.
    
-   + Be able to scroll the field leftwards by moving the cursor (currently you can only scroll leftward by deleting)
+    + Be able to scroll the field leftwards by moving the cursor (currently you can only scroll leftward by deleting)
    
   + Add a factory for easier creation of the drop-down list seen in the demo
    
