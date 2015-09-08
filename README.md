@@ -6,53 +6,53 @@ I'm calling it Soda as it is inspired by Cider (but is not a fork).
 
 ## Features
 
-+ Simple but powerful parent-child relationship between interface elements
+#### Simple but powerful parent-child relationship between interface elements
 
-  + Positions and dimensions of elements are defined relative to the parent of the element (ie the frame or window that they are in). Positions can be defined relative to any edge of the enclosing frame, or as a proportion of the parent frame. Decide a window is too cluttered? No need to move all of the elements around, just resize the parent window.
++ Positions and dimensions of elements are defined relative to the parent of the element (ie the frame or window that they are in). Positions can be defined relative to any edge of the enclosing frame, or as a proportion of the parent frame. Decide a window is too cluttered? No need to move all of the elements around, just resize the parent window.
   
-  + Elements automatically and intelligently resize when device orientation changes
++ Elements automatically and intelligently resize when device orientation changes
   
-  + A collection of elements can be moved around the screen, hidden or made inactive, just by addressing the parent of the collection
++ A collection of elements can be moved around the screen, hidden or made inactive, just by addressing the parent of the collection
   
-  + Drawing and touching are automatically handled in order to get the correct draw and touch order so that, for instance, it is not possible to touch an element through an overlying window.
++ Drawing and touching are automatically handled in order to get the correct draw and touch order so that, for instance, it is not possible to touch an element through an overlying window.
   
-+ Gorgeous and fast-performing graphics
+#### Gorgeous and fast-performing graphics
   
-  + 196-sample Gaussian blur shader used for proper drop-shadows and blurred panel effects
++ 196-sample Gaussian blur shader used for proper drop-shadows and blurred panel effects
   
-  + True rounded-rectangle mesh with an anti-aliased stroke, allows for translucent rounded-rectangles
++ True rounded-rectangle mesh with an anti-aliased stroke, allows for translucent rounded-rectangles
   
-  + Graphics kept largely separate from button logic (in the Style tab), making Soda very easily customisable and skinnable
++ Graphics kept largely separate from button logic (in the Style tab), making Soda very easily customisable and skinnable
   
-+ Interface elements currently supported:
+#### Interface elements currently supported:
 
-  + Frame. A container for other UI elements (a window).
++ **Frame**. A container for other UI elements (a window).
 
-  + Button. One press to activate a callback. Has a variety of built-in defaults for frequently-used interface elements such as the settings gear, the hamburger menu button etc.
++ **Button**. One press to activate a callback. Has a variety of built-in defaults for frequently-used interface elements such as the settings gear, the hamburger menu button etc.
   
-  + Switch. Toggles on and off.
++ **Switch**. Toggles on and off.
   
-  + Segment. Horizontally segmented buttons that activate different frames/ panels. 
++ **Segment**. Horizontally segmented buttons that activate different frames/ panels. 
   
-  + List. A vertically scrolling list of elements that the user can select from. Has elastic snap-back when user scrolls past edge of list. Can easily be set up as a drop down list for auto-populating a text field.
++ **List**. A vertically scrolling list of elements that the user can select from. Has elastic snap-back when user scrolls past edge of list. Can easily be set up as a drop down list for auto-populating a text field.
   
-  + TextEntry. A text entry field with a touchable cursor, and scrolling if the input is too long for the field.
++ **TextEntry**. A text entry field with a touchable cursor, and scrolling if the input is too long for the field.
   
-  + TextWindow. A window for handling scrolling through large bodies of text.
++ **TextWindow**. A window for handling scrolling through large bodies of text.
   
-  + Various alerts and dialogs.
++ Various alerts and dialogs.
   
-+ Roadmap
+#### Roadmap
  
- + Sliders.
++ Sliders.
  
- + Improvements to TextEntry:
++ Improvements to TextEntry:
  
-   + Be able to select a word with a double-tap, or the entire field with a triple-tap.
-   
-   + Be able to scroll the field leftwards by moving the cursor (currently you can only scroll leftward by deleting)
-   
-  + Add a factory for easier creation of the drop-down list seen in the demo
+  + Be able to select a word with a double-tap, or the entire field with a triple-tap.
+ 
+  + Be able to scroll the field leftwards by moving the cursor (currently you can only scroll leftward by deleting)
+ 
++ Add a factory for easier creation of the drop-down list seen in the demo
    
 ## Screenshots
 
@@ -72,7 +72,7 @@ Copy the contents of /SodaInstaller.lua. It is easiest to do this from the RAW p
 
 (Taken from /tabs/Demo.lua )
 
-```
+```lua
     --[[
     You only need to give an element a temporary handle (a local variable name) if it is the parent of other elements, or you need to refer to it in a callback
     
