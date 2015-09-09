@@ -68,6 +68,12 @@ I'm calling it Soda as it is inspired by Cider (but is not a fork).
 
 Copy the contents of /SodaInstaller.lua. It is easiest to do this from the RAW page. In Codea, long-press "+ Add New Project", and select "Paste into project".
 
+## Known Issues
+
+* If the height of a scroll box's contents is shorter than the height of the box itself, elastic snap-back behaves strangely
+* Sometimes vertical lists return the wrong result
+* Can only scroll a textbox by adding and deleting text
+
 ## Usage Example
 
 (Taken from /tabs/Demo.lua )
@@ -255,7 +261,3 @@ Copy the contents of /SodaInstaller.lua. It is easiest to do this from the RAW p
     }
 ```
 
-
-
-
-  
