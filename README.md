@@ -53,6 +53,8 @@ I'm calling it Soda as it is inspired by Cider (but is not a fork).
   + Be able to scroll the field leftwards by moving the cursor (currently you can only scroll leftward by deleting)
  
 + Add a factory for easier creation of the drop-down list seen in the demo
+
++ Add a rect shape that supports textures and aliased strokes, so that you can have rectangular blurred panels that match the same stroke as the rounded rectangles
    
 ## Screenshots
 
