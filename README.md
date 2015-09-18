@@ -97,7 +97,11 @@ NB for performance reasons, currently the blurred panels do not have live updati
 
 ### Adding interface elements to your code
 
-Add interface elements to your code with constructors. Currently available constructors are:
+Add interface elements to your code with constructors consisting of a Soda element and a table of arguments. All Soda elements take a single table of parameters as an argument. In Lua, if a function takes a single table or a single string as its argument, then the `()` brackets that ususally enclose the arguments can be omitted. So, `Soda.Button{title = "Press Me"}` is the same as `Soda.Button({title = "Press Me"})`, but with less typing. Keys can be supplied in any order, and very few are compulsory (Soda will supply defaults for certain missing values).
+
+Soda will automatically record each UI element you create. Therefore Soda constructors are "fire and forget". Soda does this in order to ensure the correct order of drawing and touching (so that, for example, you cannot touch a button hidden beneath a pop-up dialog window). You will ony need to define local handles for UI elements if you need to refer to that element, usually in either a callback, or to make that element the parent of others (see the example code below).
+
+#### Interface elements
 
 + `Soda.Frame` - A container for other UI elements (a window).
 
@@ -110,13 +114,18 @@ Add interface elements to your code with constructors. Currently available const
   - `Soda.AddButton` a big +
   - `Soda.QueryButton` a big ?
 
-+ `Soda.Switch` - Toggles on and off.
++ `Soda.Switch` - Toggles on and off. Additional arguments:
+  + `on` - flag. `Soda.Switch` is off by default. Set this to true to override this behaviour.
 
-+ `Soda.Segment` - Horizontally segmented buttons that activate different frames/ panels. Use `panels` parameter to pass an array of the panels that the switch toggles between)
++ `Soda.Segment` - Horizontally segmented buttons that activate different frames/ panels. Additional arguments:
+  + `text` - array of strings. Describes how each segment will be labelled.
+  + `panels` - array of UI element identifiers. Identifies which panels the segmented button will flick between, corresponds with `text` array
 
-+ `Soda.List` - A vertically scrolling list of elements that the user can select from. Has elastic snap-back when user scrolls past edge of list. Can easily be set up as a drop down list for auto-populating a text field.
++ `Soda.List` - A vertically scrolling list of elements that the user can select from. Has elastic snap-back when user scrolls past edge of list. Can easily be set up as a drop down list for auto-populating a text field. Additional arguments:
+  + `text` - array of strings. One string for each item in the list.
 
-+ `Soda.TextEntry` - A text entry field with a touchable cursor, and scrolling if the input is too long for the field.
++ `Soda.TextEntry` - A text entry field with a touchable cursor, and scrolling if the input is too long for the field. Additional arguments:
+  + `default` - string. Default text that can be overwritten by the user.
 
 + `Soda.TextWindow`. A window for handling scrolling through large bodies of text.
 
@@ -125,13 +134,7 @@ Add interface elements to your code with constructors. Currently available const
   - `Soda.Alert2` - OK and cancel buttons
   - `Soda.Control` - a standard window with a title and rounded corners
 
-### Forming Soda constructors
-
-All Soda elements take a single table of parameters as an argument. In Lua, if a function takes a single table or a single string as its argument, then the `()` brackets that ususally enclose the arguments can be omitted. So, `Soda.Button{title = "Press Me"}` is the same as `Soda.Button({title = "Press Me"})`, but with less typing. Keys can be supplied in any order, and very few are compulsory (Soda will supply defaults for certain missing values).
-
-Soda will automatically record each UI element you create. Therefore Soda constructors are "fire and forget". Soda does this in order to ensure the correct order of drawing and touching (so that, for example, you cannot touch a button hidden beneath a pop-up dialog window). You will ony need to define local handles for UI elements if you need to refer to that element, usually in either a callback, or to make that element the parent of others (see the example code below).
-
-#### Parameters
+#### General Parameters
 
 Not all parameters are currently supported by all Soda UI elements. I will try to make the interface as consistent as possible.
 
@@ -151,9 +154,11 @@ Not all parameters are currently supported by all Soda UI elements. I will try t
 + `default` - string. Used by `Soda.textEntry` for default text that can be overwritten by the user.
 
 + `callback` - function. Triggered by completing actions (pressing a button, hitting return in textEntry). Note that if a callback refers to the element itself, it needs to be defined outside of the constructor (because within the constructor there is not yet any `self` or other handle to refer to the object. See example code below).
-  - In `Soda.textEntry`, callback is triggered by hitting return or the close keyboard button (but not by selecting a different interface element, which closes the keyboard and cancels text entry). Callback is passed the string entered.
+  - In `Soda.TextEntry`, callback is triggered by hitting return or the close keyboard button (but not by selecting a different interface element, which closes the keyboard and cancels text entry). Callback is passed the string entered.
   - In `Soda.List`, callback is passed the item that was selected
   - `Soda.Switch` has two callbacks: `callback` (when on state is activated) and `callbackOff`
+
++ `on` - flag. `Soda.Switch` is off by default. Set this to true to override this behaviour.
 
 + `hidden` - flag. Set to true for elements that are hidden initially. (NB make sure you add a button that will `:show()` the element)
 
