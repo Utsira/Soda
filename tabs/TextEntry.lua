@@ -25,13 +25,17 @@ function Soda.TextEntry:inputString(txt)
     self.textW = self:getTextSize(Soda.style.textEntry, self.text)
 end
 
-function Soda.TextEntry:draw()
-    Soda.Frame.draw(self)
+function Soda.TextEntry:draw(breakPoint)
+    Soda.Frame.draw(self, breakPoint)
     local x = self:left() + self.offset.x
     local y = self:bottom() + self.offset.y
     pushStyle()
 
     if Soda.keyboardEntity and Soda.keyboardEntity == self then
+        if not isKeyboardShowing() then --end of text entry
+            Soda.keyboardEntity = nil --set this to nil before callback, else blurred will create a recursive loop
+            tween.delay(0.001, function() self:callback(self:output()) end ) 
+        end
         local h = 0.25
         if CurrentOrientation == LANDSCAPE_LEFT or CurrentOrientation == LANDSCAPE_RIGHT then h = 0.35 end
         local typewriter = math.max(0, (HEIGHT * h) - y)
@@ -92,8 +96,7 @@ end
 function Soda.TextEntry:keyboard(key)
     if key == RETURN then
       --  tween(0.5, Soda, {UIoffset = 0} )
-        hideKeyboard()
-        Soda.keyboardEntity = nil
+        hideKeyboard() --hide keyboard triggers end of text input event in TextEntry:draw()
     elseif key == BACKSPACE then
         if #self.input>0 and self.cursor>1 then
             table.remove(self.input, self.cursor-1)

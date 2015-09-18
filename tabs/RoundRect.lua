@@ -18,7 +18,9 @@ function Soda.RoundedRectangle(t)
     local c = t.corners or 15
     local w = math.max(t.w+1,2*s)
     local h = math.max(t.h,2*s)
-    local label = table.concat({w,h,s,c},",")
+    local hasTexture = 0
+    if t.tex then hasTexture = 1 end
+    local label = table.concat({w,h,s,c,hasTexture},",")
     
     if not __RRects[label] then
         local rr = mesh()
@@ -151,7 +153,7 @@ varying vec3 vNormal;
 
 void main()
 {
-    lowp vec4 col = mix(strokeColor, fillColor, smoothstep(1. - strokeWidth - scale * 0.5, 1. - strokeWidth - scale * 1.5, vNormal.z)); //0.95, 0.92,
+    lowp vec4 col = mix(strokeColor, fillColor, smoothstep((1. - strokeWidth) - scale, (1. - strokeWidth) - scale * 2. , vNormal.z)); //0.95, 0.92,
      col = mix(vec4(col.rgb, 0.), col, smoothstep(1., 1.-scale, vNormal.z) );
    // col *= smoothstep(1., 1.-scale, vNormal.z);
     gl_FragColor = col;

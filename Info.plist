@@ -7,8 +7,8 @@
 	<key>Buffer Order</key>
 	<array>
 		<string>Demo</string>
-		<string>Main</string>
 		<string>Soda</string>
+		<string>Main</string>
 		<string>Style</string>
 		<string>RoundRect</string>
 		<string>Blur</string>

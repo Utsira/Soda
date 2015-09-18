@@ -1,21 +1,21 @@
 -- Soda
 displayMode(OVERLAY)
 displayMode(FULLSCREEN)
--- Use this function to perform your initial setup
--- 
+-- Use this as a template for your projects that have Soda as a dependency. 
 
 function setup()
+    profiler.init()
+    parameter.watch("#Soda.items")
     Soda.setup()
     demo1()
-    profiler.init()
 end
 
 function draw()
-    drawing()
+    Soda.drawing()
     profiler.draw()
 end
 
-function drawing(breakPoint) --in order for gaussian blur to work, do all your drawing here
+function Soda.drawing(breakPoint) --in order for gaussian blur to work, do all your drawing here
     Soda.camera()
     background(40, 40, 50)
     sprite("Cargo Bot:Game Area", WIDTH*0.5, HEIGHT*0.5, WIDTH, HEIGHT)

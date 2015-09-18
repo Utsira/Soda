@@ -76,7 +76,7 @@ end
 function Soda.Blur:drawImage()
     pushMatrix()
     translate(-self.parent:left(), -self.parent:bottom())
-    drawing(self.parent) --draw all elements to the blur image, with the parent set as the breakpoint (so that the parent window itself does not show up in the blurred image)
+    Soda.drawing(self.parent) --draw all elements to the blur image, with the parent set as the breakpoint (so that the parent window itself does not show up in the blurred image)
     popMatrix()
 end
 

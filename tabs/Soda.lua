@@ -18,7 +18,7 @@ end
 function Soda.camera()
     if not isKeyboardShowing() then
         Soda.UIoffset = Soda.UIoffset * 0.9
-        Soda.keyboardEntity = nil --catch when user presses "hide keyboard key"
+
     end
     translate(0, Soda.UIoffset)
 end

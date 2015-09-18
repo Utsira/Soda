@@ -9,7 +9,14 @@ function Soda.Switch:init(t)
 
     self.knob = Soda.Knob{parent = self, x = 0, y = 0.5, w=40, h=40, shape = Soda.ellipse, style = Soda.style.switch, shadow = true}
     
-    if self.on then self.knob:highlight() end
+    self.callback = t.callback or null
+    self.callbackOff = t.callbackOff or null
+    if self.on then 
+        self.knob:highlight() 
+        self:callback()
+    else
+        self:callbackOff()
+    end
 end
 
 function Soda.Switch:touched(t, tpos)   
@@ -26,12 +33,16 @@ function Soda.Switch:touched(t, tpos)
                 
                 return true
             end
-        else --ended
-            self.callback()
-            
+        else --ended     
             self.touchId = nil
             self.on = not self.on
-                if self.on then self.knob:highlight() else self.knob:unHighlight() end
+            if self.on then 
+                self.knob:highlight() 
+                self:callback()
+            else 
+                self.knob:unHighlight() 
+                self:callbackOff()
+            end
             return true
         end
         

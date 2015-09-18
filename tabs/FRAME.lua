@@ -3,12 +3,18 @@ Soda.Frame = class() --the master class for all UI elements. I know that some pe
 function Soda.Frame:init(t)
     t.shapeArgs = t.shapeArgs or {}
     t.style = t.style or Soda.style.default
+    if not t.label and t.title then
+        t.label = {x=0.5, y=-10, text = t.title}
+    end
     self:storeParameters(t)
  
-    self.callback = t.callback or null --null = function() end. ie no need to test if callback then callback()
+    self.callback = t.callback or null --triggered on action completion
+    self.update = t.update or null --triggered every draw cycle.
+    
+    --null = function() end. ie no need to test if callback then callback()
     
     self.child = {} --hold any children
-    
+
     self:setPosition()
 
     self.mesh = {} --holds additional effects, such as shadow and blur
@@ -123,7 +129,7 @@ end
 function Soda.Frame:draw(breakPoint)
     if breakPoint and breakPoint == self then return true end
     if self.hidden then return end
-    
+    self:update()
     if self.alert then
         Soda.darken.draw() --darken underlying interface elements
     end
@@ -153,6 +159,8 @@ function Soda.Frame:draw(breakPoint)
         popStyle()
     end
     
+    self:drawContent()
+    
     for i, v in ipairs(self.child) do --nb children are drawn with parent's transformation
         --[[
         local ok, err = xpcall(function()  v:draw(breakPoint) end, function(trace) return debug.traceback(trace) end)
@@ -166,6 +174,8 @@ function Soda.Frame:draw(breakPoint)
     end
     popMatrix()
 end
+
+function Soda.Frame:drawContent() end --overridden by subclasses
 
 function Soda.Frame:drawShape(sty)
     pushStyle()
@@ -228,7 +238,7 @@ function Soda.Frame:selectFromList(child) --method used by parents of selectors
         end
         self.selected = child
         if child.panel then child.panel:show() end
-        self.callback(child.label.text)
+        self:callback(child)
     end
 end
 

@@ -34,7 +34,7 @@ function Soda.ScrollShape:draw(breakPoint)
     for i = #self.mesh, 1, -1 do
         self.mesh[i]:draw()
     end
-    self:update()
+    self:updateScroll()
 
     if not breakPoint then
         --  tween.delay(0.001, function() self:drawImage() end)

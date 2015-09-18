@@ -16,7 +16,7 @@ function Soda.Selector:touched(t, tpos)
                 return true
             end
         else --ended
-            self.callback()
+            self:callback()
             self.touchId = nil
           --  self.on = true
             self.highlighted = true

@@ -23,7 +23,7 @@ function Soda.Button:touched(t, tpos)
                 return true
             end
         else --ended
-            self.callback()
+            self:callback()
             self.highlighted = false
             self.touchId = nil
             return true
@@ -82,7 +82,7 @@ function Soda.AddButton(t)
 end
 
 function Soda.QueryButton(t)
-    t.title = "\u{ff1f}" --full-width ?
+    t.title = "?" --full-width ? \u{ff1f}
     t.w, t.h = 40, 40
     t.style = t.style or Soda.style.darkIcon
     t.shape = t.shape or Soda.ellipse
