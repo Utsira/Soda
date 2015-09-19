@@ -6,7 +6,7 @@ I'm calling it Soda as it is inspired by Cider (but is not a fork).
 
 ## Features
 
-#### Simple but powerful parent-child relationship between interface elements
+### Simple but powerful parent-child relationship between interface elements
 
 + Positions and dimensions of elements are defined relative to the parent of the element (ie the frame or window that they are in). Positions can be defined relative to any edge of the enclosing frame, or as a proportion of the parent frame. Decide a window is too cluttered? No need to move all of the elements around, just resize the parent window.
 
@@ -16,7 +16,7 @@ I'm calling it Soda as it is inspired by Cider (but is not a fork).
 
 + Drawing and touching are automatically handled in order to get the correct draw and touch order so that, for instance, it is not possible to touch an element through an overlying window.
 
-#### Gorgeous and fast-performing graphics
+### Gorgeous and fast-performing graphics
 
 + 196-sample Gaussian blur shader used for proper drop-shadows and blurred panel effects
 
@@ -40,7 +40,7 @@ http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerful-gui-windowing-bu
 
 ## Version Notes
 
-#### v0.2
+### v0.2
 
 + NEW `Soda.DropdownList` - A button which, when pressed, toggles a dropdown list (this is a wrapper or factory which makes it much easier to setup dropdown lists). When an item is selected from the list, the button's label changes to reflect the selection, and an optional callback is triggered.
 
@@ -56,7 +56,7 @@ http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerful-gui-windowing-bu
 
 + If you're using iOS 9, TextEntry fields now have cut, copy, and paste ;-)
 
-+ The `Soda.Control` wrapper is now called 'Soda.Window'
++ The `Soda.Control` wrapper is now called `Soda.Window`
 
 + The `drawing` function called in `draw` must now be called `Soda.drawing`
 
@@ -123,11 +123,14 @@ Add interface elements to your code with constructors consisting of a Soda eleme
 
 Soda will automatically record each UI element you create. Therefore Soda constructors are "fire and forget". Soda does this in order to ensure the correct order of drawing and touching (so that, for example, you cannot touch a button hidden beneath a pop-up dialog window). You will ony need to define local handles for UI elements if you need to refer to that element, usually in either a callback, or to make that element the parent of others (see /tabs/Demo for examples).
 
-#### Interface elements
+#### `Soda.Frame`
 
-+ `Soda.Frame` - A container for other UI elements (a window).
+A container for other UI elements (a window).
 
-+ `Soda.Button` - One press to activate a callback. Has a variety of built-in defaults for frequently-used interface elements such as:
+#### `Soda.Button`
+
+One press to activate a callback. Has a variety of built-in variants for frequently-used interface elements:
+
   - `Soda.SettingsButton` the settings "gear" icon
   - `Soda.MenuButton` the "hamburger" menu button
   - `Soda.BackButton` (add `direction = RIGHT` if you want a right facing button)
@@ -136,7 +139,10 @@ Soda will automatically record each UI element you create. Therefore Soda constr
   - `Soda.AddButton` a big "+"
   - `Soda.QueryButton` a big "?"
 
-* `Soda.Toggle` - Toggles on and off. Additional arguments:
+#### `Soda.Toggle`
+
+Toggles on and off. Additional arguments:
+
   + `on` - flag. `Soda.Toggle` is off by default. Set this to true to override this behaviour.
   + `callback`, `callbackOff` - in addition to `callback` parameter (see General Parameters below), fired when switch turns on, there is a `callbackOff`, triggered when the switch is turned off.
 
@@ -144,17 +150,23 @@ Soda will automatically record each UI element you create. Therefore Soda constr
 
   + `:switchOn()`, `:switchOff()` - methods to switch the toggle on or off (and fire its callbacks), in case you need to automate the switches.
 
-  Built-in defaults:
+  Built-in variants:
 
   + `Soda.MenuToggle` the "hamburger" menu button, as a toggle
 
   + `Soda.Switch` - An iOS-style toggle with a lever that slides back and forth.
 
-+ `Soda.Segment` - Horizontally segmented buttons that activate different frames/ panels. Define the panels first, before defining the segment button that will switch between them. Additional arguments:
+#### `Soda.Segment`
+
+Horizontally segmented buttons that activate different frames/ panels. Define the panels first, before defining the segment button that will switch between them. Additional arguments:
+
   + `text` - array of strings. Describes how each segment will be labelled. eg: `text = {"Buttons", "Switches"}`
   + `panels` - array of UI element identifiers. Identifies which panels the segmented button will flick between, corresponds with `text` array. eg: `panels = {buttonPanel, switchPanel}` where `buttonPanel`, `switchPanel` are handles (local variables are fine here) for prior defined Soda elements.
 
-+ `Soda.List` - A vertically scrolling list of elements that the user can select from. Has elastic snap-back when user scrolls past edge of list. Additional arguments:
+#### `Soda.List`
+
+A vertically scrolling list of elements that the user can select from. Has elastic snap-back when user scrolls past edge of list. Additional arguments:
+
   + `text` - array of strings. One string for each item in the list. eg `text = {"apples", "oranges", "bananas"}`
   + `defaultNo` - if you want an item in the list to be selected by default, set this to the number of the item in the `text` array. eg `defaultNo = 2` to default to `"oranges"` from the above list. Omit this for no selection.
   + `callback` - list callbacks return 3 variables, eg: `callback = function(self, selected, txt)`
@@ -168,34 +180,40 @@ Soda will automatically record each UI element you create. Therefore Soda constr
   + `defaultNo` - the list item selected by default, same as `Soda.List`. If you omit this, there will be no selection by default, and the text "Select from list" will be appended to the button's label.
   + `callback` - is passed same three variables as `Soda.List`
 
-+ `Soda.TextEntry` - A text entry field with a touchable cursor, and scrolling if the input is too long for the field. Additional arguments:
+#### `Soda.TextEntry`
+
+A text entry field with a touchable cursor, and scrolling if the input is too long for the field. Additional arguments:
+
   + `default` - string. Default text that can be overwritten by the user.
 
   Additional method:
 
   + `:inputString(string)` - in case you need to populate the field with a string
 
-+ `Soda.TextScroll`, `Soda.TextWindow`. `Soda.TextScroll` is a window for handling scrolling through large bodies of text. `Soda.TextWindow` is a wrapper that adds a close button to the text window. Additional method:
+#### `Soda.TextScroll`, `Soda.TextWindow`
+
+`Soda.TextScroll` is a window for handling scrolling through large bodies of text. `Soda.TextWindow` is a wrapper that adds a close button to the text window. Additional method:
 
    + `:inputString(string)` - as above
 
-+ Various alerts and dialogs:
+#### Various alerts and dialogs
+
   - `Soda.Alert` - alert message plus single OK button
   - `Soda.Alert2` - OK and cancel buttons. Additional arguments:
     * `ok` - override default "OK" button text
     * `cancel` - override "cancel" button text
   - `Soda.Window` - a standard window with a title and rounded corners.
 
-#### General Parameters
+### General Parameters
 
 Not all parameters are currently supported by all Soda UI elements.
 
 + `parent` - UI element identifier. The parent of this element. Positions and dimensions are defined relative to the parent. Elements without any parent are top-level.
 
 + `x`,`y`,`w`,`h` - float. Position and dimensions of element, defined relative to the parent, or to the viewable screen if there is no parent, according to 3 rules:
-  1. if x,y,w, or h are positive integers, they behave as normal coordinates in rectMode CORNER (ie pixels from the origin)
-  2. if x,y,w,or h are floating point between 0 and 1, they describe proportions in CENTER mode (x,y 0.5 is centred)
-  3. if x,y,w, or h are negative, they describe distance in pixels from the TOP or RIGHT edge, as in CORNERS mode (ie, w,h become x2,y2 rather than width and height). if x and y are negative, they also behave the same way as w,h, describing the distance between the TOP/RIGHT edge of the parent, and the TOP/RIGHT edge of the child (they also become x2, y2).
+  1) if x,y,w, or h are positive integers, they behave as normal coordinates in rectMode CORNER (ie pixels from the origin)
+  2) if x,y,w,or h are floating point between 0 and 1, they describe proportions in CENTER mode (x,y 0.5 is centred)
+  3) if x,y,w, or h are negative, they describe distance in pixels from the TOP or RIGHT edge, as in CORNERS mode (ie, w,h become x2,y2 rather than width and height). if x and y are negative, they also behave the same way as w,h, describing the distance between the TOP/RIGHT edge of the parent, and the TOP/RIGHT edge of the child (they also become x2, y2).
 
   the above 3 rules can be mixed together in one definition. eg a button fixed to the bottom right corner of its parent with a 20 pixel border, with a variable width of a quarter of its parent's width, and a fixed height of 40 pixels, would be: x = -20, y = 20, w = 0.25, h = 40.
 
