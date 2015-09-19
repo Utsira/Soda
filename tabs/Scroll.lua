@@ -10,7 +10,7 @@ end
 
 function Soda.Scroll:updateScroll()
     
-    local scrollH = self.scrollHeight -self.h
+    local scrollH = math.max(0, self.scrollHeight -self.h)
     if self.scrollY<0 then 
       --  self.scrollVel = self.scrollVel +   math.abs(self.scrollY) * 0.005
         self.scrollY = self.scrollY * 0.7

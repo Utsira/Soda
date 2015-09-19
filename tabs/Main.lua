@@ -7,23 +7,23 @@ function setup()
     profiler.init()
     parameter.watch("#Soda.items")
     Soda.setup()
-    demo1()
+    demo1() --do your setting up here
 end
 
 function draw()
-
+    --do your updating here
+    pushMatrix()
+    Soda.camera()
     Soda.drawing()
+    popMatrix()
     profiler.draw()
 end
 
 function Soda.drawing(breakPoint) 
-    pushMatrix()
-    Soda.camera()
     --in order for gaussian blur to work, do all your drawing here
     background(40, 40, 50)
     sprite("Cargo Bot:Game Area", WIDTH*0.5, HEIGHT*0.5, WIDTH, HEIGHT)
     Soda.draw(breakPoint)
-    popMatrix()
 end
 
 --user inputs:
