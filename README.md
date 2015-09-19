@@ -4,6 +4,25 @@ Gorgeous and powerful GUI/ button library for [Codea](http://codea.io) projects.
 
 I'm calling it Soda as it is inspired by Cider (but is not a fork).
 
+Forum Discussion: http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerful-gui-windowing-button-library-for-codea
+
+## Contents
+1. [Features](#features)
+
+1. [Screenshots](#screenshots)
+
+1. [Version notes](#versionnotes)
+
+1. [Usage](#usage)
+  1. [Interface elements](#interfaceelements)
+    1. [Frame](#sodaframe)
+  1. [General Parameters](#generalparameters)
+  1. [Methods](#methods)
+
+1. [Known issues](#knownissues)
+
+1. [Roadmap](#roadmap)  
+
 ## Features
 
 ### Simple but powerful parent-child relationship between interface elements
@@ -33,10 +52,6 @@ I'm calling it Soda as it is inspired by Cider (but is not a fork).
 ![DropDownList](https://puffinturtle.files.wordpress.com/2015/09/image4.jpg) A drop down list for autopopulating a text field
 
 ![TextWindow](https://puffinturtle.files.wordpress.com/2015/09/image5.jpg) A window for scrolling through large bodies of text
-
-## Forum Discussion
-
-http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerful-gui-windowing-button-library-for-codea
 
 ## Version Notes
 
@@ -117,7 +132,7 @@ If you want blurry panels to blur elements that lie beneath the interface, you w
 
 NB for performance reasons, currently the blurred panels do not have live updating of the underlying image being blurred. The blurred image is only generated when the panel is first declared, or the orientation changes. They therefore look best if the underlying image is not moving.
 
-### Adding interface elements to your code
+### Interface elements
 
 Add interface elements to your code with constructors consisting of a Soda element and a table of arguments. All Soda elements take a single table of parameters as an argument. In Lua, if a function takes a single table or a single string as its argument, then the `()` brackets that ususally enclose the arguments can be omitted. So, `Soda.Button{title = "Press Me"}` is the same as `Soda.Button({title = "Press Me"})`, but with less typing. Keys can be supplied in any order, and very few are compulsory (Soda will supply defaults for certain missing values).
 
