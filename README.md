@@ -11,15 +11,15 @@ Forum Discussion: http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerfu
 
 1. [Screenshots](#screenshots)
 
-1. [Version notes](#versionnotes)
+1. [Version notes](#version-notes)
 
 1. [Usage](#usage)
-  1. [Interface elements](#interfaceelements)
+  1. [Interface elements](#interface-elements)
     1. [Frame](#sodaframe)
-  1. [General Parameters](#generalparameters)
+  1. [General Parameters](#general-parameters)
   1. [Methods](#methods)
 
-1. [Known issues](#knownissues)
+1. [Known issues](#known-issues)
 
 1. [Roadmap](#roadmap)  
 
