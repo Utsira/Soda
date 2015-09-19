@@ -103,6 +103,7 @@ function Soda.Frame:show(direction)
     else --no animation
         self.inactive = false
     end
+    if self.shapeArgs and self.shapeArgs.tex then self.shapeArgs.resetTex = self.shapeArgs.tex end --force roundedrect to switch texture (because two rects of same dimensions are cached as one mesh)
 end
 
 function Soda.Frame:hide(direction)
@@ -238,7 +239,7 @@ function Soda.Frame:selectFromList(child) --method used by parents of selectors
         end
         self.selected = child
         if child.panel then child.panel:show() end
-        self:callback(child)
+        self:callback(child, child.label.text)
     end
 end
 

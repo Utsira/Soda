@@ -4,15 +4,10 @@ function Soda.setup()
     --  parameter.watch("#Soda.items")
     Soda.Assets()
     Soda.theme = Soda.themes.default
-   --  strokeWidth(2)
+
     textAlign(CENTER)
     rectMode(CENTER)
-    --[[
-    print("centre=", CENTER) --2
-    print("corner=", CORNER) --0
-    print("left", LEFT) --0
-    print("right", RIGHT) --1
-    ]]
+
 end
 
 function Soda.camera()
@@ -61,13 +56,6 @@ function Soda.parseCoord(v, len, edge)
     if v<0 then return edge - half + v end --eg WIDTH - 40
     return edge * v  --proportional
 end
-
---[[
-function Soda.parseSize(v, origin, edge)
-    if v>0 and v<=1 then return (edge-origin) * v end --v * edge
-    return v
-end
-  ]]
 
 function Soda.parseCoordSize(loc, size, edge)
     local pos, len

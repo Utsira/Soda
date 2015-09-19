@@ -9,8 +9,42 @@ function Soda.List:init(t)
         t.text = tab
     end
     t.scrollHeight = #t.text * 40
+    t.h = math.min(t.h or t.scrollHeight, t.scrollHeight)
     Soda.ScrollShape.init(self, t)
     for i,v in ipairs(t.text) do
-        Soda.Selector{parent = self, idNo = i, label = { text = v, x = 10, y = 0.5}, style = t.style, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
+        local item = Soda.Selector{parent = self, idNo = i, label = { text = v, x = 10, y = 0.5}, style = t.style, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
+        if t.defaultNo and i==t.defaultNo then
+            item.highlighted = true
+            self:selectFromList(item)
+        end
     end
+end
+
+--- a factory for dropdown lists
+
+function Soda.DropdownList(t)
+    local this = Soda.Button{
+        parent = t.parent, x = t.x, y = t.y, w = t.w, h = t.h,
+        label = {text = "\u{25bc} "..t.title..": Select from list", x = 10, y = 0.5}
+    }
+
+    local callback = t.callback or null
+
+    local list = Soda.List{
+        parent = t.parent,
+        hidden = true,
+        x = t.x, y = this:bottom() - t.parent.h, w = t.w, h = this:bottom(),
+        text = t.text,    
+        defaultNo = t.defaultNo,  
+        callback = function(self, selected, txt) 
+            this.label.text = "\u{25bc} "..t.title..": "..txt
+            this:setPosition() --to recalculate left-justified label
+            self:hide() 
+            callback(self, selected, txt)
+        end
+    } 
+    
+    this.callback = function() list:toggle() end --callback has to be outside of constructor only when two elements' callbacks both refer to each-other.
+    
+    return this
 end

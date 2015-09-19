@@ -59,7 +59,7 @@ function demo1()
         parent = panel, 
         x = 20, y = 20, w = -20, h = -140,
         text = listProjectTabs(), -- text of list items taken from current project tabs
-        callback = function (this, out) Soda.TextWindow{title = out.label.text, text = readProjectTab(out.label.text), shadow = true, closeButton = true, style = Soda.style.thickStroke, shapeArgs = {radius = 25}} end --a window for scrolling through large blocks of text
+        callback = function (self, selected, txt) Soda.TextWindow{title = txt, text = readProjectTab(txt), shadow = true, closeButton = true, style = Soda.style.thickStroke, shapeArgs = {radius = 25}} end --a window for scrolling through large blocks of text
     }
     
     --a segmented button to choose between the above 3 panels:
@@ -81,8 +81,8 @@ function demo1()
         title = "Profiler\n\n\n", --will be overridden
       --  shapeArgs = {corners = 8},
         blurred = true, shadow = true,
-        update = function(this) --update will be called every frame
-            this.label.text = string.format("Profiler\n\nFPS: %.2f\nMem: %.2f", profiler.fps, profiler.mem)
+        update = function(self) --update will be called every frame
+            self.label.text = string.format("Profiler\n\nFPS: %.2f\nMem: %.2f", profiler.fps, profiler.mem)
         end
     }
     
@@ -93,7 +93,7 @@ function demo1()
         x = 10, y = -70, w = -10, h = 40,
         title = "Nick-name:",
         default = "Ice Man",
-        callback = function(this, inkey)
+        callback = function(self, inkey)
             Soda.Alert{
                 title = inkey.."?!?\n\nWas that really your nickname?",
                style = Soda.style.darkBlurred, blurred = true
@@ -106,7 +106,7 @@ function demo1()
         x = 10, y = -130, w = -10, h = 40,
         title = "Name of 1st pet:",
         default = "Percival",
-        callback = function(this, inkey)
+        callback = function(self, inkey)
             Soda.Alert{
                 title = inkey.."\n\u{1f63b}\u{1f436}\u{1f430}\n\nAwwww. Cute name",
                style = Soda.style.darkBlurred, blurred = true
@@ -114,48 +114,12 @@ function demo1()
         end
     }
     
-    --[[
-    local countyName = Soda.TextEntry{
+    Soda.DropdownList{ --a dropdown list button
         parent = textEntryPanel,
-         x = 10, y = -10, w = -49, h = 40,
-        shapeArgs = {corners = 1 | 2}, --only round left-hand corners
-        title = "County:",
-        default = "Select from list",
-        --inactive = true
+        x = 10, y = -10, w = -10, h = 40,    
+        title = "County",
+        text = {"London", "Bedfordshire", "Buckinghamshire", "Cambridgeshire", "Cheshire", "Cornwall and Isles of Scilly", "Cumbria", "Derbyshire", "Devon", "Dorset", "Durham", "East Sussex", "Essex", "Gloucestershire", "Greater London", "Greater Manchester", "Hampshire", "Hertfordshire", "Kent", "Lancashire", "Leicestershire", "Lincolnshire", "Merseyside", "Norfolk", "North Yorkshire", "Northamptonshire", "Northumberland", "Nottinghamshire", "Oxfordshire", "Shropshire", "Somerset", "South Yorkshire", "Staffordshire", "Suffolk", "Surrey", "Tyne and Wear", "Warwickshire", "West Midlands", "West Sussex", "West Yorkshire", "Wiltshire", "Worcestershire", "Flintshire", "Glamorgan", "Merionethshire", "Monmouthshire", "Montgomeryshire", "Pembrokeshire", "Radnorshire", "Anglesey", "Breconshire", "Caernarvonshire", "Cardiganshire", "Carmarthenshire", "Denbighshire", "Kirkcudbrightshire", "Lanarkshire", "Midlothian", "Moray", "Nairnshire", "Orkney", "Peebleshire", "Perthshire", "Renfrewshire", "Ross & Cromarty", "Roxburghshire", "Selkirkshire", "Shetland", "Stirlingshire", "Sutherland", "West Lothian", "Wigtownshire", "Aberdeenshire", "Angus", "Argyll", "Ayrshire", "Banffshire", "Berwickshire", "Bute", "Caithness", "Clackmannanshire", "Dumfriesshire", "Dumbartonshire", "East Lothian", "Fife", "Inverness", "Kincardineshire", "Kinross-shire"},    
     }
-      ]]
-    
-    local countyName = Soda.Button{
-        parent = textEntryPanel,
-         x = 10, y = -10, w = -10, h = 40,
-     --   shapeArgs = {corners = 1 | 2}, --only round left-hand corners
-        title = "\u{25bc} County: Select from list",
-     --   default = "Select from list",
-        --inactive = true
-    }
-    
-    local counties = Soda.List{
-        parent = textEntryPanel,
-        hidden = true,
-        x = 10, y = 0, w = -10, h = -50,
-        text = {"London", "Bedfordshire", "Buckinghamshire", "Cambridgeshire", "Cheshire", "Cornwall and Isles of Scilly", "Cumbria", "Derbyshire", "Devon", "Dorset", "Durham", "East Sussex", "Essex", "Gloucestershire", "Greater London", "Greater Manchester", "Hampshire", "Hertfordshire", "Kent", "Lancashire", "Leicestershire", "Lincolnshire", "Merseyside", "Norfolk", "North Yorkshire", "Northamptonshire", "Northumberland", "Nottinghamshire", "Oxfordshire", "Shropshire", "Somerset", "South Yorkshire", "Staffordshire", "Suffolk", "Surrey", "Tyne and Wear", "Warwickshire", "West Midlands", "West Sussex", "West Yorkshire", "Wiltshire", "Worcestershire", "Flintshire", "Glamorgan", "Merionethshire", "Monmouthshire", "Montgomeryshire", "Pembrokeshire", "Radnorshire", "Anglesey", "Breconshire", "Caernarvonshire", "Cardiganshire", "Carmarthenshire", "Denbighshire", "Kirkcudbrightshire", "Lanarkshire", "Midlothian", "Moray", "Nairnshire", "Orkney", "Peebleshire", "Perthshire", "Renfrewshire", "Ross & Cromarty", "Roxburghshire", "Selkirkshire", "Shetland", "Stirlingshire", "Sutherland", "West Lothian", "Wigtownshire", "Aberdeenshire", "Angus", "Argyll", "Ayrshire", "Banffshire", "Berwickshire", "Bute", "Caithness", "Clackmannanshire", "Dumfriesshire", "Dumbartonshire", "East Lothian", "Fife", "Inverness", "Kincardineshire", "Kinross-shire"},      
-    callback = function(this, out) 
-       -- countyName:inputString(out.label.text) 
-        countyName.label.text = "\u{25bc} County: "..out.label.text
-        this:hide() 
-    end
-    } --counties.selected.label.text
-    countyName.callback = function() counties:toggle() end
-    
-    --[[
-    Soda.DropdownButton{
-        parent = textEntryPanel,
-        style = Soda.style.default,
-        x = -10, y = -10,
-        shapeArgs = {corners = 4 | 8}, --only round the right-hand corners
-        callback = function() counties:toggle() end
-    }
-      ]]
     
     --the button panel:
     
