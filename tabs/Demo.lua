@@ -19,7 +19,7 @@ function demo1()
     
     --the main panel
     
-    local panel = Soda.Control{ --give parent a local handle, in this case "panel", to define children
+    local panel = Soda.Window{ --give parent a local handle, in this case "panel", to define children
         title = "Demonstration", 
         hidden = true, --not visible or active initially
         x=0.7, y=0.5, w=0, h=0.7, 
@@ -28,18 +28,12 @@ function demo1()
         shapeArgs = { corners = 1 | 2} --only round left-hand corners
     }
     
-    --2 navigation buttons to show & hide the main panel
+    --A menu button to show & hide the main panel
     
-    local menu = Soda.MenuButton{x = -20, y = -20, --a button to activate the above panel
-    callback = function(this) panel:show(RIGHT) this:hide(RIGHT) end
-    } --the first parameter passd to the callback is always "self" (here "this")
-    
-    Soda.BackButton{ --a button to hide "panel" and re-show "menu" button
-        parent = panel, --a child of above "panel", therefore also inactive initially
-        direction = RIGHT, --override the default left-pointing back icon
-        x = -10, y = -10, --relative to edges of "panel"
-        callback = function() panel:hide(RIGHT) menu:show(RIGHT) end --this callback does not reference itself, so can be included in {} constructor
-    } 
+    local menu = Soda.MenuToggle{x = -20, y = -20, --a button to activate the above panel
+    callback = function() panel:show(RIGHT) end,
+    callbackOff = function() panel:hide(RIGHT) end,
+    }
     
     Soda.QueryButton{ --a button to open the help readme
         parent = panel,
@@ -81,7 +75,7 @@ function demo1()
     
     --a panel for displaying profiling stats (activated by a switch in the button panel)
     
-    local stats = Soda.Control{
+    local stats = Soda.Window{
         hidden = true,
         x = 0, y = -0.001, w = 200, h = 120,
         title = "Profiler\n\n\n", --will be overridden
@@ -120,6 +114,7 @@ function demo1()
         end
     }
     
+    --[[
     local countyName = Soda.TextEntry{
         parent = textEntryPanel,
          x = 10, y = -10, w = -49, h = 40,
@@ -128,19 +123,31 @@ function demo1()
         default = "Select from list",
         --inactive = true
     }
+      ]]
+    
+    local countyName = Soda.Button{
+        parent = textEntryPanel,
+         x = 10, y = -10, w = -10, h = 40,
+     --   shapeArgs = {corners = 1 | 2}, --only round left-hand corners
+        title = "\u{25bc} County: Select from list",
+     --   default = "Select from list",
+        --inactive = true
+    }
     
     local counties = Soda.List{
         parent = textEntryPanel,
         hidden = true,
         x = 10, y = 0, w = -10, h = -50,
         text = {"London", "Bedfordshire", "Buckinghamshire", "Cambridgeshire", "Cheshire", "Cornwall and Isles of Scilly", "Cumbria", "Derbyshire", "Devon", "Dorset", "Durham", "East Sussex", "Essex", "Gloucestershire", "Greater London", "Greater Manchester", "Hampshire", "Hertfordshire", "Kent", "Lancashire", "Leicestershire", "Lincolnshire", "Merseyside", "Norfolk", "North Yorkshire", "Northamptonshire", "Northumberland", "Nottinghamshire", "Oxfordshire", "Shropshire", "Somerset", "South Yorkshire", "Staffordshire", "Suffolk", "Surrey", "Tyne and Wear", "Warwickshire", "West Midlands", "West Sussex", "West Yorkshire", "Wiltshire", "Worcestershire", "Flintshire", "Glamorgan", "Merionethshire", "Monmouthshire", "Montgomeryshire", "Pembrokeshire", "Radnorshire", "Anglesey", "Breconshire", "Caernarvonshire", "Cardiganshire", "Carmarthenshire", "Denbighshire", "Kirkcudbrightshire", "Lanarkshire", "Midlothian", "Moray", "Nairnshire", "Orkney", "Peebleshire", "Perthshire", "Renfrewshire", "Ross & Cromarty", "Roxburghshire", "Selkirkshire", "Shetland", "Stirlingshire", "Sutherland", "West Lothian", "Wigtownshire", "Aberdeenshire", "Angus", "Argyll", "Ayrshire", "Banffshire", "Berwickshire", "Bute", "Caithness", "Clackmannanshire", "Dumfriesshire", "Dumbartonshire", "East Lothian", "Fife", "Inverness", "Kincardineshire", "Kinross-shire"},      
-      --  alert = true   
     callback = function(this, out) 
-        countyName:inputString(out.label.text) 
+       -- countyName:inputString(out.label.text) 
+        countyName.label.text = "\u{25bc} County: "..out.label.text
         this:hide() 
     end
     } --counties.selected.label.text
+    countyName.callback = function() counties:toggle() end
     
+    --[[
     Soda.DropdownButton{
         parent = textEntryPanel,
         style = Soda.style.default,
@@ -148,6 +155,7 @@ function demo1()
         shapeArgs = {corners = 4 | 8}, --only round the right-hand corners
         callback = function() counties:toggle() end
     }
+      ]]
     
     --the button panel:
     
@@ -208,8 +216,9 @@ function demo1()
         title = "OK", 
         x = 20, y = 20, w = 0.4, h = 40,
         callback = function() 
-            panel:hide(RIGHT) 
-            menu:show(RIGHT)
+          --  panel:hide(RIGHT) 
+         --   menu:unHighlight()
+            menu:switchOff()
         end
     }
     
@@ -222,6 +231,7 @@ function demo1()
         function()
             Soda.Alert{ --an alert box with a single button
                 title = "CONGRATULATIONS!\n\nYou held out "..string.format("%.2f", ElapsedTime).." seconds before\n succumbing to the irresistable\nallure of a big red button saying\n‘do not press’", 
+                ok = "Here, have a medal",
                 y=0.6, h = 0.3,
         
                 style = Soda.style.darkBlurred, blurred = true, 
@@ -235,7 +245,7 @@ end
 function demo2()
      local t = ElapsedTime
     local box = --create a temporary handle "box" so that we can define other buttons as children
-    Soda.Control{title = "Settings", w = 0.6, h = 0.6, blurred = true, style = Soda.style.darkBlurred} --
+    Soda.Window{title = "Settings", w = 0.6, h = 0.6, blurred = true, style = Soda.style.darkBlurred} --
      --320
       --  instruction = Label(instruction, x+20, y+160, 640, 120),
      --   field = TextField(textfield, x+20, y+80, 640.0, 40, default, 1, test_Clicked),

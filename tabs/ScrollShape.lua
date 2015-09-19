@@ -7,7 +7,7 @@ function Soda.ScrollShape:init(t)
   --  self:setPosition()
 
     Soda.Scroll.init(self, t)
-
+    
     self.image = image(self.w, self.h)
     setContext(self.image) background(255) setContext()
     self.shapeArgs.radius = 6
@@ -34,15 +34,17 @@ function Soda.ScrollShape:draw(breakPoint)
     for i = #self.mesh, 1, -1 do
         self.mesh[i]:draw()
     end
+      
     self:updateScroll()
 
     if not breakPoint then
         --  tween.delay(0.001, function() self:drawImage() end)
         setContext(self.image)
-        background(40, 40) --40,40 self.style.shape.stroke
+        background(120, 120) --40,40 self.style.shape.stroke
         
         pushMatrix()
         resetMatrix()
+        --if self.blurred then sprite(self.mesh[1].image, self.w*0.5, self.h*0.5, self.w, self.h) end
         translate(0, self.scrollY)
         self:drawImage()
         popMatrix()

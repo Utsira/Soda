@@ -1,7 +1,7 @@
-Soda.Switch = class(Soda.Frame) --press toggles on/ off stats
+Soda.Switch = class(Soda.Toggle) --an iOS-style switch with a lever that moves back and forth
 
 function Soda.Switch:init(t)
-    self.on = t.on or false
+
     local tw,_ = textSize(t.title or "")
    -- t.w, t.h = 120+tw,40
 
@@ -9,45 +9,17 @@ function Soda.Switch:init(t)
 
     self.knob = Soda.Knob{parent = self, x = 0, y = 0.5, w=40, h=40, shape = Soda.ellipse, style = Soda.style.switch, shadow = true}
     
-    self.callback = t.callback or null
-    self.callbackOff = t.callbackOff or null
-    if self.on then 
-        self.knob:highlight() 
-        self:callback()
-    else
-        self:callbackOff()
-    end
+    self:toggleSettings(t)
 end
 
-function Soda.Switch:touched(t, tpos)   
-    if t.state == BEGAN then
-        if self:pointIn(tpos.x, tpos.y) then
-            self.touchId = t.id
-            self:keyboardHideCheck()
-            return true
-        end
-    elseif self.touchId and self.touchId == t.id then
-        if t.state == MOVING then
-            if not self:pointIn(tpos.x, tpos.y) then --cancelled
-                self.touchId = nil
-                
-                return true
-            end
-        else --ended     
-            self.touchId = nil
-            self.on = not self.on
-            if self.on then 
-                self.knob:highlight() 
-                self:callback()
-            else 
-                self.knob:unHighlight() 
-                self:callbackOff()
-            end
-            return true
-        end
-        
-    end
-   -- return Soda.Frame.touched(self, t, tpos) ---switch shouldn't have children
+function Soda.Switch:switchOn()
+    Soda.Toggle.switchOn(self)
+    self.knob:highlight() 
+end
+
+function Soda.Switch:switchOff()
+    Soda.Toggle.switchOff(self)
+    self.knob:unHighlight() 
 end
 
 --animates the switch handle flicking back and forth

@@ -61,8 +61,8 @@ function Soda.Blur:init(t)
     self.parent = t.parent
     self.falloff = 1
     self.off = 0
-
     self:setMesh()
+    --self.draw = self.setMesh --
 end
 
 function Soda.Blur:draw() end
@@ -71,6 +71,7 @@ function Soda.Blur:setMesh()
     self.image = self:setImage()
     self.parent.shapeArgs.tex = self.image
     self.parent.shapeArgs.resetTex = self.image
+      --  self.draw = null
 end
 
 function Soda.Blur:drawImage()

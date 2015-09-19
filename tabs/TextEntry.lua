@@ -33,8 +33,8 @@ function Soda.TextEntry:draw(breakPoint)
 
     if Soda.keyboardEntity and Soda.keyboardEntity == self then
         if not isKeyboardShowing() then --end of text entry
-            Soda.keyboardEntity = nil --set this to nil before callback, else blurred will create a recursive loop
-            tween.delay(0.001, function() self:callback(self:output()) end ) 
+            Soda.keyboardEntity = nil 
+            tween.delay(0.001, function() self:callback(self:output()) end ) --because callback is in draw loop, delay it until end of draw
         end
         local h = 0.25
         if CurrentOrientation == LANDSCAPE_LEFT or CurrentOrientation == LANDSCAPE_RIGHT then h = 0.35 end

@@ -1,7 +1,7 @@
 Soda.List = class(Soda.ScrollShape)
 
 function Soda.List:init(t)
-    if type(t.text)=="string" then
+    if type(t.text)=="string" then --can also accept a comma-separated list of values instead of a table
         local tab={}
         for word in t.text:gmatch("(.-),%s*") do
             tab[#tab+1] = word
