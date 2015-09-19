@@ -40,9 +40,13 @@ http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerful-gui-windowing-bu
 
 ## Version Notes
 
-#### v1.2
+#### v0.2
 
-+ Callbacks have been made more consistent and are triggered by more elements. Callbacks are now always triggered as `self:callback` (with a colon) so the first argument passed to the callback will always be the sender's self. If you have any callbacks that take an argument, eg `callback = function(inkey)`, these will now need to have a `self`/`this` variable as their first argument: `callback = function(this, inkey)`.
++ NEW `Soda.DropdownList` - A button which, when pressed, toggles a dropdown list (this is a wrapper or factory which makes it much easier to setup dropdown lists). When an item is selected from the list, the button's label changes to reflect the selection, and an optional callback is triggered.
+
++ NEW `Soda.Toggle`: now, in addition to iOS-style `Soda.Switch` (with an animated lever that ficks back and forth), any button can behave as a toggle. This has been implemented by separating the graphics and animation of `Soda.Switch` from the toggle button logic.
+
++ Callbacks have been made more consistent and are triggered by more elements. Callbacks are now always triggered as `self:callback` (with a colon) so the first argument passed to the callback will always be the sender's self. If you have any callbacks that take an argument, eg `callback = function(inkey)`, these will now need to have a `self`/`this` variable as their first argument (how you name the variables passed to the callback is up to you): eg `callback = function(self, inkey)`.
 
   - In `Soda.TextEntry`, callback is triggered by hitting return or the close keyboard button (but not by selecting a different interface element, which closes the keyboard and cancels text entry). Callback is passed the string entered.
 
@@ -50,11 +54,11 @@ http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerful-gui-windowing-bu
 
 + new `update` parameter. Like a callback, but triggered every frame, in case any elemenets need constant updating (see the new profiler panel in the demo).
 
-+ The switch button logic has been taken out of `Soda.Switch` and put in a new class `Soda.Toggle`. This means that switch button logic is now separate from the animation of `Soda.Switch`. `Soda.Switch` remains as before, an iOS-style switch with an animated lever. `Soda.Toggle` allows any button to operate as a toggle switch.
-
 + If you're using iOS 9, TextEntry fields now have cut, copy, and paste ;-)
 
 + The `Soda.Control` wrapper is now called 'Soda.Window'
+
++ The `drawing` function called in `draw` must now be called `Soda.drawing`
 
 ## Usage
 
@@ -144,14 +148,25 @@ Soda will automatically record each UI element you create. Therefore Soda constr
 
   + `Soda.MenuToggle` the "hamburger" menu button, as a toggle
 
-+ `Soda.Switch` - An iOS-style toggle with a lever that slides back and forth. Same arguments and methods as `Soda.Toggle`
+  + `Soda.Switch` - An iOS-style toggle with a lever that slides back and forth.
 
-+ `Soda.Segment` - Horizontally segmented buttons that activate different frames/ panels. Additional arguments:
-  + `text` - array of strings. Describes how each segment will be labelled.
-  + `panels` - array of UI element identifiers. Identifies which panels the segmented button will flick between, corresponds with `text` array
++ `Soda.Segment` - Horizontally segmented buttons that activate different frames/ panels. Define the panels first, before defining the segment button that will switch between them. Additional arguments:
+  + `text` - array of strings. Describes how each segment will be labelled. eg: `text = {"Buttons", "Switches"}`
+  + `panels` - array of UI element identifiers. Identifies which panels the segmented button will flick between, corresponds with `text` array. eg: `panels = {buttonPanel, switchPanel}` where `buttonPanel`, `switchPanel` are handles (local variables are fine here) for prior defined Soda elements.
 
-+ `Soda.List` - A vertically scrolling list of elements that the user can select from. Has elastic snap-back when user scrolls past edge of list. Can easily be set up as a drop down list for auto-populating a text field. Additional arguments:
-  + `text` - array of strings. One string for each item in the list.
++ `Soda.List` - A vertically scrolling list of elements that the user can select from. Has elastic snap-back when user scrolls past edge of list. Additional arguments:
+  + `text` - array of strings. One string for each item in the list. eg `text = {"apples", "oranges", "bananas"}`
+  + `defaultNo` - if you want an item in the list to be selected by default, set this to the number of the item in the `text` array. eg `defaultNo = 2` to default to `"oranges"` from the above list. Omit this for no selection.
+  + `callback` - list callbacks return 3 variables, eg: `callback = function(self, selected, txt)`
+    1) as always, the sender (the list object itself).
+    2) the selected item. List items are numbered in order with the variable `idNo`, this can be queried within the callback with eg `selected.idNo`
+    3) the selected item's title string.
+
++ `Soda.DropdownList` - A button which, when pressed, toggles a dropdown list. When an item is selected from the list, the button's label changes to reflect the selection, and an optional callback is triggered. Arguments:
+  + `title` - the title of the button, will be prepended to the user's list selection. A downward-facing triangle is automatically prepended to the title to indicate that a dropdown menu is available
+  + `text` - array of strings. Same as `Soda.List`
+  + `defaultNo` - the list item selected by default, same as `Soda.List`. If you omit this, there will be no selection by default, and the text "Select from list" will be appended to the button's label.
+  + `callback` - is passed same three variables as `Soda.List`
 
 + `Soda.TextEntry` - A text entry field with a touchable cursor, and scrolling if the input is too long for the field. Additional arguments:
   + `default` - string. Default text that can be overwritten by the user.
@@ -168,7 +183,7 @@ Soda will automatically record each UI element you create. Therefore Soda constr
   - `Soda.Alert` - alert message plus single OK button
   - `Soda.Alert2` - OK and cancel buttons. Additional arguments:
     * `ok` - override default "OK" button text
-    * `cancel` - overide "cancel" button text
+    * `cancel` - override "cancel" button text
   - `Soda.Window` - a standard window with a title and rounded corners.
 
 #### General Parameters
@@ -188,11 +203,13 @@ Not all parameters are currently supported by all Soda UI elements.
 
 + `text` - table of strings. Used by elements made of multiple parts such as `Soda.Segment`, `Soda.List`
 
++ `defaultNo` - integer. Used by `Soda.List` to indicate a default selected item in the list. Omit for no selection.
+
 + `default` - string. Used by `Soda.textEntry` for default text that can be overwritten by the user.
 
 + `callback` - function. Triggered by completing actions (pressing a button, hitting return in textEntry). Callbacks are always triggered as `self:callback` (with a colon) so the first argument passed to the callback will always be the sender's self.
-  - In `Soda.TextEntry`, callback is triggered by hitting return or the close keyboard button (but not by selecting a different interface element, which closes the keyboard and cancels text entry). Callback is passed the string entered.
-  - In `Soda.List`, callback is passed the item that was selected
+  - In `Soda.TextEntry`, callback is triggered by hitting return or the close keyboard button (but not by selecting a different interface element, which closes the keyboard and cancels text entry). Callback is passed the string entered as the second variable.
+  - In `Soda.List`, callbacks return 3 variables: 1) as always, the sender (the list object itself), 2) the selected item, 3) the selected item's title string
   - `Soda.Toggle` and `Soda.Switch` have two callbacks: `callback` (when on state is activated) and `callbackOff`
 
 + `update` - function. Fired every frame, in case an element needs constant live-updating (eg a window displaying constantly changing stats)
@@ -229,6 +246,7 @@ Not all parameters are currently supported by all Soda UI elements.
 * If the height of a scroll box's contents is shorter than the height of the box itself, elastic snap-back behaves strangely
 * Sometimes vertical lists return the wrong result
 * Can only scroll a textbox by adding and deleting text
+* New keyboard height in iOS 9 has not been accounted for
 
 ## Roadmap
 
@@ -240,6 +258,6 @@ Not all parameters are currently supported by all Soda UI elements.
 
   + Be able to scroll the field leftwards by moving the cursor (currently you can only scroll leftward by deleting)
 
-+ Add a factory for easier creation of the drop-down list seen in the demo
++ ~~DONE. Add a factory for easier creation of the drop-down list seen in the demo~~
 
 + Add a rect shape that supports textures and aliased strokes, so that you can have rectangular blurred panels that match the same stroke as the rounded rectangles
