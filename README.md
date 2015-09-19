@@ -16,7 +16,14 @@ Forum Discussion: http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerfu
 1. [Usage](#usage)
   1. [Interface elements](#interface-elements)
     1. [Frame](#sodaframe)
-  1. [General Parameters](#general-parameters)
+    1. [Button](#sodabutton)
+    1. [Toggle](#sodatoggle)
+    1. [Segment](#sodasegment)
+    1. [List](#sodalist)
+    1. [Text entry](#sodatextentry)
+    1. [Text scroll](#sodatextscroll-sodatextwindow)
+    1. [Alerts and dialogs](#various-alerts-and-dialogs)
+  1. [General parameters](#general-parameters)
   1. [Methods](#methods)
 
 1. [Known issues](#known-issues)
@@ -59,11 +66,13 @@ Forum Discussion: http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerfu
 
 + NEW `Soda.DropdownList` - A button which, when pressed, toggles a dropdown list (this is a wrapper or factory which makes it much easier to setup dropdown lists). When an item is selected from the list, the button's label changes to reflect the selection, and an optional callback is triggered.
 
-+ NEW `Soda.Toggle`: now, in addition to iOS-style `Soda.Switch` (with an animated lever that ficks back and forth), any button can behave as a toggle. This has been implemented by separating the graphics and animation of `Soda.Switch` from the toggle button logic.
++ NEW `Soda.Toggle` - now, in addition to iOS-style `Soda.Switch` (with an animated lever that ficks back and forth), any button can behave as a toggle. This has been implemented by separating the graphics and animation of `Soda.Switch` from the toggle button logic.
 
 + Callbacks have been made more consistent and are triggered by more elements. Callbacks are now always triggered as `self:callback` (with a colon) so the first argument passed to the callback will always be the sender's self. If you have any callbacks that take an argument, eg `callback = function(inkey)`, these will now need to have a `self`/`this` variable as their first argument (how you name the variables passed to the callback is up to you): eg `callback = function(self, inkey)`.
 
   - In `Soda.TextEntry`, callback is triggered by hitting return or the close keyboard button (but not by selecting a different interface element, which closes the keyboard and cancels text entry). Callback is passed the string entered.
+
+  - In `Soda.List`, callbacks return 3 variables: 1) the sender (the list object itself), 2) the selected item, 3) the selected item's title string
 
   - `Soda.Toggle` and `Soda.Switch` have two callbacks: `callback` (when on state is activated) and `callbackOff`
 
@@ -87,7 +96,7 @@ To incorporate Soda into your own project, make Soda a dependency of your own pr
 
 #### Core function hooks
 
-Soda needs hooks into the five built-in functions `setup`, `draw`, `touched`, `keyboard`, and `orientationChanged`, that pass the arguments of those functions into Soda. These are `Soda.setup()`, `Soda.draw(breakPoint)`,* `Soda.touched(touch)`, `Soda.keyboard(key)`, and `Soda.orientationChanged(ori)` . How to call these hooks can be found in the `Main` tab of Soda.
+Soda needs hooks into the five built-in functions `setup`, `draw`, `touched`, `keyboard`, and `orientationChanged`, that pass the arguments of those functions into Soda. These are `Soda.setup()`, `Soda.draw(breakPoint)`,[* ](#about-sodadrawing)  `Soda.touched(touch)`, `Soda.keyboard(key)`, and `Soda.orientationChanged(ori)` . How to call these hooks can be found in the `Main` tab of Soda.
 
 ```lua
 function setup()
@@ -126,7 +135,7 @@ end
 
 You can copy this Main tab and use it as a template for your projects that use Soda.
 
-#### * About blurred panels and `Soda.drawing`
+#### About `Soda.drawing`
 
 If you want blurry panels to blur elements that lie beneath the interface, you will need to place this drawing in a function in your own project titled `Soda.drawing(breakPoint)`. When a new blurred panel is created, `Soda.drawing` is run twice, once to be output to the screen as normal, and a second pass with the gaussian blur effect applied. There needs to be a breakpoint variable in order to prevent the blurred window itself being incorporated into the blurred effect. For best results, separate your drawing from all other code that may be in your draw loop (updating positions etc), and place just the drawing in `Soda.drawing`.
 
@@ -188,6 +197,8 @@ A vertically scrolling list of elements that the user can select from. Has elast
     1. as always, the sender (the list object itself).
     2. the selected item. List items are numbered in order with the variable `idNo`, this can be queried within the callback with eg `selected.idNo`
     3. the selected item's title string.
+
+Variant:
 
 + `Soda.DropdownList` - A button which, when pressed, toggles a dropdown list. When an item is selected from the list, the button's label changes to reflect the selection, and an optional callback is triggered. Arguments:
   + `title` - the title of the button, will be prepended to the user's list selection. A downward-facing triangle is automatically prepended to the title to indicate that a dropdown menu is available
