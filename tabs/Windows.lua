@@ -27,7 +27,7 @@ function Soda.TextWindow(t)
     
     local this = Soda.Window2(t)
     
-    Soda.TextScroll{
+    local scroll = Soda.TextScroll{
        -- parent = t.parent,
        -- label = {x=0.5, y=-10, text = t.title},
       --    shape = t.shape or Soda.RoundedRectangle,
@@ -39,6 +39,9 @@ function Soda.TextWindow(t)
      --   x = t.x or 0.5, y = t.y or 20, w = t.w or 700, h = t.h or -20,
         text = t.text,
     }  
+    
+    this.inputString = function(_, ...) scroll:inputString(...) end
+    --pass the textscroll's method to the enclosing wrapper
     
     if t.closeButton then
         Soda.CloseButton{

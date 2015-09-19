@@ -5,23 +5,23 @@ function Soda.Selector:touched(t, tpos)
         if self:pointIn(tpos.x, tpos.y) then
             self.touchId = t.id
             self:keyboardHideCheck()
-           -- self.highlighted = true
             return true
         end
     elseif self.touchId and self.touchId == t.id then
         if t.state == MOVING then
             if not self:pointIn(tpos.x, tpos.y) then --cancelled
                 self.touchId = nil
-              --  self.highlighted = false
-                return true
+               -- return true
             end
-        else --ended
-            self:callback()
+        elseif t.state == ENDED then
             self.touchId = nil
           --  self.on = true
-            self.highlighted = true
-            self.parent:selectFromList(self)
-            return true
+            if self:pointIn(tpos.x, tpos.y) then
+                self:callback()
+                self.highlighted = true
+                self.parent:selectFromList(self)
+                return true
+            end
         end
     end
    -- return Soda.Frame.touched(self, t, tpos) --a selector shouldn't have children

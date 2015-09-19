@@ -295,7 +295,7 @@ Not all parameters are currently supported by all Soda UI elements.
 ## Known Issues
 
 * ~~If the height of a scroll box's contents is shorter than the height of the box itself, elastic snap-back behaves strangely~~
-* Sometimes vertical lists return the wrong result
+* ~~Sometimes vertical lists return the wrong result~~
 * Can only scroll a textbox by adding and deleting text (waiting to see if Codea will add support for iOS 9 keyboard touchpad to its touched API)
 * ~~New keyboard height in iOS 9 has not been accounted for~~
 
