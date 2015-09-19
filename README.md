@@ -170,9 +170,9 @@ A vertically scrolling list of elements that the user can select from. Has elast
   + `text` - array of strings. One string for each item in the list. eg `text = {"apples", "oranges", "bananas"}`
   + `defaultNo` - if you want an item in the list to be selected by default, set this to the number of the item in the `text` array. eg `defaultNo = 2` to default to `"oranges"` from the above list. Omit this for no selection.
   + `callback` - list callbacks return 3 variables, eg: `callback = function(self, selected, txt)`
-    1) as always, the sender (the list object itself).
-    2) the selected item. List items are numbered in order with the variable `idNo`, this can be queried within the callback with eg `selected.idNo`
-    3) the selected item's title string.
+    1. as always, the sender (the list object itself).
+    2. the selected item. List items are numbered in order with the variable `idNo`, this can be queried within the callback with eg `selected.idNo`
+    3. the selected item's title string.
 
 + `Soda.DropdownList` - A button which, when pressed, toggles a dropdown list. When an item is selected from the list, the button's label changes to reflect the selection, and an optional callback is triggered. Arguments:
   + `title` - the title of the button, will be prepended to the user's list selection. A downward-facing triangle is automatically prepended to the title to indicate that a dropdown menu is available
