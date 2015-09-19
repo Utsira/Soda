@@ -99,20 +99,26 @@ To incorporate Soda into your own project, make Soda a dependency of your own pr
 Soda needs hooks into the five built-in functions `setup`, `draw`, `touched`, `keyboard`, and `orientationChanged`, that pass the arguments of those functions into Soda. These are `Soda.setup()`, `Soda.draw(breakPoint)`,[* ](#about-sodadrawing)  `Soda.touched(touch)`, `Soda.keyboard(key)`, and `Soda.orientationChanged(ori)` . How to call these hooks can be found in the `Main` tab of Soda.
 
 ```lua
+-- Use this as a template for your projects that have Soda as a dependency.
+
 function setup()
-    -- do your setting up
     Soda.setup()
+    --do your setting up here
 end
 
 function draw()
-    --do your updating
+    --do your updating here
+    pushMatrix()
+    Soda.camera()
     Soda.drawing()
+    popMatrix()
+    profiler.draw()
 end
 
-function Soda.drawing(breakPoint) --in order for gaussian blur to work, do all your drawing here
-    Soda.camera()
+function Soda.drawing(breakPoint)
+    --in order for gaussian blur to work, do all your drawing here
     background(40, 40, 50)
-    --do your project's drawing
+    sprite("Cargo Bot:Game Area", WIDTH*0.5, HEIGHT*0.5, WIDTH, HEIGHT)
     Soda.draw(breakPoint)
 end
 
@@ -288,9 +294,9 @@ Not all parameters are currently supported by all Soda UI elements.
 
 ## Known Issues
 
-* If the height of a scroll box's contents is shorter than the height of the box itself, elastic snap-back behaves strangely
+* ~~If the height of a scroll box's contents is shorter than the height of the box itself, elastic snap-back behaves strangely~~
 * Sometimes vertical lists return the wrong result
-* Can only scroll a textbox by adding and deleting text
+* Can only scroll a textbox by adding and deleting text (waiting to see if Codea will add support for iOS 9 keyboard touchpad to its touched API)
 * ~~New keyboard height in iOS 9 has not been accounted for~~
 
 ## Roadmap
