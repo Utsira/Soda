@@ -38,6 +38,24 @@ I'm calling it Soda as it is inspired by Cider (but is not a fork).
 
 http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerful-gui-windowing-button-library-for-codea
 
+## Version Notes
+
+#### v1.2
+
++ Callbacks have been made more consistent and are triggered by more elements. Callbacks are now always triggered as `self:callback` (with a colon) so the first argument passed to the callback will always be the sender's self. If you have any callbacks that take an argument, eg `callback = function(inkey)`, these will now need to have a `self`/`this` variable as their first argument: `callback = function(this, inkey)`.
+
+  - In `Soda.TextEntry`, callback is triggered by hitting return or the close keyboard button (but not by selecting a different interface element, which closes the keyboard and cancels text entry). Callback is passed the string entered.
+
+  - `Soda.Toggle` and `Soda.Switch` have two callbacks: `callback` (when on state is activated) and `callbackOff`
+
++ new `update` parameter. Like a callback, but triggered every frame, in case any elemenets need constant updating (see the new profiler panel in the demo).
+
++ The switch button logic has been taken out of `Soda.Switch` and put in a new class `Soda.Toggle`. This means that switch button logic is now separate from the animation of `Soda.Switch`. `Soda.Switch` remains as before, an iOS-style switch with an animated lever. `Soda.Toggle` allows any button to operate as a toggle switch.
+
++ If you're using iOS 9, TextEntry fields now have cut, copy, and paste ;-)
+
++ The `Soda.Control` wrapper is now called 'Soda.Window'
+
 ## Usage
 
 ### Installation
@@ -99,23 +117,34 @@ NB for performance reasons, currently the blurred panels do not have live updati
 
 Add interface elements to your code with constructors consisting of a Soda element and a table of arguments. All Soda elements take a single table of parameters as an argument. In Lua, if a function takes a single table or a single string as its argument, then the `()` brackets that ususally enclose the arguments can be omitted. So, `Soda.Button{title = "Press Me"}` is the same as `Soda.Button({title = "Press Me"})`, but with less typing. Keys can be supplied in any order, and very few are compulsory (Soda will supply defaults for certain missing values).
 
-Soda will automatically record each UI element you create. Therefore Soda constructors are "fire and forget". Soda does this in order to ensure the correct order of drawing and touching (so that, for example, you cannot touch a button hidden beneath a pop-up dialog window). You will ony need to define local handles for UI elements if you need to refer to that element, usually in either a callback, or to make that element the parent of others (see the example code below).
+Soda will automatically record each UI element you create. Therefore Soda constructors are "fire and forget". Soda does this in order to ensure the correct order of drawing and touching (so that, for example, you cannot touch a button hidden beneath a pop-up dialog window). You will ony need to define local handles for UI elements if you need to refer to that element, usually in either a callback, or to make that element the parent of others (see /tabs/Demo for examples).
 
 #### Interface elements
 
 + `Soda.Frame` - A container for other UI elements (a window).
 
 + `Soda.Button` - One press to activate a callback. Has a variety of built-in defaults for frequently-used interface elements such as:
-  - `Soda.SettingsButton` the settings gear
-  - `Soda.MenuButton` the hamburger menu button
+  - `Soda.SettingsButton` the settings "gear" icon
+  - `Soda.MenuButton` the "hamburger" menu button
   - `Soda.BackButton` (add `direction = RIGHT` if you want a right facing button)
-  - `Soda.CloseButton` an X close icon
+  - `Soda.CloseButton` an "X" close icon
   - `Soda.DropdownButton` a triangle pointing down
-  - `Soda.AddButton` a big +
-  - `Soda.QueryButton` a big ?
+  - `Soda.AddButton` a big "+"
+  - `Soda.QueryButton` a big "?"
 
-+ `Soda.Switch` - Toggles on and off. Additional arguments:
-  + `on` - flag. `Soda.Switch` is off by default. Set this to true to override this behaviour.
+* `Soda.Toggle` - Toggles on and off. Additional arguments:
+  + `on` - flag. `Soda.Toggle` is off by default. Set this to true to override this behaviour.
+  + `callback`, `callbackOff` - in addition to `callback` parameter (see General Parameters below), fired when switch turns on, there is a `callbackOff`, triggered when the switch is turned off.
+
+  Additional methods:
+
+  + `:switchOn()`, `:switchOff()` - methods to switch the toggle on or off (and fire its callbacks), in case you need to automate the switches.
+
+  Built-in defaults:
+
+  + `Soda.MenuToggle` the "hamburger" menu button, as a toggle
+
++ `Soda.Switch` - An iOS-style toggle with a lever that slides back and forth. Same arguments and methods as `Soda.Toggle`
 
 + `Soda.Segment` - Horizontally segmented buttons that activate different frames/ panels. Additional arguments:
   + `text` - array of strings. Describes how each segment will be labelled.
@@ -127,16 +156,24 @@ Soda will automatically record each UI element you create. Therefore Soda constr
 + `Soda.TextEntry` - A text entry field with a touchable cursor, and scrolling if the input is too long for the field. Additional arguments:
   + `default` - string. Default text that can be overwritten by the user.
 
-+ `Soda.TextWindow`. A window for handling scrolling through large bodies of text.
+  Additional method:
+
+  + `:inputString(string)` - in case you need to populate the field with a string
+
++ `Soda.TextScroll`, `Soda.TextWindow`. `Soda.TextScroll` is a window for handling scrolling through large bodies of text. `Soda.TextWindow` is a wrapper that adds a close button to the text window. Additional method:
+
+   + `:inputString(string)` - as above
 
 + Various alerts and dialogs:
   - `Soda.Alert` - alert message plus single OK button
-  - `Soda.Alert2` - OK and cancel buttons
-  - `Soda.Control` - a standard window with a title and rounded corners
+  - `Soda.Alert2` - OK and cancel buttons. Additional arguments:
+    * `ok` - override default "OK" button text
+    * `cancel` - overide "cancel" button text
+  - `Soda.Window` - a standard window with a title and rounded corners.
 
 #### General Parameters
 
-Not all parameters are currently supported by all Soda UI elements. I will try to make the interface as consistent as possible.
+Not all parameters are currently supported by all Soda UI elements.
 
 + `parent` - UI element identifier. The parent of this element. Positions and dimensions are defined relative to the parent. Elements without any parent are top-level.
 
@@ -153,14 +190,16 @@ Not all parameters are currently supported by all Soda UI elements. I will try t
 
 + `default` - string. Used by `Soda.textEntry` for default text that can be overwritten by the user.
 
-+ `callback` - function. Triggered by completing actions (pressing a button, hitting return in textEntry). Note that if a callback refers to the element itself, it needs to be defined outside of the constructor (because within the constructor there is not yet any `self` or other handle to refer to the object. See example code below).
++ `callback` - function. Triggered by completing actions (pressing a button, hitting return in textEntry). Callbacks are always triggered as `self:callback` (with a colon) so the first argument passed to the callback will always be the sender's self.
   - In `Soda.TextEntry`, callback is triggered by hitting return or the close keyboard button (but not by selecting a different interface element, which closes the keyboard and cancels text entry). Callback is passed the string entered.
   - In `Soda.List`, callback is passed the item that was selected
-  - `Soda.Switch` has two callbacks: `callback` (when on state is activated) and `callbackOff`
+  - `Soda.Toggle` and `Soda.Switch` have two callbacks: `callback` (when on state is activated) and `callbackOff`
+
++ `update` - function. Fired every frame, in case an element needs constant live-updating (eg a window displaying constantly changing stats)
 
 + `on` - flag. `Soda.Switch` is off by default. Set this to true to override this behaviour.
 
-+ `hidden` - flag. Set to true for elements that are hidden initially. (NB make sure you add a button that will `:show()` the element)
++ `hidden` - flag. Set to true for elements that are hidden initially. (NB make sure you add a button that will `:show()` or `:toggle()` the element)
 
 + `shape` - function pointer. Set (or override) the default shape of the element. Currently, only `Soda.RoundedRectangle` supports blurred panels
 
@@ -182,192 +221,8 @@ Not all parameters are currently supported by all Soda UI elements. I will try t
 
 + `:show(direction)`, `:hide(direction)`, `:toggle(direction)` - Makes the element, and its chidren if it has any, appear (and become active) and disappear (and become inactive), or toggle between the two states. The optional direction argument can be set to either `LEFT` or `RIGHT`, and will make the element slide in and out of the left and right sides of the screen. If direction is not specified, the element will appear and disappear without animation.
 
-## Example Code
++ `:inputString(string)` - method to add text to `Soda.TextEntry`, `Soda.TextWindow` (and `Soda.TextScroll`)
 
-(Taken from /tabs/Demo.lua )
-
-```lua
-    --[[
-    You only need to give an element a temporary handle (a local variable name) if it is the parent of other elements, or you need to refer to it in a callback
-
-    To define an element as a child of another, just add "parent = parentName" to its constructor
-
-    x,y,w,h of elements are defined relative to their parents, according to 3 rules:
-
-    1. if x,y,w, or h are positive integers, they behave as normal coordinates in rectMode CORNER (ie pixels from the origin)
-
-    2. if x,y,w,or h are floating point between 0 and 1, they describe proportions in CENTER mode (x,y 0.5 is centred)
-
-    3. if x,y,w, or h are negative, they describe distance in pixels from the TOP or RIGHT edge, as in CORNERS mode (ie, w,h become x2,y2 rather than width and height). if x and y are negative, they also behave the same way as w,h, describing the distance between the TOP/RIGHT edge of the parent, and the TOP/RIGHT edge of the child.
-
-    the above 3 rules can be mixed together in one definition. eg a button fixed to the bottom right corner of its parent with a 20 pixel border, with a variable width of a quarter of its parent's width, and a fixed height of 40 pixels, would be: x = -20, y = 20, w = 0.25, h = 40.
-      ]]
-
-    --the main panel
-
-    local panel = Soda.Control{ --give parent a local handle, in this case "panel", to define children, callbacks
-        title = "Demonstration",
-        hidden = true, --not visible or active initially
-        x=0.7, y=0.5, w=0, h=0.7,
-        blurred = true, style = Soda.style.darkBlurred, --gaussian blurs what is underneath it
-        shapeArgs = { corners = 1 | 2} --only round left-hand corners
-    }
-
-    --2 navigation buttons to show & hide the main panel
-
-    local menu = Soda.MenuButton{x = -20, y = -20} --a button to activate the above panel
-    menu.callback = function() panel:show(RIGHT) menu:hide(RIGHT) end --n.b. if a callback refers to self, eg here "menu:hide", the callback has to be defined outside of the {} constructor
-
-    Soda.BackButton{ --a button to hide "panel" and re-show "menu" button
-        parent = panel, --a child of above "panel", therefore also inactive initially
-        direction = RIGHT, --override the default left-pointing back icon
-        x = -20, y = -20, --relative to edges of "panel"
-        callback = function() panel:hide(RIGHT) menu:show(RIGHT) end --this callback does not reference itself, so can be included in {} constructor
-    }
-
-    --three panels to hold various elements. All hidden initially.
-
-    local buttonPanel = Soda.Frame{
-        parent = panel,
-        hidden = true,
-        x = 20, y = 20, w = -20, h = -140, --20 pixel border on left, right, bottom
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-    }
-
-    local textEntryPanel = Soda.Frame{
-        parent = panel,
-        hidden = true,
-        x = 20, y = 20, w = -20, h = -140,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,     
-    }
-
-    local list = Soda.List{ --a vertically scrolling list of items
-        parent = panel,
-        hidden = true,
-        x = 20, y = 20, w = -20, h = -140,
-        text = listProjectTabs(), -- text of list items taken from current project tabs
-        callback = function (txt) Soda.TextWindow{title = txt, text = readProjectTab(txt)} end --a window for scrolling through large blocks of text
-    }
-
-    --a segmented button to choose between the above 3 panels:
-
-    Soda.Segment{
-        parent = panel,
-        x = 20, y = -80, w = -20, h = 40,
-        text = {"Buttons", "Text Entry", "Examine Source"}, --segment labels...
-        panels = { --...and their corresponding panels
-        buttonPanel, textEntryPanel, list
-        }
-    }
-
-    --the textEntry panel
-
-    Soda.TextEntry{ --text entry box
-        parent = textEntryPanel,
-        x = 10, y = -70, w = -10, h = 40,
-        title = "Nick-name:",
-        default = "Ice Man"
-    }
-
-    Soda.TextEntry{
-        parent = textEntryPanel,
-        x = 10, y = -130, w = -10, h = 40,
-        title = "Name of 1st pet:",
-    }
-
-    local countyName = Soda.TextEntry{
-        parent = textEntryPanel,
-         x = 10, y = -10, w = -49, h = 40,
-        shapeArgs = {corners = 1 | 2}, --only round left-hand corners
-        title = "County:",
-        default = "Select from list",
-        inactive = true
-    }
-
-    local counties = Soda.List{
-        parent = textEntryPanel,
-        hidden = true,
-        x = 10, y = 0, w = -10, h = -50,
-        text = {"London", "Bedfordshire", "Buckinghamshire", "Cambridgeshire", "Cheshire", "Cornwall and Isles of Scilly", "Cumbria", "Derbyshire", "Devon", "Dorset", "Durham", "East Sussex", "Essex", "Gloucestershire", "Greater London", "Greater Manchester", "Hampshire", "Hertfordshire", "Kent", "Lancashire", "Leicestershire", "Lincolnshire", "Merseyside", "Norfolk", "North Yorkshire", "Northamptonshire", "Northumberland", "Nottinghamshire", "Oxfordshire", "Shropshire", "Somerset", "South Yorkshire", "Staffordshire", "Suffolk", "Surrey", "Tyne and Wear", "Warwickshire", "West Midlands", "West Sussex", "West Yorkshire", "Wiltshire", "Worcestershire", "Flintshire", "Glamorgan", "Merionethshire", "Monmouthshire", "Montgomeryshire", "Pembrokeshire", "Radnorshire", "Anglesey", "Breconshire", "Caernarvonshire", "Cardiganshire", "Carmarthenshire", "Denbighshire", "Kirkcudbrightshire", "Lanarkshire", "Midlothian", "Moray", "Nairnshire", "Orkney", "Peebleshire", "Perthshire", "Renfrewshire", "Ross & Cromarty", "Roxburghshire", "Selkirkshire", "Shetland", "Stirlingshire", "Sutherland", "West Lothian", "Wigtownshire", "Aberdeenshire", "Angus", "Argyll", "Ayrshire", "Banffshire", "Berwickshire", "Bute", "Caithness", "Clackmannanshire", "Dumfriesshire", "Dumbartonshire", "East Lothian", "Fife", "Inverness", "Kincardineshire", "Kinross-shire"},      
-      --  alert = true
-    }
-    counties.callback = function(txt) countyName:inputString(txt) counties:hide() end --counties.selected.label.text
-
-    Soda.DropdownButton{
-        parent = textEntryPanel,
-        style = Soda.style.default,
-        x = -10, y = -10,
-        shapeArgs = {corners = 4 | 8}, --only round the right-hand corners
-        callback = function() counties:show() end
-    }
-
-    --the button panel:
-
-    local div = 1/7
-
-    Soda.BackButton{
-    parent = buttonPanel,
-    x = div, y = -20}
-
-    Soda.SettingsButton{
-    parent = buttonPanel,
-    x = div * 2, y = -20}
-
-    Soda.AddButton{
-    parent = buttonPanel,
-    x = div * 3, y = -20}
-
-    Soda.QueryButton{
-    parent = buttonPanel,
-    x = div * 4, y = -20}
-
-    Soda.MenuButton{
-    parent = buttonPanel,
-    x = div * 5, y = -20}
-
-    Soda.CloseButton{
-    parent = buttonPanel,
-    x = div * 6, y = -20}
-
-    Soda.Switch{
-    parent = buttonPanel,
-    x = 20, y = -80,
-    title = "Turbo boost",
-    }
-
-    Soda.Switch{
-    parent = buttonPanel,
-    x = 20, y = -140,
-    title = "Wings stay on the plane",
-    on = true}
-
-    Soda.Switch{
-    parent = buttonPanel,
-    x = 20, y = -200,
-    title = "Afterburners",
-    }
-
-    Soda.Button{
-    parent = buttonPanel,
-    title = "OK",
-    x = 20, y = 20, w = 0.4, h = 40}
-
-    Soda.Button{
-    parent = buttonPanel,
-    title = "Do not press",
-    style = Soda.style.warning,
-    x = -20, y = 20, w = 0.4, h = 40,
-    callback =
-        function()
-            Soda.Alert1{ --an alert box with a single button
-                title = "I warned you not to press this!",
-                y=0.6,
-                style = Soda.style.darkBlurred, blurred = true,
-                alert = true, --if alert=true, underlying elements are inactive and darkened until alert is dismissed
-            }
-        end
-    }
-```
 
 ## Known Issues
 
