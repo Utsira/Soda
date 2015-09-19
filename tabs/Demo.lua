@@ -96,10 +96,10 @@ function demo1()
         callback = function(self, inkey)
             Soda.Alert{
                 title = inkey.."?!?\n\nWas that really your nickname?",
-               style = Soda.style.darkBlurred, blurred = true
+               style = Soda.style.darkBlurred, blurred = true,
             }
         end
-    }
+    }    
     
     Soda.TextEntry{
         parent = textEntryPanel,
@@ -108,8 +108,8 @@ function demo1()
         default = "Percival",
         callback = function(self, inkey)
             Soda.Alert{
-                title = inkey.."\n\u{1f63b}\u{1f436}\u{1f430}\n\nAwwww. Cute name",
-               style = Soda.style.darkBlurred, blurred = true
+              title = inkey.."!\n\u{1f63b}\u{1f436}\u{1f430}\n\nAwwww. Cute name.",
+               style = Soda.style.darkBlurred, blurred = true,
             }
         end
     }
@@ -199,7 +199,6 @@ function demo1()
                 y=0.6, h = 0.3,
         
                 style = Soda.style.darkBlurred, blurred = true, 
-                alert = true, --if alert=true, underlying elements are inactive and darkened until alert is dismissed
             }
         end
     }

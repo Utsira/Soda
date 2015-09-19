@@ -2,6 +2,7 @@ Soda = {}
 
 function Soda.setup()
     --  parameter.watch("#Soda.items")
+    parameter.watch("Soda.UIoffset")
     Soda.Assets()
     Soda.theme = Soda.themes.default
 

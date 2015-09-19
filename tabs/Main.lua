@@ -11,15 +11,19 @@ function setup()
 end
 
 function draw()
+
     Soda.drawing()
     profiler.draw()
 end
 
-function Soda.drawing(breakPoint) --in order for gaussian blur to work, do all your drawing here
+function Soda.drawing(breakPoint) 
+    pushMatrix()
     Soda.camera()
+    --in order for gaussian blur to work, do all your drawing here
     background(40, 40, 50)
     sprite("Cargo Bot:Game Area", WIDTH*0.5, HEIGHT*0.5, WIDTH, HEIGHT)
     Soda.draw(breakPoint)
+    popMatrix()
 end
 
 --user inputs:

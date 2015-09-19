@@ -33,7 +33,9 @@ function Soda.Gaussian:setImage()
     pushStyle()
     pushMatrix()
     setContext(blurTex[1])
+
     scale(downSample)
+
     self:drawImage()
     popMatrix()
     popStyle()   
@@ -62,21 +64,24 @@ function Soda.Blur:init(t)
     self.falloff = 1
     self.off = 0
     self:setMesh()
-    --self.draw = self.setMesh --
+  --  self.image = image(self.parent.w * 0.25, self.parent.h * 0.25)
+  --  self.draw = self.setMesh --
 end
 
 function Soda.Blur:draw() end
 
 function Soda.Blur:setMesh() 
+   --     self.draw = null
     self.image = self:setImage()
     self.parent.shapeArgs.tex = self.image
     self.parent.shapeArgs.resetTex = self.image
-      --  self.draw = null
 end
 
 function Soda.Blur:drawImage()
     pushMatrix()
+
     translate(-self.parent:left(), -self.parent:bottom())
+ 
     Soda.drawing(self.parent) --draw all elements to the blur image, with the parent set as the breakpoint (so that the parent window itself does not show up in the blurred image)
     popMatrix()
 end

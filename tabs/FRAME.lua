@@ -21,6 +21,7 @@ function Soda.Frame:init(t)
     if t.blurred then
         self.mesh[#self.mesh+1] = Soda.Blur{parent = self}
         self.shapeArgs.tex = self.mesh[#self.mesh].image
+        self.shapeArgs.resetTex = self.mesh[#self.mesh].image
     end
     if t.shadow then
         self.mesh[#self.mesh+1] = Soda.Shadow{parent = self}

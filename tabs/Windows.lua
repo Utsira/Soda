@@ -74,7 +74,8 @@ function Soda.Alert(t)
     t.h = t.h or 0.25
     t.shadow = true
     t.label = {x=0.5, y=0.6, text = t.title}
-    local this = Soda.Window(t) --alert = true
+    t.alert = true  --if alert=true, underlying elements are inactive and darkened until alert is dismissed
+    local this = Soda.Window(t) 
     local ok = Soda.Button{parent = this, title = t.ok or "OK", x = 0, y = 0, w = 1, h = 50, shapeArgs = {corners = 1 | 8, radius = 25}, callback = function() this.kill = true end,  style = Soda.style.transparent} --style = Soda.style.transparent,blurred = t.blurred,
     return this
 end

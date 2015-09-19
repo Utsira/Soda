@@ -36,8 +36,8 @@ function Soda.TextEntry:draw(breakPoint)
             Soda.keyboardEntity = nil 
             tween.delay(0.001, function() self:callback(self:output()) end ) --because callback is in draw loop, delay it until end of draw
         end
-        local h = 0.25
-        if CurrentOrientation == LANDSCAPE_LEFT or CurrentOrientation == LANDSCAPE_RIGHT then h = 0.35 end
+        local h = 0.3 --0.25
+        if CurrentOrientation == LANDSCAPE_LEFT or CurrentOrientation == LANDSCAPE_RIGHT then h = 0.4 end --0.35
         local typewriter = math.max(0, (HEIGHT * h) - y)
         Soda.UIoffset = Soda.UIoffset + (typewriter - Soda.UIoffset) * 0.1
         if (ElapsedTime/0.25)%2<1.3 then
