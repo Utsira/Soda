@@ -1323,7 +1323,7 @@ function Soda.BackButton(t)
 end
 
 function Soda.CloseButton(t)
-    t.title = "\u{ff38}" --full-width X
+    t.title = "\u{2715}" --multiplication X 
     t.w, t.h = 40, 40
     t.style = t.style or Soda.style.darkIcon
     return Soda.Button(t)
@@ -1620,23 +1620,23 @@ function Soda.Selector:touched(t, tpos)
         if self:pointIn(tpos.x, tpos.y) then
             self.touchId = t.id
             self:keyboardHideCheck()
-           -- self.highlighted = true
             return true
         end
     elseif self.touchId and self.touchId == t.id then
         if t.state == MOVING then
             if not self:pointIn(tpos.x, tpos.y) then --cancelled
                 self.touchId = nil
-              --  self.highlighted = false
-                return true
+               -- return true
             end
-        else --ended
-            self:callback()
+        elseif t.state == ENDED then
             self.touchId = nil
           --  self.on = true
-            self.highlighted = true
-            self.parent:selectFromList(self)
-            return true
+            if self:pointIn(tpos.x, tpos.y) then
+                self:callback()
+                self.highlighted = true
+                self.parent:selectFromList(self)
+                return true
+            end
         end
     end
    -- return Soda.Frame.touched(self, t, tpos) --a selector shouldn't have children
@@ -1746,7 +1746,7 @@ function Soda.ScrollShape:init(t)
     
     self.image = image(self.w, self.h)
     setContext(self.image) background(255) setContext()
-    self.shapeArgs.radius = 6
+    self.shapeArgs.radius = t.shapeArgs.radius or 6
     self.shapeArgs.tex = self.image
     self.shapeArgs.resetTex = self.image
     
@@ -1814,7 +1814,6 @@ end
 
 --# TextScroll
 Soda.TextScroll = class(Soda.Scroll) --smooth scrolling of large text files (ie larger than screen height)
---fix close button bug...
 
 function Soda.TextScroll:init(t)
    -- t.shape = t.shape or Soda.rect
@@ -1955,21 +1954,28 @@ function Soda.Window2(t)
 end
 
 function Soda.TextWindow(t)
-
-  --  local this = Soda.Window2(t)
+    t.x = t.x or 0.5 
+    t.y = t.y or 20
+    t.w = t.w or 700
+    t.h = t.h or -20
     
-    local this = Soda.TextScroll{
-        parent = t.parent,
-        label = {x=0.5, y=-10, text = t.title},
-        shape = t.shape or Soda.RoundedRectangle,
-        shapeArgs = t.shapeArgs,
-        shadow = t.shadow,
-        style = t.style,
-       -- parent = this,
-      --  x = 10, y = 10, w = -10, h = -10,
-        x = t.x or 0.5, y = t.y or 20, w = t.w or 700, h = t.h or -20,
+    local this = Soda.Window2(t)
+    
+    local scroll = Soda.TextScroll{
+       -- parent = t.parent,
+       -- label = {x=0.5, y=-10, text = t.title},
+      --    shape = t.shape or Soda.RoundedRectangle,
+     --   shapeArgs = t.shapeArgs,
+     --   shadow = t.shadow,
+     --   style = t.style,
+     parent = this,
+      x = 10, y = 10, w = -10, h = -10,
+     --   x = t.x or 0.5, y = t.y or 20, w = t.w or 700, h = t.h or -20,
         text = t.text,
     }  
+    
+    this.inputString = function(_, ...) scroll:inputString(...) end
+    --pass the textscroll's method to the enclosing wrapper
     
     if t.closeButton then
         Soda.CloseButton{
