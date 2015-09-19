@@ -1,5 +1,4 @@
 Soda.TextScroll = class(Soda.Scroll) --smooth scrolling of large text files (ie larger than screen height)
---fix close button bug...
 
 function Soda.TextScroll:init(t)
    -- t.shape = t.shape or Soda.rect

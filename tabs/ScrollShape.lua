@@ -10,7 +10,7 @@ function Soda.ScrollShape:init(t)
     
     self.image = image(self.w, self.h)
     setContext(self.image) background(255) setContext()
-    self.shapeArgs.radius = 6
+    self.shapeArgs.radius = t.shapeArgs.radius or 6
     self.shapeArgs.tex = self.image
     self.shapeArgs.resetTex = self.image
     

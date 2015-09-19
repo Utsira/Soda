@@ -20,19 +20,23 @@ function Soda.Window2(t)
 end
 
 function Soda.TextWindow(t)
-
-  --  local this = Soda.Window2(t)
+    t.x = t.x or 0.5 
+    t.y = t.y or 20
+    t.w = t.w or 700
+    t.h = t.h or -20
     
-    local this = Soda.TextScroll{
-        parent = t.parent,
-        label = {x=0.5, y=-10, text = t.title},
-        shape = t.shape or Soda.RoundedRectangle,
-        shapeArgs = t.shapeArgs,
-        shadow = t.shadow,
-        style = t.style,
-       -- parent = this,
-      --  x = 10, y = 10, w = -10, h = -10,
-        x = t.x or 0.5, y = t.y or 20, w = t.w or 700, h = t.h or -20,
+    local this = Soda.Window2(t)
+    
+    Soda.TextScroll{
+       -- parent = t.parent,
+       -- label = {x=0.5, y=-10, text = t.title},
+      --    shape = t.shape or Soda.RoundedRectangle,
+     --   shapeArgs = t.shapeArgs,
+     --   shadow = t.shadow,
+     --   style = t.style,
+     parent = this,
+      x = 10, y = 10, w = -10, h = -10,
+     --   x = t.x or 0.5, y = t.y or 20, w = t.w or 700, h = t.h or -20,
         text = t.text,
     }  
     

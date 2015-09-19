@@ -52,7 +52,7 @@ function Soda.BackButton(t)
 end
 
 function Soda.CloseButton(t)
-    t.title = "\u{ff38}" --full-width X
+    t.title = "\u{2715}" --multiplication X 
     t.w, t.h = 40, 40
     t.style = t.style or Soda.style.darkIcon
     return Soda.Button(t)
