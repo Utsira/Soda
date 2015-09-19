@@ -186,13 +186,14 @@ Horizontally segmented buttons that activate different frames/ panels. Define th
 
   + `text` - array of strings. Describes how each segment will be labelled. eg: `text = {"Buttons", "Switches"}`
   + `panels` - array of UI element identifiers. Identifies which panels the segmented button will flick between, corresponds with `text` array. eg: `panels = {buttonPanel, switchPanel}` where `buttonPanel`, `switchPanel` are handles (local variables are fine here) for prior defined Soda elements.
+  + `defaultNo` - integer. if you want one of the segment sections to be selected by default, set this to the number of the item in the `text` array. eg `defaultNo = 2` to default to `"Switches"` from the above list. If omitted defaults to 1 (left-most panel)
 
 #### `Soda.List`
 
 A vertically scrolling list of elements that the user can select from. Has elastic snap-back when user scrolls past edge of list. Additional arguments:
 
   + `text` - array of strings. One string for each item in the list. eg `text = {"apples", "oranges", "bananas"}`
-  + `defaultNo` - if you want an item in the list to be selected by default, set this to the number of the item in the `text` array. eg `defaultNo = 2` to default to `"oranges"` from the above list. Omit this for no selection.
+  + `defaultNo` - integer. Similar to `Soda.Segment`, if you want an item in the list to be selected by default, set this to the number of the item in the `text` array. eg `defaultNo = 2` to default to `"oranges"` from the above list. Omit this for no selection.
   + `callback` - list callbacks return 3 variables, eg: `callback = function(self, selected, txt)`
     1. as always, the sender (the list object itself).
     2. the selected item. List items are numbered in order with the variable `idNo`, this can be queried within the callback with eg `selected.idNo`
@@ -245,20 +246,20 @@ Not all parameters are currently supported by all Soda UI elements.
 
 + `title` - string. The text that will label this element
 
-+ `text` - table of strings. Used by elements made of multiple parts such as `Soda.Segment`, `Soda.List`
++ `text` - table of strings. Used by elements made of multiple parts such as [`Soda.Segment`](#sodasegment), [`Soda.List`](#sodalist)
 
-+ `defaultNo` - integer. Used by `Soda.List` to indicate a default selected item in the list. Omit for no selection.
++ `defaultNo` - integer. Used by elements made of multiple parts such as [`Soda.Segment`](#sodasegment), [`Soda.List`](#sodalist) to indicate a default selected item in the list.
 
-+ `default` - string. Used by `Soda.textEntry` for default text that can be overwritten by the user.
++ `default` - string. Used by [`Soda.textEntry`](#sodatextentry) for default text that can be overwritten by the user.
 
 + `callback` - function. Triggered by completing actions (pressing a button, hitting return in textEntry). Callbacks are always triggered as `self:callback` (with a colon) so the first argument passed to the callback will always be the sender's self.
-  - In `Soda.TextEntry`, callback is triggered by hitting return or the close keyboard button (but not by selecting a different interface element, which closes the keyboard and cancels text entry). Callback is passed the string entered as the second variable.
-  - In `Soda.List`, callbacks return 3 variables: 1) as always, the sender (the list object itself), 2) the selected item, 3) the selected item's title string
-  - `Soda.Toggle` and `Soda.Switch` have two callbacks: `callback` (when on state is activated) and `callbackOff`
+  - In [`Soda.TextEntry`](#sodatextentry), callback is triggered by hitting return or the close keyboard button (but not by selecting a different interface element, which closes the keyboard and cancels text entry). Callback is passed the string entered as the second variable. eg `callback = function(self, inkey)`
+  - In [`Soda.List`](#sodalist), callbacks return 3 variables: 1) as always, the sender (the list object itself), 2) the selected item, 3) the selected item's title string
+  - [`Soda.Toggle`](#sodatoggle) and `Soda.Switch` have two callbacks: `callback` (when on state is activated) and `callbackOff`
 
 + `update` - function. Fired every frame, in case an element needs constant live-updating (eg a window displaying constantly changing stats)
 
-+ `on` - flag. `Soda.Switch` is off by default. Set this to true to override this behaviour.
++ `on` - flag. [`Soda.Toggle`](#sodatoggle) and `Soda.Switch` are off by default. Set this to true to override this behaviour.
 
 + `hidden` - flag. Set to true for elements that are hidden initially. (NB make sure you add a button that will `:show()` or `:toggle()` the element)
 
@@ -266,9 +267,9 @@ Not all parameters are currently supported by all Soda UI elements.
 
 + `style` - table pointer. set (or override) the default style of the element (see Style tab)
 
-+ `panels` - table of UI element identifiers. Used only by `Soda.Segment` to identify which panels the segmented button will flick between
++ `panels` - table of UI element identifiers. Used only by [`Soda.Segment`](#sodasegment) to identify which panels the segmented button will flick between
 
-+ `alert` - flag. Set to true to darken and disable the underlying interface elements until this element has been dismissed. Use sparingly, for important alerts only.
++ `alert` - flag. Set to true to darken and disable the underlying interface elements until this element has been dismissed. Automatically set by `Soda.Alert` dialog.
 
 + `blurred` - flag. Make this a blurry panel. Currently only supported for Rounded Rectangle. Use sparingly. Instead of layering blurs on top of one another, consider making only the underlying element blurred, and overlying elements transparent.
 
@@ -290,7 +291,7 @@ Not all parameters are currently supported by all Soda UI elements.
 * If the height of a scroll box's contents is shorter than the height of the box itself, elastic snap-back behaves strangely
 * Sometimes vertical lists return the wrong result
 * Can only scroll a textbox by adding and deleting text
-* New keyboard height in iOS 9 has not been accounted for
+* ~~New keyboard height in iOS 9 has not been accounted for~~
 
 ## Roadmap
 
