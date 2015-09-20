@@ -1,9 +1,10 @@
 
 --# Main
 -- Soda Tutorial
+-- v1.2
 
 displayMode(OVERLAY)
-displayMode(FULLSCREEN_NO_BUTTONS )
+displayMode(FULLSCREEN)
 
 function setup()
     Soda.setup()
@@ -11,11 +12,15 @@ function setup()
 end
 
 function draw()
+    --do your updating here
+    pushMatrix()
+    Soda.camera()
     Soda.drawing()
+    popMatrix()
 end
 
-function Soda.drawing(breakPoint) --in order for gaussian blur to work, do all your drawing here
-    Soda.camera()
+function Soda.drawing(breakPoint) 
+    --in order for gaussian blur to work, do all your drawing here
     background(40, 40, 50)
     sprite("Cargo Bot:Game Area", WIDTH*0.5, HEIGHT*0.5, WIDTH, HEIGHT)
     pushStyle()
@@ -23,6 +28,7 @@ function Soda.drawing(breakPoint) --in order for gaussian blur to work, do all y
     fontSize(40)
     text("Output\narea", WIDTH * 0.5, HEIGHT * 0.75)
     popStyle()
+    
     Soda.draw(breakPoint)
 end
 
@@ -45,8 +51,17 @@ end
 --the tutorial interface, not part of the tutorial itself
 function tutorial()
     parameter.watch("#Soda.items")
-    stepFuncs = {Step1, Step2, Step3, Step4, Step5, Step6, Step7}
-    stepTabs = {"Step1", "Step2", "Step3", "Step4", "Step5", "Step6", "Step7"}
+
+    local steps = listProjectTabs() --get the steps of the tutorial
+    table.remove(steps, 1) --remove Main and this tab from the tutorial
+    table.remove(steps, 1)
+    
+    --grab the names of each tutorial step
+    local stepNames = {}
+    for i,v in ipairs(steps) do
+        loadstring(readProjectTab(v))()
+        stepNames[i] = title 
+    end
     
     local codeWindow = Soda.TextWindow{
         shapeArgs = {corners = 2 | 4, radius = 25},
@@ -61,20 +76,25 @@ function tutorial()
         shapeArgs = {radius = 20},
         x = 0.5, y = -5, w = 400, h = 40,
         title = "Tutorial Step",
-        text = {"1: Hello World", "2: A window", "3: Special effects", "4: Let's get styling", "5: Throw some shapes", "6: Parenthood","7: Callbacks"},
+        text = stepNames, --{"Hello World", "A window", "Special effects", "Let's get styling", "Throw some shapes", "Parenthood","Callbacks", "Panels", "Text Entry", "Alert!", "Segmented buttons"},
+        enumerate = true,
         callback = function(self, obj)  
-            codeWindow:inputString(readProjectTab(stepTabs[obj.idNo]))     
+            local code = readProjectTab(steps[obj.idNo])
+            codeWindow:inputString(code:match("function setupUI%(%)(.-)end%s*$"))     
             while #Soda.items>1 do
                 table.remove(Soda.items)
             end
-            tween.delay(0.001, function() stepFuncs[obj.idNo]() end)
+            tween.delay(0.001, function() loadstring(code)()
+    setupUI() end) 
         end
     }
 
 end
 
---# Step1
-function Step1()
+--# HelloWorld
+title = "Hello World"
+    
+function setupUI()
     --all Soda elements take a table of keys as their arguments
     --in Lua, if a function's sole argument is a table or a string,
     --you can omit the enclosing () and just use "" or, in this case, {}
@@ -95,8 +115,10 @@ function Step1()
     --try flipping your device now.
 end
 
---# Step2
-function Step2()
+--# Window
+title = "A window"
+    
+function setupUI()
     --shapes and presets
     --Soda.Window is a basic window with a title. We're not going to set a shape argument, because Window automatically selects the Soda.roundedRectangle shape. We can override this if we want.
     Soda.Window{ 
@@ -106,8 +128,10 @@ function Step2()
     }
 end
 
---# Step3
-function Step3()
+--# Effects
+title = "Special effects"
+    
+function setupUI()
     --special effects
     Soda.Window{ 
         title = "Hello World", 
@@ -119,8 +143,10 @@ function Step3()
 
     }
 end
---# Step4
-function Step4()
+--# Styles
+title = "Let's get styling"
+    
+function setupUI()
     --lets style our panel
     Soda.Window{ 
         title = "Hello World", 
@@ -135,8 +161,10 @@ function Step4()
       
     }
 end
---# Step5
-function Step5()
+--# Shapes
+title = "Throw some shapes"
+    
+function setupUI()
     --throw some shapes
     Soda.Window{ 
         title = "Hello World", 
@@ -151,8 +179,10 @@ function Step5()
         shapeArgs = { corners = 1 | 8} --only round bottom corners
     }
 end
---# Step6
-function Step6()
+--# Parenthood
+title = "Parenthood"
+    
+function setupUI()
     --ok lets add some buttons to our window.
     --we need to make the window the parent of all the elements it contains
     --to do this, we need a handle to refer to it by.
@@ -177,8 +207,10 @@ function Step6()
     --it also allows elements to resize easily eg when orientation changes. Try flipping your device.
     --oh, and try pressing your button!
 end
---# Step7
-function Step7()
+--# Callbacks
+title = "Callbacks"
+    
+function setupUI()
     --lets make our button do something
     local panel = Soda.Window{ 
         title = "Hello World", 
@@ -198,4 +230,347 @@ function Step7()
     }
     --You can use this button if you want to check anything in the documentation. Check that it works now.
 end
+--# Panels
+title = "Panels"
+    
+function setupUI()
+    --Our window is looking a little bare still. Lets start adding some panels.
+    local panel = Soda.Window{ 
+        title = "Hello World", 
+        x=0.5, y=-0.001, w=0.7, h=0.51, 
+        blurred = true, shadow = true, style = Soda.style.darkBlurred, 
+        shapeArgs = { corners = 1 | 8} 
+    }
+    
+    Soda.QueryButton{
+        parent = panel, 
+        x = 10, y = -10,
+        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
+    }
+    
+    --this panel will eventually allow for the user to enter details about themselves, a user account. 
+    --I'm calling it accountPanel.
+    local accountPanel = Soda.Frame{
+        parent = panel,
+        x = 10, y = 10, w = -10, h = -60, -- a 10 pixel border, except at the top (to give room for the Window title and query button)
+        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shapeArgs = {radius = 16} --get the radius to match that of the parent window
+    }
+    
+end
+--# TextEntry
+title = "Text Entry"
+    
+function setupUI()
+    --Lets add a text entry box to our user account panel
+    local panel = Soda.Window{ 
+        title = "Hello World", 
+        x=0.5, y=-0.001, w=0.7, h=0.51, 
+        blurred = true, shadow = true, style = Soda.style.darkBlurred, 
+        shapeArgs = { corners = 1 | 8} 
+    }
+    
+    Soda.QueryButton{
+        parent = panel, 
+        x = 10, y = -10,
+        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
+    }
+    
+    local accountPanel = Soda.Frame{
+        parent = panel,
+        x = 10, y = 10, w = -10, h = -60, 
+        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shapeArgs = {radius = 16} 
+    }
+    
+    --our text entry box:
+    Soda.TextEntry{
+        parent = accountPanel, --this time, the parent is the accountPanel (so this text entry box is the grandchild of the Window)
+        x = 10, y = -60, w = -10, h = 40,
+        title = "User name:",
+        default = "Enter name", --some default text, in this case a prompt, that the user will overwrite
+    }
+    
+end
+--# Alert
+title = "Alert!"
+    
+function setupUI()
+    --Lets make our text entry box do something, so that the user knows her input has been accepted
+    local panel = Soda.Window{ 
+        title = "Hello World", 
+        x=0.5, y=-0.001, w=0.7, h=0.51, 
+        blurred = true, shadow = true, style = Soda.style.darkBlurred, 
+        shapeArgs = { corners = 1 | 8} 
+    }
+    
+    Soda.QueryButton{
+        parent = panel, 
+        x = 10, y = -10,
+        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
+    }
+    
+    local accountPanel = Soda.Frame{
+        parent = panel,
+        x = 10, y = 10, w = -10, h = -60, 
+        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shapeArgs = {radius = 16} 
+    }
+    
+    --just as we did with the query button, we're going to add a callback to text entry.
+    --text entry callbacks are triggered when the user hits return or the close keyboard button.
+    --our callback is going to produce an alert dialog acknowledging the users input.
+    --callbacks always pass the sender (ie this particular text entry box, its "self") as the first argument.
+    --textentry callbacks are passed the entered text as the second argument.
+    Soda.TextEntry{
+        parent = accountPanel, 
+        x = 10, y = -60, w = -10, h = 40,
+        title = "User name:",
+        default = "Enter name", 
+        callback = function(self, inkey) --in this case, we're not using the "self" variable
+            Soda.Alert{ --brings up an alert dialog, with a single button to dismiss it
+                title = "User name registered as \n"..inkey,
+                ok = "Got it", --by default, the ok button says "ok". We can override this with the ok parameter
+                style = Soda.style.darkBlurred, blurred = true --add some lovely blurriness
+            }
+        end
+    }
+    
+end
+--# Segment
+title = "Segmented Button"
+    
+function setupUI()
+    --Lets add a second panel, and a segmented button to switch between the panels.
+    --Having different panels stops our interface from getting too cluttered
+    local panel = Soda.Window{ 
+        title = "Hello World", 
+        x=0.5, y=-0.001, w=0.7, h=0.51, 
+        blurred = true, shadow = true, style = Soda.style.darkBlurred, 
+        shapeArgs = { corners = 1 | 8} 
+    }
+    
+    Soda.QueryButton{
+        parent = panel, 
+        x = 10, y = -10,
+        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
+    }
+    
+    local accountPanel = Soda.Frame{
+        parent = panel,
+        x = 10, y = 10, w = -10, h = -60, 
+        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shapeArgs = {radius = 16} 
+    }
+    
+    --this is a settings panel. Other than the handle, it is identical to the accountPanel   
+    local settingsPanel = Soda.Frame{
+        parent = panel,
+        x = 10, y = 10, w = -10, h = -60, 
+        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shapeArgs = {radius = 16} 
+    }
+    
+    --now, to choose between the two panels (and stop them both appearing at once)
+    --we'll add a segmented button
+    Soda.Segment{
+        parent = panel,
+        x = 20, y = -70, w = -20, h = 40,
+        text = {"Account details", "Settings"}, --the labels for each panel
+        panels = {accountPanel, settingsPanel}, --the panels we just defined
+        defaultNo = 2 --display the second panel by default
+    }
+    
+    --our text entry box from the previous step:
+    Soda.TextEntry{
+        parent = accountPanel, 
+        x = 10, y = -60, w = -10, h = 40,
+        title = "User name:",
+        default = "Enter name", 
+        callback = function(self, inkey) 
+            Soda.Alert{ 
+                title = "User name registered as \n"..inkey,
+                ok = "Got it", 
+                style = Soda.style.darkBlurred, blurred = true 
+            }
+        end
+    }
+    --see how, when flicking back and forth between the panels, the states of the elements within those panels is retained
+end
+--# Step100
+function setupUI()
+    local panel = Soda.Window{ --give parent a local handle, in this case "panel", to define children
+        title = "Demonstration", 
+        hidden = true, --not visible or active initially
+        x=0.5, y=-0.001, w=0.7, h=0.51, 
+        blurred = true, style = Soda.style.darkBlurred, --gaussian blurs what is underneath it
+        shapeArgs = { corners = 1 | 8} --only round left-hand corners
+    }
+    
+    --2 navigation buttons to show & hide the main panel
+    
+    local menu = Soda.MenuButton{x = -20, y = -20} --a button to activate the above panel
+    menu.callback = function() panel:show(RIGHT) menu:hide(RIGHT) end --n.b. if a callback refers to self, eg here "menu:hide", the callback has to be defined outside of the {} constructor
+    
+    Soda.BackButton{ --a button to hide "panel" and re-show "menu" button
+        parent = panel, --a child of above "panel", therefore also inactive initially
+        direction = RIGHT, --override the default left-pointing back icon
+        x = -10, y = -10, --relative to edges of "panel"
+        callback = function() panel:hide(RIGHT) menu:show(RIGHT) end --this callback does not reference itself, so can be included in {} constructor
+    } 
+    
+    Soda.QueryButton{ --a button to open the help readme
+        parent = panel,
+        x = 10, y = -10,
+        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
+    }
+    
+    --three panels to hold various elements. All hidden initially.
+    
+    local buttonPanel = Soda.Frame{
+        parent = panel,
+        hidden = true,
+        x = 20, y = 20, w = -20, h = -140, --20 pixel border on left, right, bottom
+        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+    }
+    
+    local textEntryPanel = Soda.Frame{
+        parent = panel,
+        hidden = true,
+        x = 20, y = 20, w = -20, h = -140,
+        shape = Soda.RoundedRectangle, style = Soda.style.translucent,     
+    }
+    
+    local list = Soda.List{ --a vertically scrolling list of items
+        parent = panel, 
+        hidden = true,
+        x = 20, y = 20, w = -20, h = -140,
+        text = listProjectTabs(), -- text of list items taken from current project tabs
+        callback = function (txt) Soda.TextWindow{title = txt, text = readProjectTab(txt)} end --a window for scrolling through large blocks of text
+    }
+    
+    --a segmented button to choose between the above 3 panels:
+    
+    Soda.Segment{
+        parent = panel,
+        x = 20, y = -80, w = -20, h = 40,
+        text = {"Buttons", "Text Entry", "Examine Source"}, --segment labels...
+        panels = { --...and their corresponding panels
+        buttonPanel, textEntryPanel, list
+        }
+    }
+    
+    --the textEntry panel
+    
+    Soda.TextEntry{ --text entry box
+        parent = textEntryPanel,
+        x = 10, y = -70, w = -10, h = 40,
+        title = "Nick-name:",
+        default = "Ice Man"
+    }
+    
+    Soda.TextEntry{
+        parent = textEntryPanel,
+        x = 10, y = -130, w = -10, h = 40,
+        title = "Name of 1st pet:",
+    }
+    
+    local countyName = Soda.TextEntry{
+        parent = textEntryPanel,
+         x = 10, y = -10, w = -49, h = 40,
+        shapeArgs = {corners = 1 | 2}, --only round left-hand corners
+        title = "County:",
+        default = "Select from list",
+        inactive = true
+    }
+    
+    local counties = Soda.List{
+        parent = textEntryPanel,
+        hidden = true,
+        x = 10, y = 0, w = -10, h = -50,
+        text = {"London", "Bedfordshire", "Buckinghamshire", "Cambridgeshire", "Cheshire", "Cornwall and Isles of Scilly", "Cumbria", "Derbyshire", "Devon", "Dorset", "Durham", "East Sussex", "Essex", "Gloucestershire", "Greater London", "Greater Manchester", "Hampshire", "Hertfordshire", "Kent", "Lancashire", "Leicestershire", "Lincolnshire", "Merseyside", "Norfolk", "North Yorkshire", "Northamptonshire", "Northumberland", "Nottinghamshire", "Oxfordshire", "Shropshire", "Somerset", "South Yorkshire", "Staffordshire", "Suffolk", "Surrey", "Tyne and Wear", "Warwickshire", "West Midlands", "West Sussex", "West Yorkshire", "Wiltshire", "Worcestershire", "Flintshire", "Glamorgan", "Merionethshire", "Monmouthshire", "Montgomeryshire", "Pembrokeshire", "Radnorshire", "Anglesey", "Breconshire", "Caernarvonshire", "Cardiganshire", "Carmarthenshire", "Denbighshire", "Kirkcudbrightshire", "Lanarkshire", "Midlothian", "Moray", "Nairnshire", "Orkney", "Peebleshire", "Perthshire", "Renfrewshire", "Ross & Cromarty", "Roxburghshire", "Selkirkshire", "Shetland", "Stirlingshire", "Sutherland", "West Lothian", "Wigtownshire", "Aberdeenshire", "Angus", "Argyll", "Ayrshire", "Banffshire", "Berwickshire", "Bute", "Caithness", "Clackmannanshire", "Dumfriesshire", "Dumbartonshire", "East Lothian", "Fife", "Inverness", "Kincardineshire", "Kinross-shire"},      
+      --  alert = true
+    }
+    counties.callback = function(txt) countyName:inputString(txt) counties:hide() end --counties.selected.label.text
+    
+    Soda.DropdownButton{
+        parent = textEntryPanel,
+        style = Soda.style.default,
+        x = -10, y = -10,
+        shapeArgs = {corners = 4 | 8}, --only round the right-hand corners
+        callback = function() counties:toggle() end
+    }
+    
+    --the button panel:
+    
+    local div = 1/8
+    
+    Soda.BackButton{
+    parent = buttonPanel,
+    x = div, y = -20}
+    
+    Soda.SettingsButton{
+    parent = buttonPanel,
+    x = div * 2, y = -20}
+    
+    Soda.AddButton{
+    parent = buttonPanel,
+    x = div * 3, y = -20}
+    
+    Soda.QueryButton{
+    parent = buttonPanel,
+    x = div * 4, y = -20}
+    
+    Soda.MenuButton{
+    parent = buttonPanel,
+    x = div * 5, y = -20}
+    
+    Soda.DropdownButton{
+    parent = buttonPanel,
+    x = div * 6, y = -20}
+    
+    Soda.CloseButton{
+    parent = buttonPanel,
+    x = div * 7, y = -20}
+    
+    Soda.Switch{
+    parent = buttonPanel,
+    x = 20, y = -80,
+    title = "Turbo boost",
+    }
+    
+    Soda.Switch{
+    parent = buttonPanel,
+    x = 20, y = -140,
+    title = "Wings stay on the plane",
+    on = true}
+    
+    Soda.Switch{
+    parent = buttonPanel,
+    x = 20, y = -200,
+    title = "Afterburners",
+    }
+       
+    Soda.Button{
+    parent = buttonPanel, 
+    title = "OK", 
+    x = 20, y = 20, w = 0.4, h = 40}
+    
+    Soda.Button{
+    parent = buttonPanel, 
+    title = "Do not press", 
+    style = Soda.style.warning, 
+    x = -20, y = 20, w = 0.4, h = 40, 
+    callback = 
+        function()
+            Soda.Alert1{ --an alert box with a single button
+                title = "I warned you not to press this!", 
+                y=0.6, 
+                style = Soda.style.darkBlurred, blurred = true, 
+                alert = true, --if alert=true, underlying elements are inactive and darkened until alert is dismissed
+            }
+        end
+    }
+    
 
+end
