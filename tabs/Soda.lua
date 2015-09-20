@@ -5,16 +5,18 @@ function Soda.setup()
     parameter.watch("Soda.UIoffset")
     Soda.Assets()
     Soda.theme = Soda.themes.default
-
+    
     textAlign(CENTER)
     rectMode(CENTER)
 
 end
 
 function Soda.camera()
+    if Soda.device.current then
+        translate(Soda.device.offset.x, Soda.device.offset.y)
+    end
     if not isKeyboardShowing() then
         Soda.UIoffset = Soda.UIoffset * 0.9
-
     end
     translate(0, Soda.UIoffset)
 end
@@ -43,7 +45,38 @@ function Soda.keyboard(key)
     end
 end
 
-function Soda.orientationChanged()
+Soda.device = { 
+    name = {"iPhone4", "iPhone5", "iPhone6", "iPhone6+", "iPad"},
+    size = {vec2(480, 320), vec2(568, 320),vec2(667, 375),vec2(736, 414),vec2(1024, 768)}, --x and y are width and height in landscape
+    ratio = {0.5, 0.6, 0.7, 0.75, 1} --aprox ratio of width, rounding up
+}
+
+function Soda:setDevice(sel)    
+    if sel.idNo == 5 then --selected iPad
+        Soda.device.current = nil
+    else
+        Soda.device.current = sel.idNo
+    end
+    Soda.orientationChanged(CurrentOrientation)
+end
+
+function Soda.orientationChanged(ori)
+    if Soda.device.current then
+        local size = Soda.device.size[Soda.device.current]
+        local iPadSize = Soda.device.size[5]
+        if ori == LANDSCAPE_LEFT or ori == LANDSCAPE_RIGHT then
+            WIDTH = size.x
+            HEIGHT = size.y
+        else
+            WIDTH = size.y
+            HEIGHT = size.x  
+            local z = iPadSize.y
+            iPadSize.y = iPadSize.x
+            iPadSize.x = z      
+        end
+        
+        Soda.device.offset = (iPadSize - size)*0.5        
+    end
     for i,v in ipairs(Soda.items) do
         v:orientationChanged()
     end

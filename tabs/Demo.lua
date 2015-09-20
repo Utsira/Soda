@@ -123,6 +123,15 @@ function demo1()
     
     --the button panel:
     
+    --a button to test different sizes of iDevice
+    Soda.DropdownList{
+        parent = buttonPanel,
+        x= -20, y = -80, h = 40,
+        title = "Device",
+        text = Soda.device.name,
+        callback = Soda.setDevice
+    }
+    
     local div = 1/8
     
     Soda.BackButton{
