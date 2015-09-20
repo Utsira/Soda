@@ -12,7 +12,9 @@ function Soda.List:init(t)
     t.h = math.min(t.h or t.scrollHeight, t.scrollHeight)
     Soda.ScrollShape.init(self, t)
     for i,v in ipairs(t.text) do
-        local item = Soda.Selector{parent = self, idNo = i, label = { text = v, x = 10, y = 0.5}, style = t.style, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
+        local number = ""
+        if t.enumerate then number = i..") " end
+        local item = Soda.Selector{parent = self, idNo = i, label = { text = number..v, x = 10, y = 0.5}, style = t.style, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
         if t.defaultNo and i==t.defaultNo then
             item.highlighted = true
             self:selectFromList(item)
@@ -36,6 +38,7 @@ function Soda.DropdownList(t)
         x = t.x, y = this:bottom() - t.parent.h, w = t.w, h = this:bottom(),
         text = t.text,    
         defaultNo = t.defaultNo,  
+        enumerate = t.enumerate,
         callback = function(self, selected, txt) 
             this.label.text = "\u{25bc} "..t.title..": "..txt
             this:setPosition() --to recalculate left-justified label

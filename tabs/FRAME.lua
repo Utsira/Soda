@@ -240,7 +240,7 @@ function Soda.Frame:selectFromList(child) --method used by parents of selectors
         end
         self.selected = child
         if child.panel then child.panel:show() end
-        self:callback(child, child.label.text)
+        tween.delay(0.1, function() self:callback(child, child.label.text) end) --slight delay for list animation to register before panel disappears
     end
 end
 
