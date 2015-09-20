@@ -43,7 +43,7 @@ function Soda.Scroll:touched(t, tpos)
             end
     
         end
-        if self.touchMove==0 then --only test selectors if this touch was not a scroll gesture
+        if self.touchMove<1 then --only test selectors if this touch was not a scroll gesture
             local off = tpos - vec2(self:left(), self:bottom() + self.scrollY)
             for _, v in ipairs(self.child) do --children take priority over frame for touch
                 if v:touched(t, off) then return true end
