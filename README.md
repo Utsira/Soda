@@ -209,6 +209,10 @@ A vertically scrolling list of elements that the user can select from. Has elast
     2. the selected item. List items are numbered in order with the variable `idNo`, this can be queried within the callback with eg `selected.idNo`
     3. the selected item's title string.
 
+Additional method:
+
+  + `:clearSelection()` - clears the selection
+
 Variant:
 
 + `Soda.DropdownList` - A button which, when pressed, toggles a dropdown list. When an item is selected from the list, the button's label changes to reflect the selection, and an optional callback is triggered. Arguments:
@@ -216,6 +220,10 @@ Variant:
   + `text` - array of strings. Same as `Soda.List`
   + `defaultNo` - the list item selected by default, same as `Soda.List`. If you omit this, there will be no selection by default, and the text "Select from list" will be appended to the button's label.
   + `callback` - is passed same three variables as `Soda.List`
+
+Additional method:
+
+  + `:clearSelection()` - clears the selection, as above.
 
 #### `Soda.TextEntry`
 
@@ -229,7 +237,11 @@ A text entry field with a touchable cursor, and scrolling if the input is too lo
 
 #### `Soda.TextScroll`, `Soda.TextWindow`
 
-`Soda.TextScroll` is a window for handling scrolling through large bodies of text. `Soda.TextWindow` is a wrapper that adds a close button to the text window. Additional method:
+`Soda.TextScroll` is a window for handling scrolling through large bodies of text. `Soda.TextWindow` is a wrapper that adds a close button to the text window. Additional argument:
+
+  + `textBody` - string. the body of text to be scrolled.
+
+Additional method:
 
    + `:inputString(string)` - as above
 
@@ -257,6 +269,8 @@ Not all parameters are currently supported by all Soda UI elements.
 + `title` - string. The text that will label this element
 
 + `text` - table of strings. Used by elements made of multiple parts such as [`Soda.Segment`](#sodasegment), [`Soda.List`](#sodalist)
+
++ `textBody` - string. Used by [`Soda.TextScroll`, `Soda.TextWindow`](#sodatextscroll-sodatextwindow)
 
 + `defaultNo` - integer. Used by elements made of multiple parts such as [`Soda.Segment`](#sodasegment), [`Soda.List`](#sodalist) to indicate a default selected item in the list.
 
