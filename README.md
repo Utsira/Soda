@@ -337,3 +337,11 @@ Not all parameters are currently supported by all Soda UI elements.
 + ~~DONE. Add a factory for easier creation of the drop-down list seen in the demo~~
 
 + Add a rect shape that supports textures and aliased strokes, so that you can have rectangular blurred panels that match the same stroke as the rounded rectangles
+
++ Add optional support for live-updating blurred panels
+
++ Add option to emulate various iDevices to prepare interfaces for universalisation 
+
++ Add Codea syntax highlighting to TextWindows
+
+
