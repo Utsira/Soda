@@ -62,6 +62,10 @@ Forum Discussion: http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerfu
 
 ## Version Notes
 
+### v0.3
+
++ Fixed bug where vertical lists sometimes returned the wrong result
+
 ### v0.2
 
 + NEW `Soda.DropdownList` - A button which, when pressed, toggles a dropdown list (this is a wrapper or factory which makes it much easier to setup dropdown lists). When an item is selected from the list, the button's label changes to reflect the selection, and an optional callback is triggered.
