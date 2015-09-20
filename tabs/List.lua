@@ -22,6 +22,11 @@ function Soda.List:init(t)
     end
 end
 
+function Soda.List:clearSelection()
+    if self.selected then self.selected.highlighted = false end
+    self.selected = nil
+end
+
 --- a factory for dropdown lists
 
 function Soda.DropdownList(t)
@@ -46,6 +51,13 @@ function Soda.DropdownList(t)
             callback(self, selected, txt)
         end
     } 
+    
+    this.clearSelection = function() 
+        list:clearSelection() 
+        this.label.text = "\u{25bc} "..t.title..": Select from list"
+        this:setPosition() --to recalculate left-justified label
+    end
+    --add clear list method (...perhaps this should be a class, not a wrapper?)
     
     this.callback = function() list:toggle() end --callback has to be outside of constructor only when two elements' callbacks both refer to each-other.
     

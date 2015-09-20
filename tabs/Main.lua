@@ -1,5 +1,5 @@
 -- Soda
--- v0.3.1
+-- v0.4
 displayMode(OVERLAY)
 displayMode(FULLSCREEN)
 -- Use this as a template for your projects that have Soda as a dependency. 

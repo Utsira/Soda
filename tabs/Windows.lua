@@ -37,7 +37,7 @@ function Soda.TextWindow(t)
      parent = this,
       x = 10, y = 10, w = -10, h = -10,
      --   x = t.x or 0.5, y = t.y or 20, w = t.w or 700, h = t.h or -20,
-        text = t.text,
+        textBody = t.textBody,
     }  
     
     this.inputString = function(_, ...) scroll:inputString(...) end
@@ -64,6 +64,7 @@ function Soda.Alert2Dark(t)
     return this
 end
 
+--[[
 function Soda.Alert2(t)
     local this = Soda.Frame{h = 0.25} --, edge = ~BOTTOMEDGE
      
@@ -74,6 +75,23 @@ function Soda.Alert2(t)
     
     local ok = Soda.Button{parent = this, title = t.ok or "OK", x = 0.251, y = 0, w = 0.5, h = 50, shapeArgs = {r = 25, edge = LEFTEDGE | BOTTOMEDGE}} --style = Soda.style.transparent,blurred = true --{edgeX = LEFT, edgeY = 1, r = 25}
     local cancel = Soda.Button{parent = this, title = t.cancel or "Cancel", x = 0.748, y = 0, w = 0.5, h = 50, shapeArgs = {r = 25, edge = RIGHTEDGE | BOTTOMEDGE}, callback = function() this.kill = true end} --style = Soda.style.transparent,{edgeX = RIGHT, edgeY = 1, r = 25}
+    return this
+end
+  ]]
+
+function Soda.Alert2(t)
+    t.h = t.h or 0.25
+    t.shadow = true
+    t.label = {x=0.5, y=0.6, text = t.title}
+    t.alert = true  --if alert=true, underlying elements are inactive and darkened until alert is dismissed
+    local callback = t.callback or null
+    
+    local this = Soda.Window(t) 
+    
+    local proceed = Soda.Button{parent = this, title = t.ok or "Proceed", x = 0.749, y = 0, w = 0.5, h = 50, shapeArgs = {corners = 8, radius = 25}, callback = function() this.kill = true callback() end,  style = Soda.style.transparent} --style = Soda.style.transparent,blurred = t.blurred,
+    
+    local cancel = Soda.Button{parent = this, title = t.cancel or "Cancel", x = 0.251, y = 0, w = 0.5, h = 50, shapeArgs = {corners = 1, radius = 25}, callback = function() this.kill = true end,  style = Soda.style.transparent} 
+    
     return this
 end
 

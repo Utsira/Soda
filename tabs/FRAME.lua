@@ -222,7 +222,7 @@ function Soda.Frame:touched(t, tpos)
     if self.alert or self:pointIn(tpos.x, tpos.y) then return true end
 end
 
-function Soda.Frame:selectFromList(child) --method used by parents of selectors
+function Soda.Frame:selectFromList(child) --method used by parents of selectors. 
     if child==self.selected then --pressed the one already selected
         if self.noSelectionPossible then
             child.highlighted = false

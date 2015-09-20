@@ -61,7 +61,7 @@ function demo1()
         parent = panel, 
         x = 20, y = 20, w = -20, h = -140,
         text = listProjectTabs(), -- text of list items taken from current project tabs
-        callback = function (self, selected, txt) Soda.TextWindow{title = txt, text = readProjectTab(txt), shadow = true, closeButton = true, style = Soda.style.thickStroke, shapeArgs = {radius = 25}} end --a window for scrolling through large blocks of text
+        callback = function (self, selected, txt) Soda.TextWindow{title = txt, textBody = readProjectTab(txt), shadow = true, closeButton = true, style = Soda.style.thickStroke, shapeArgs = {radius = 25}} end --a window for scrolling through large blocks of text
     }
     
     --a segmented button to choose between the above 3 panels:
@@ -335,7 +335,7 @@ end
 
 --# Main
 -- Soda
--- v0.3.1
+-- v0.4
 displayMode(OVERLAY)
 displayMode(FULLSCREEN)
 -- Use this as a template for your projects that have Soda as a dependency. 
@@ -432,11 +432,11 @@ Soda.style = {
         highlight = {shape = {}, text = {}},
     transparent = {
         shape = {noFill = true, --color(0,0),
-                stroke = "stroke2"},
-        text = { fill = "darkText"},
+                }, --stroke = "stroke2"
+        text = { }, --fill = "darkText"
         highlight = { 
         shape = {fill = "darkText"},
-        text = {fill = "stroke2"}
+        text = {} --fill = "stroke2"
         }
     },
     translucent = {
@@ -1231,7 +1231,7 @@ function Soda.Frame:touched(t, tpos)
     if self.alert or self:pointIn(tpos.x, tpos.y) then return true end
 end
 
-function Soda.Frame:selectFromList(child) --method used by parents of selectors
+function Soda.Frame:selectFromList(child) --method used by parents of selectors. 
     if child==self.selected then --pressed the one already selected
         if self.noSelectionPossible then
             child.highlighted = false
@@ -1249,7 +1249,7 @@ function Soda.Frame:selectFromList(child) --method used by parents of selectors
         end
         self.selected = child
         if child.panel then child.panel:show() end
-        self:callback(child, child.label.text)
+        tween.delay(0.1, function() self:callback(child, child.label.text) end) --slight delay for list animation to register before panel disappears
     end
 end
 
@@ -1617,30 +1617,13 @@ end
 Soda.Selector = class(Soda.Button) --press deactivates its siblings
 
 function Soda.Selector:touched(t, tpos)
-    if t.state == BEGAN then
-        if self:pointIn(tpos.x, tpos.y) then
-            self.touchId = t.id
-            self:keyboardHideCheck()
-            return true
-        end
-    elseif self.touchId and self.touchId == t.id then
-        if t.state == MOVING then
-            if not self:pointIn(tpos.x, tpos.y) then --cancelled
-                self.touchId = nil
-               -- return true
-            end
-        elseif t.state == ENDED then
-            self.touchId = nil
-          --  self.on = true
-            if self:pointIn(tpos.x, tpos.y) then
-                self:callback()
-                self.highlighted = true
-                self.parent:selectFromList(self)
-                return true
-            end
-        end
+    if t.state == ENDED and self:pointIn(tpos.x, tpos.y) then
+        self:keyboardHideCheck()
+        self:callback()
+        self.highlighted = true
+        self.parent:selectFromList(self)
+        return true
     end
-   -- return Soda.Frame.touched(self, t, tpos) --a selector shouldn't have children
 end
 --# Segment
 Soda.Segment = class(Soda.Frame) --horizontally segmented set of selectors
@@ -1723,7 +1706,7 @@ function Soda.Scroll:touched(t, tpos)
             end
     
         end
-        if self.touchMove<1 then --only test selectors if this touch was not a scroll gesture
+        if self.touchMove<10 then --only test selectors if this touch was not a scroll gesture
             local off = tpos - vec2(self:left(), self:bottom() + self.scrollY)
             for _, v in ipairs(self.child) do --children take priority over frame for touch
                 if v:touched(t, off) then return true end
@@ -1820,11 +1803,11 @@ function Soda.TextScroll:init(t)
    -- t.shape = t.shape or Soda.rect
     self.characterW, self.characterH = self:getTextSize(Soda.style.textBox, "a")
     Soda.Scroll.init(self, t)
-    self:inputString(t.text)
+    self:inputString(t.textBody)
 end
 
 function Soda.TextScroll:inputString(txt)
-        --split text into lines and wrap them
+    --split text into lines and wrap them
     local lines = {}
     local boxW = (self.w//self.characterW)-2 --how many characters can we fit in?
     for lin in txt:gmatch("[^\n\r]+") do
@@ -1895,12 +1878,19 @@ function Soda.List:init(t)
     t.h = math.min(t.h or t.scrollHeight, t.scrollHeight)
     Soda.ScrollShape.init(self, t)
     for i,v in ipairs(t.text) do
-        local item = Soda.Selector{parent = self, idNo = i, label = { text = v, x = 10, y = 0.5}, style = t.style, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
+        local number = ""
+        if t.enumerate then number = i..") " end
+        local item = Soda.Selector{parent = self, idNo = i, label = { text = number..v, x = 10, y = 0.5}, style = t.style, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
         if t.defaultNo and i==t.defaultNo then
             item.highlighted = true
             self:selectFromList(item)
         end
     end
+end
+
+function Soda.List:clearSelection()
+    if self.selected then self.selected.highlighted = false end
+    self.selected = nil
 end
 
 --- a factory for dropdown lists
@@ -1919,6 +1909,7 @@ function Soda.DropdownList(t)
         x = t.x, y = this:bottom() - t.parent.h, w = t.w, h = this:bottom(),
         text = t.text,    
         defaultNo = t.defaultNo,  
+        enumerate = t.enumerate,
         callback = function(self, selected, txt) 
             this.label.text = "\u{25bc} "..t.title..": "..txt
             this:setPosition() --to recalculate left-justified label
@@ -1926,6 +1917,13 @@ function Soda.DropdownList(t)
             callback(self, selected, txt)
         end
     } 
+    
+    this.clearSelection = function() 
+        list:clearSelection() 
+        this.label.text = "\u{25bc} "..t.title..": Select from list"
+        this:setPosition() --to recalculate left-justified label
+    end
+    --add clear list method (...perhaps this should be a class, not a wrapper?)
     
     this.callback = function() list:toggle() end --callback has to be outside of constructor only when two elements' callbacks both refer to each-other.
     
@@ -1972,7 +1970,7 @@ function Soda.TextWindow(t)
      parent = this,
       x = 10, y = 10, w = -10, h = -10,
      --   x = t.x or 0.5, y = t.y or 20, w = t.w or 700, h = t.h or -20,
-        text = t.text,
+        textBody = t.textBody,
     }  
     
     this.inputString = function(_, ...) scroll:inputString(...) end
@@ -1999,6 +1997,7 @@ function Soda.Alert2Dark(t)
     return this
 end
 
+--[[
 function Soda.Alert2(t)
     local this = Soda.Frame{h = 0.25} --, edge = ~BOTTOMEDGE
      
@@ -2009,6 +2008,23 @@ function Soda.Alert2(t)
     
     local ok = Soda.Button{parent = this, title = t.ok or "OK", x = 0.251, y = 0, w = 0.5, h = 50, shapeArgs = {r = 25, edge = LEFTEDGE | BOTTOMEDGE}} --style = Soda.style.transparent,blurred = true --{edgeX = LEFT, edgeY = 1, r = 25}
     local cancel = Soda.Button{parent = this, title = t.cancel or "Cancel", x = 0.748, y = 0, w = 0.5, h = 50, shapeArgs = {r = 25, edge = RIGHTEDGE | BOTTOMEDGE}, callback = function() this.kill = true end} --style = Soda.style.transparent,{edgeX = RIGHT, edgeY = 1, r = 25}
+    return this
+end
+  ]]
+
+function Soda.Alert2(t)
+    t.h = t.h or 0.25
+    t.shadow = true
+    t.label = {x=0.5, y=0.6, text = t.title}
+    t.alert = true  --if alert=true, underlying elements are inactive and darkened until alert is dismissed
+    local callback = t.callback or null
+    
+    local this = Soda.Window(t) 
+    
+    local proceed = Soda.Button{parent = this, title = t.ok or "Proceed", x = 0.749, y = 0, w = 0.5, h = 50, shapeArgs = {corners = 8, radius = 25}, callback = function() this.kill = true callback() end,  style = Soda.style.transparent} --style = Soda.style.transparent,blurred = t.blurred,
+    
+    local cancel = Soda.Button{parent = this, title = t.cancel or "Cancel", x = 0.251, y = 0, w = 0.5, h = 50, shapeArgs = {corners = 1, radius = 25}, callback = function() this.kill = true end,  style = Soda.style.transparent} 
+    
     return this
 end
 

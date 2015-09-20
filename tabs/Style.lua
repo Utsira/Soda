@@ -26,11 +26,11 @@ Soda.style = {
         highlight = {shape = {}, text = {}},
     transparent = {
         shape = {noFill = true, --color(0,0),
-                stroke = "stroke2"},
-        text = { fill = "darkText"},
+                }, --stroke = "stroke2"
+        text = { }, --fill = "darkText"
         highlight = { 
         shape = {fill = "darkText"},
-        text = {fill = "stroke2"}
+        text = {} --fill = "stroke2"
         }
     },
     translucent = {

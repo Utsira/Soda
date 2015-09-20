@@ -4,11 +4,11 @@ function Soda.TextScroll:init(t)
    -- t.shape = t.shape or Soda.rect
     self.characterW, self.characterH = self:getTextSize(Soda.style.textBox, "a")
     Soda.Scroll.init(self, t)
-    self:inputString(t.text)
+    self:inputString(t.textBody)
 end
 
 function Soda.TextScroll:inputString(txt)
-        --split text into lines and wrap them
+    --split text into lines and wrap them
     local lines = {}
     local boxW = (self.w//self.characterW)-2 --how many characters can we fit in?
     for lin in txt:gmatch("[^\n\r]+") do
