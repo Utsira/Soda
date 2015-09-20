@@ -335,7 +335,7 @@ end
 
 --# Main
 -- Soda
--- v 0.3
+-- v0.3.1
 displayMode(OVERLAY)
 displayMode(FULLSCREEN)
 -- Use this as a template for your projects that have Soda as a dependency. 
@@ -1723,7 +1723,7 @@ function Soda.Scroll:touched(t, tpos)
             end
     
         end
-        if self.touchMove==0 then --only test selectors if this touch was not a scroll gesture
+        if self.touchMove<1 then --only test selectors if this touch was not a scroll gesture
             local off = tpos - vec2(self:left(), self:bottom() + self.scrollY)
             for _, v in ipairs(self.child) do --children take priority over frame for touch
                 if v:touched(t, off) then return true end
