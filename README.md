@@ -361,7 +361,7 @@ Not all parameters are currently supported by all Soda UI elements.
 
 ## Roadmap
 
-+ Sliders.
++ ~~ADDED V0.5 Sliders.~~
 
 + Improvements to TextEntry:
 
@@ -379,7 +379,7 @@ Not all parameters are currently supported by all Soda UI elements.
 
 + Add optional filters (eg Codea syntax highlighting, markdown parsing) to TextWindows
 
-+ Make gesture recognition (refusal of swipe-to-scroll gestures) universal across Soda (currently just applies to List classes)
++ ~~Make gesture recognition (refusal of swipe-to-scroll gestures) universal across Soda (currently just applies to List classes)~~
 
 + Make styles list cascading
 
