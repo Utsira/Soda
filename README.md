@@ -24,7 +24,7 @@ Forum Discussion: http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerfu
     3. [Text entry](#sodatextentry)
     4. [Text scroll](#sodatextscroll-sodatextwindow)
     5. [Alerts and dialogs](#various-alerts-and-dialogs)
-  6. [General parameters](#general-parameters)
+  6. [Attributes](#attributes)
   7. [Methods](#methods)
 
 1. [Known issues](#known-issues)
