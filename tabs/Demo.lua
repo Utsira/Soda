@@ -82,7 +82,7 @@ function demo1()
       --  shapeArgs = {corners = 8},
         blurred = true, shadow = true,
         update = function(self) --update will be called every frame
-            self.label.text = string.format("Profiler\n\nFPS: %.2f\nMem: %.2f", profiler.fps, profiler.mem)
+            self.title = string.format("Profiler\n\nFPS: %.2f\nMem: %.2f", profiler.fps, profiler.mem)
         end
     }
     
@@ -230,3 +230,4 @@ function demo2()
     
     local inkey = Soda.TextEntry{parent = box, title = "Nick-name:", x=20, y=80, w=0.7, h=40} 
 end
+

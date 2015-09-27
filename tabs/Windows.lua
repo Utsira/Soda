@@ -4,9 +4,24 @@ function Soda.Window(t)
     t.shape = t.shape or Soda.RoundedRectangle
     t.shapeArgs = t.shapeArgs or {}
     t.shapeArgs.radius = 25
-    t.label = t.label or {x=0.5, y=-15, text = t.title}
+    t.label = t.label or {x=0.5, y=-15}
+    
+    local callback = t.callback or null
+    local this = Soda.Frame(t)
+    
+    if t.ok then
+        local title = "OK"
+        if type(t.ok)=="string" then title = t.ok end
+        Soda.Button{parent = this, title = title, x = -10, y = 10, w = 0.3, h = 40, callback = function() this.kill = true callback() end} --style = Soda.style.transparent,blurred = t.blurred,
+    end
+    
+    if t.cancel then
+        local title = "Cancel"
+        if type(t.cancel)=="string" then title = t.cancel end
+        Soda.Button{parent = this, title = title, x = 10, y = 10, w = 0.3, h = 40, callback = function() this.kill = true end,  style = Soda.style.warning} 
+    end
    -- t.shadow = true
-    return Soda.Frame(t)
+    return this
 end
 
 function Soda.Window2(t)
@@ -14,7 +29,7 @@ function Soda.Window2(t)
     t.shapeArgs = t.shapeArgs or {}
     t.shapeArgs.radius = 25
     t.style = t.style or Soda.style.thickStroke
-    t.label = {x=0.5, y=-10, text = t.title}
+    t.label = {x=0.5, y=-10}
  --   t.shadow = true
     return Soda.Frame(t)
 end
@@ -41,7 +56,8 @@ function Soda.TextWindow(t)
     }  
     
     this.inputString = function(_, ...) scroll:inputString(...) end
-    --pass the textscroll's method to the enclosing wrapper
+    this.clearString = function(_, ...) scroll:clearString(...) end
+    --pass the textscroll's method to the enclosing wrapper (make this a subclass, not a wrapper)
     
     if t.closeButton then
         Soda.CloseButton{
@@ -82,7 +98,7 @@ end
 function Soda.Alert2(t)
     t.h = t.h or 0.25
     t.shadow = true
-    t.label = {x=0.5, y=0.6, text = t.title}
+    t.label = {x=0.5, y=0.6}
     t.alert = true  --if alert=true, underlying elements are inactive and darkened until alert is dismissed
     local callback = t.callback or null
     
@@ -98,9 +114,11 @@ end
 function Soda.Alert(t)
     t.h = t.h or 0.25
     t.shadow = true
-    t.label = {x=0.5, y=0.6, text = t.title}
+    t.label = {x=0.5, y=0.6}
     t.alert = true  --if alert=true, underlying elements are inactive and darkened until alert is dismissed
     local this = Soda.Window(t) 
-    local ok = Soda.Button{parent = this, title = t.ok or "OK", x = 0, y = 0, w = 1, h = 50, shapeArgs = {corners = 1 | 8, radius = 25}, callback = function() this.kill = true end,  style = Soda.style.transparent} --style = Soda.style.transparent,blurred = t.blurred,
+    local callback = t.callback or null
+    local ok = Soda.Button{parent = this, title = t.ok or "OK", x = 0, y = 0, w = 1, h = 50, shapeArgs = {corners = 1 | 8, radius = 25}, callback = function() this.kill = true callback() end,  style = Soda.style.transparent} --style = Soda.style.transparent,blurred = t.blurred,
     return this
 end
+

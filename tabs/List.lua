@@ -14,9 +14,15 @@ function Soda.List:init(t)
     for i,v in ipairs(t.text) do
         local number = ""
         if t.enumerate then number = i..") " end
-        local item = Soda.Selector{parent = self, idNo = i, label = { text = number..v, x = 10, y = 0.5}, style = t.style, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
+        
+        if t.panels then
+            panel = t.panels[i]
+            panel:hide() --hide the panel by default
+        end
+        
+        local item = Soda.Selector{parent = self, idNo = i, title = number..v, label = {x = 10, y = 0.5}, style = t.style, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42, panel = panel} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
         if t.defaultNo and i==t.defaultNo then
-            item.highlighted = true
+          --  item.highlighted = true
             self:selectFromList(item)
         end
     end
@@ -32,12 +38,13 @@ end
 function Soda.DropdownList(t)
     local this = Soda.Button{
         parent = t.parent, x = t.x, y = t.y, w = t.w, h = t.h,
-        label = {text = "\u{25bc} "..t.title..": Select from list", x = 10, y = 0.5}
+        title = "\u{25bc} "..t.title..": Select from list",
+        label = {x = 10, y = 0.5}
     }
 
     local callback = t.callback or null
 
-    local list = Soda.List{
+    this.list = Soda.List{
         parent = t.parent,
         hidden = true,
         x = t.x, y = this:bottom() - t.parent.h, w = t.w, h = this:bottom(),
@@ -45,7 +52,7 @@ function Soda.DropdownList(t)
         defaultNo = t.defaultNo,  
         enumerate = t.enumerate,
         callback = function(self, selected, txt) 
-            this.label.text = "\u{25bc} "..t.title..": "..txt
+            this.title = "\u{25bc} "..t.title..": "..txt
             this:setPosition() --to recalculate left-justified label
             self:hide() 
             callback(self, selected, txt)
@@ -53,13 +60,14 @@ function Soda.DropdownList(t)
     } 
     
     this.clearSelection = function() 
-        list:clearSelection() 
-        this.label.text = "\u{25bc} "..t.title..": Select from list"
+        this.list:clearSelection() 
+        this.title = "\u{25bc} "..t.title..": Select from list"
         this:setPosition() --to recalculate left-justified label
     end
     --add clear list method (...perhaps this should be a class, not a wrapper?)
     
-    this.callback = function() list:toggle() end --callback has to be outside of constructor only when two elements' callbacks both refer to each-other.
+    this.callback = function() this.list:toggle() end --callback has to be outside of constructor only when two elements' callbacks both refer to each-other.
     
     return this
 end
+

@@ -1,5 +1,5 @@
 -- Soda
--- v0.4
+
 displayMode(OVERLAY)
 displayMode(FULLSCREEN)
 -- Use this as a template for your projects that have Soda as a dependency. 
@@ -8,7 +8,8 @@ function setup()
     profiler.init()
     parameter.watch("#Soda.items")
     Soda.setup()
-    demo1() --do your setting up here
+   -- demo1() --do your setting up here
+    overview{}
 end
 
 function draw()
@@ -66,3 +67,4 @@ function profiler.draw()
         profiler.mem=collectgarbage("count", 2)
     end
 end
+

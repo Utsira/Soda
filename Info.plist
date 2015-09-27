@@ -3,10 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>Author</key>
-	<string>Unknown</string>
+	<string>Utsira</string>
 	<key>Buffer Order</key>
 	<array>
 		<string>Demo</string>
+		<string>Overview</string>
 		<string>Soda</string>
 		<string>Main</string>
 		<string>Style</string>
@@ -16,6 +17,7 @@
 		<string>Button</string>
 		<string>Toggle</string>
 		<string>Switch</string>
+		<string>Slider</string>
 		<string>TextEntry</string>
 		<string>Selector</string>
 		<string>Segment</string>
@@ -25,8 +27,10 @@
 		<string>List</string>
 		<string>Windows</string>
 	</array>
+	<key>Created</key>
+	<string>2015-09-20 22:29:05 +0000</string>
 	<key>Description</key>
-	<string>No description available</string>
+	<string>Soda v0.5</string>
 	<key>Icon</key>
 	<string>Icon.png</string>
 </dict>

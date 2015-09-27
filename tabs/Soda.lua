@@ -1,14 +1,38 @@
 Soda = {}
+Soda.version = "0.5"
 
 function Soda.setup()
     --  parameter.watch("#Soda.items")
     parameter.watch("Soda.UIoffset")
     Soda.Assets()
     Soda.theme = Soda.themes.default
-
     textAlign(CENTER)
     rectMode(CENTER)
 
+end
+
+function Soda.Assets()
+    Soda.items = {} --holds all top-level ui elements (i.e. anything without a parent)
+    
+    Soda.darken.assets() --used to darken underlying interface elements when alert flag is set.
+    
+    Soda.UIoffset = 0 --used to scroll up screen when keyboard appears
+end
+
+Soda.darken = {}
+
+function Soda.darken.assets()
+    Soda.darken.m = mesh()
+    local s = math.max(WIDTH, HEIGHT)
+    Soda.darken.m:addRect(s/2, s/2, s, s)
+    Soda.darken.m:setColors(color(0,128))
+end
+
+function Soda.darken.draw()
+    pushMatrix()
+    resetMatrix()
+    Soda.darken.m:draw()
+    popMatrix()
 end
 
 function Soda.camera()
@@ -20,6 +44,7 @@ function Soda.camera()
 end
 
 function Soda.draw(breakPoint)
+    Soda.setStyle(Soda.style.default.text)
     for i,v in ipairs(Soda.items) do --draw most recent item last
         if v.kill then
             table.remove(Soda.items, i)
@@ -63,7 +88,7 @@ function Soda.parseCoordSize(loc, size, edge)
     if size>1 then
         len = size --standard length coord
     elseif size>0 then
-        len = edge * size --proportional length
+        len = math.ceil(edge * size) --proportional length
     end --nb defer if size is negative
     if len then
         local half = len * 0.5
@@ -72,18 +97,25 @@ function Soda.parseCoordSize(loc, size, edge)
         elseif loc<0 then
             pos = edge - half + loc --negative coord
         else
-            pos = edge * loc --proportional coord
+            pos = math.ceil(edge * loc) --proportional coord
         end
     else --negative size
         if loc%1==0 and loc>=0 then 
             len = edge - loc + size --loc and size describing the two edges
             pos = loc + len * 0.5
-        elseif loc>0 then 
-            pos = edge * loc --proportional loc coord
+        elseif loc>0 then  --proportional loc coord
             local x2 = edge + size
-            len = (x2 - pos) * 2
-        else
-            alert("negative length must be coupled with positive position")
+            local x1 = math.ceil(edge * loc)
+            len = x2 - x1
+            pos = x1 + len * 0.5
+          --  pos = edge * loc 
+            
+            --len = (x2 - pos) * 2
+        else --both negative
+            local x2 = edge + size
+            local x1 = edge + loc
+            len = x2 - x1
+            pos = x1 + len * 0.5
         end
     end
     return pos, len
@@ -95,4 +127,17 @@ function smoothstep(t,a,b)
     local a,b = a or 0,b or 1
     local t = math.min(1,math.max(0,(t-a)/(b-a)))
     return t * t * (3 - 2 * t)
+end
+
+function clamp(v,low,high)
+    return math.min(math.max(v, low), high)
+end
+
+function lerp(v,a,b)
+    return a * (1 - v) + b * v
+end
+
+function round(number, places) --use -ve places to round to tens, hundreds etc
+    local mult = 10^(places or 0)
+    return math.floor(number * mult + 0.5) / mult
 end

@@ -2,7 +2,7 @@ Soda.TextEntry = class(Soda.Frame)
 
 function Soda.TextEntry:init(t)
     t.shape = Soda.RoundedRectangle
-    t.label = {text = t.title, x=10, y=0.5} 
+    t.label = {x=10, y=0.5} 
     Soda.Frame.init(self, t)
     
     self.offset = vec2(self.label.w + 15, (self.h-self.label.h)*0.5) --bottom corner of text-entry (because left-aligned text needs to be drawn in CORNER mode)
@@ -118,3 +118,4 @@ function Soda.TextEntry:keyboard(key)
    -- self:getCursorPos()
     self.cursorPos = ((self.cursor - self.start)) * self.characterW
 end
+

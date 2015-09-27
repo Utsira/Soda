@@ -4,32 +4,43 @@ function Soda.TextScroll:init(t)
    -- t.shape = t.shape or Soda.rect
     self.characterW, self.characterH = self:getTextSize(Soda.style.textBox, "a")
     Soda.Scroll.init(self, t)
+    
+    self:clearString()
     self:inputString(t.textBody)
+end
+
+function Soda.TextScroll:clearString()
+    self.lines = {}
+  --  self.chunk = {}
+    self.cursorY = 0
+    self.scrollHeight = 0    
 end
 
 function Soda.TextScroll:inputString(txt)
     --split text into lines and wrap them
-    local lines = {}
+  --  local lines = {}
+    self.chunk = {}
     local boxW = (self.w//self.characterW)-2 --how many characters can we fit in?
     for lin in txt:gmatch("[^\n\r]+") do
-        local prefix = ""
+      --  local prefix = ""
         while lin:len()>boxW do --wrap the lines
-            lines[#lines+1] = prefix..lin:sub(1, boxW)
+            self.lines[#self.lines+1] = lin:sub(1, boxW)
             lin = lin:sub(boxW+1) 
-            prefix = "  "    
+          --  prefix = "  "    
         end
-        lines[#lines+1] = prefix..lin
+        self.lines[#self.lines+1] = lin
     end
-    self.scrollHeight = #lines * self.characterH
+    self.scrollHeight = #self.lines * self.characterH
     
     --put lines back into chunks of text, 10 lines high each
-    self.chunk = {}
-    local n = #lines//10
+    local n = #self.lines//10
     for i = 0,n do
         local start = (i * 10)+1
-        local stop = math.min(#lines, start + 9) --nb concat range is inclusive, hence +9
-        self.chunk[i+1] = {y = self.h - stop * self.characterH, text = table.concat(lines, "\n", start, stop)}
+        local stop = math.min(#self.lines, start + 9) --nb concat range is inclusive, hence +9
+        self.chunk[#self.chunk+1] = {y = self.h - (stop * self.characterH), text = table.concat(self.lines, "\n", start, stop)} --self.cursorY + 
     end
+  --  print(#self.lines, #self.chunk)
+   -- self.cursorY = self.scrollHeight
 end
 
 function Soda.TextScroll:drawContent()
@@ -63,3 +74,4 @@ function Soda.TextScroll:drawContent()
   popMatrix()
     
 end
+
