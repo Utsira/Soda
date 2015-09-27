@@ -75,6 +75,8 @@ Forum Discussion: http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerfu
 
 * `Soda.Window` can now have optional automatic ok and cancel buttons by setting ok and cancel attributes.
 
+![Sliders](https://puffinturtle.files.wordpress.com/2015/09/image3.png) Sliders
+
 ### v0.4
 
 *  Vertical list selectors now less aggressive at rejecting scroll gestures
