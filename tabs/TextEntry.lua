@@ -104,8 +104,15 @@ function Soda.TextEntry:keyboard(key)
             self.start = math.max(1, self.start - 1  )    
         end
     else
-        table.insert(self.input, self.cursor, key)
-        self.cursor = self.cursor + 1
+        if key:len()==1 then
+            table.insert(self.input, self.cursor, key)
+            self.cursor = self.cursor + 1
+        else --user has pasted multiple letters
+            for letter in key:gmatch(".") do
+                table.insert(self.input, self.cursor, letter)
+                self.cursor = self.cursor + 1               
+            end
+        end
     end
    -- self.text = table.concat(self.input, "", self.start)
     
