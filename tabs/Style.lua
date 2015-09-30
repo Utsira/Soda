@@ -1,8 +1,8 @@
 Soda.themes = {
 default = { 
-fill = color(255, 200)  ,stroke = color(152, 200)  ,stroke2 = color(69, 200)  , text = color(0, 97, 255)  ,
+fill = color(255, 240)  ,stroke = color(152, 200)  ,stroke2 = color(69, 200)  , text = color(0, 97, 255)  ,
 text2 = color(0)  ,warning = color(220, 0, 0)  ,darkFill = color(40, 40)  ,darkStroke = color(70, 128)  , 
-darkStroke2 = color(20,20)  ,darkText = color(195, 223, 255)  }
+darkStroke2 = color(20,20)  ,darkText = color(195, 223, 255) , grey = color(128, 128) }
 }
 
 Soda.style = {
@@ -19,7 +19,8 @@ Soda.style = {
             shape = {fill = "text",},
         }
     },
-    thickStroke = {shape = { strokeWidth = 10}, text = {}},
+    title = {text = {font = "HelveticaNeue"}, shape = {}},
+    thickStroke = {shape = {fill = "fill", stroke = "stroke", strokeWidth = 10}, text = {}},
     borderless = {
         shape = {strokeWidth = 0},
         text = {fill = "fill"}},
@@ -109,6 +110,10 @@ Soda.style = {
             }
         }
     },
+    inactive = {
+        shape = { fill = "fill", stroke = "grey"},
+        text = {fill = "grey"}
+    }
 }
 
 function Soda.setStyle(sty)

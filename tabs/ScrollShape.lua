@@ -40,7 +40,7 @@ function Soda.ScrollShape:draw(breakPoint)
     if not breakPoint then
         --  tween.delay(0.001, function() self:drawImage() end)
         setContext(self.image)
-        background(120, 120) --40,40 self.style.shape.stroke
+        background(150, 180) --40,40 self.style.shape.stroke
         
         pushMatrix()
         resetMatrix()

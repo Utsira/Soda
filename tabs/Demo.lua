@@ -22,7 +22,7 @@ function demo1()
     local panel = Soda.Window{ --give parent a local handle, in this case "panel", to define children
         title = "Demonstration", 
         hidden = true, --not visible or active initially
-        x=0.7, y=0.5, w=0, h=0.7, 
+        x=0.4, y=0.5, w=0, h=0.7, 
         blurred = true, style = Soda.style.darkBlurred, --gaussian blurs what is underneath it
         shadow = true,
         shapeArgs = { corners = 1 | 2} --only round left-hand corners

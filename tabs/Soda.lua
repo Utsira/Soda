@@ -1,5 +1,4 @@
 Soda = {}
-Soda.version = "0.5"
 
 function Soda.setup()
     --  parameter.watch("#Soda.items")
