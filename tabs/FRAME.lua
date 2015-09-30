@@ -29,11 +29,13 @@ function Soda.Frame:init(t)
     
     if t.parent then
         t.parent.child[#t.parent.child+1] = self --if this has a parent, add it to the parent's list of children
+  --      self.inactive = self.inactive or self.parent.inactive
     else
         table.insert( Soda.items, self) --no parent = top-level, added to Soda.items table
     end
     
-    self.inactive = self.hidden --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
+    self.inactive = self.inactive or self.hidden  --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
+   -- if self.inactive then self:deactivate() end
 end
 
 function Soda.Frame:storeParameters(t)
@@ -128,6 +130,20 @@ function Soda.Frame:toggle(direction)
     end
 end
 
+function Soda.Frame:activate()
+    self.inactive = false
+    for i,v in ipairs(self.child) do
+        v:activate()
+    end
+end
+
+function Soda.Frame:deactivate()
+    self.inactive = true
+    for i,v in ipairs(self.child) do
+        v:deactivate()
+    end
+end
+
 function Soda.Frame:draw(breakPoint)
     if breakPoint and breakPoint == self then return true end
     if self.hidden then return end
@@ -143,6 +159,9 @@ function Soda.Frame:draw(breakPoint)
     local sty = self.style
     if self.highlighted and self.highlightable then
         sty = self.style.highlight or Soda.style.default.highlight
+    end
+    if self.inactive then
+        sty = Soda.style.inactive
     end
     pushMatrix()
     pushStyle()
