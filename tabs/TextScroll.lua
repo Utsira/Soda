@@ -11,12 +11,12 @@ end
 
 function Soda.TextScroll:clearString()
     self.lines = {}
-  --  self.chunk = {}
+    self.chunk = {}
     self.cursorY = 0
     self.scrollHeight = 0    
 end
 
-function Soda.TextScroll:inputString(txt)
+function Soda.TextScroll:inputString(txt, bottom)
     --split text into lines and wrap them
   --  local lines = {}
     self.chunk = {}
@@ -24,14 +24,19 @@ function Soda.TextScroll:inputString(txt)
     for lin in txt:gmatch("[^\n\r]+") do
       --  local prefix = ""
         while lin:len()>boxW do --wrap the lines
-            self.lines[#self.lines+1] = lin:sub(1, boxW)
-            lin = lin:sub(boxW+1) 
+            local truncate = lin:sub(1, boxW)
+            local wrap,_ = truncate:find("(%W)%w-$")
+            self.lines[#self.lines+1] = lin:sub(1, wrap)
+            lin = lin:sub(wrap+1) 
           --  prefix = "  "    
         end
         self.lines[#self.lines+1] = lin
     end
     self.scrollHeight = #self.lines * self.characterH
-    
+    if bottom then 
+        --self.scrollY = self.scrollHeight -self.h 
+        self.scrollVel = ((self.scrollHeight -self.h) - self.scrollY ) * 0.1
+    end
     --put lines back into chunks of text, 10 lines high each
     local n = #self.lines//10
     for i = 0,n do
@@ -59,7 +64,7 @@ function Soda.TextScroll:drawContent()
         local mm = modelMatrix()
     translate(10, self.scrollY)
 
-    clip(mm[13]+10, mm[14]+10, self.w-20, self.h-20) --nb translate doesnt apply to clip. (idea: grab transformation from current model matrix?) --self.parent:left()+self:left(),self.parent:bottom()+self:bottom()
+    clip(mm[13]+2, mm[14]+2, self.w-4, self.h-4) --nb translate doesnt apply to clip. (idea: grab transformation from current model matrix?) --self.parent:left()+self:left(),self.parent:bottom()+self:bottom()
     
     --calculate which chunks to draw
     local lineStart = math.max(1, math.ceil(self.scrollY/self.characterH))
