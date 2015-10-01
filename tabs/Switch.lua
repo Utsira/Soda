@@ -12,7 +12,7 @@ function Soda.Switch:init(t)
     self:toggleSettings(t)
     
     -- #################################### <JMV38 changes>
-    self.sensor = Soda.Sensor{parent=self, xywhMode = CENTER}
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
     self.sensor:onTap(function(event) self:toggleMe() end)
     -- #################################### </JMV38 changes>
 end
@@ -61,4 +61,5 @@ function Soda.Knob:unHighlight()
     self.tween2 = tween.sequence(t1, t2)
 
 end
+
 

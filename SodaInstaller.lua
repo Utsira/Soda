@@ -24,7 +24,7 @@ function demo1()
     local panel = Soda.Window{ --give parent a local handle, in this case "panel", to define children
         title = "Demonstration", 
         hidden = true, --not visible or active initially
-        x=0.7, y=0.5, w=0, h=0.7, 
+        x=0.4, y=0.5, w=0, h=0.7, 
         blurred = true, style = Soda.style.darkBlurred, --gaussian blurs what is underneath it
         shadow = true,
         shapeArgs = { corners = 1 | 2} --only round left-hand corners
@@ -232,6 +232,7 @@ function demo2()
     
     local inkey = Soda.TextEntry{parent = box, title = "Nick-name:", x=20, y=80, w=0.7, h=40} 
 end
+
 
 
 --# Overview
@@ -1136,9 +1137,9 @@ function splashScreen()
 end
   ]==]
 
+
 --# Soda
 Soda = {}
-Soda.version = "0.5"
 
 function Soda.setup()
     --  parameter.watch("#Soda.items")
@@ -1200,6 +1201,10 @@ function Soda.touched(t)
         if v:touched(t, tpos) then return end
     end
 end
+
+
+
+
 
 function Soda.keyboard(key)
     if Soda.keyboardEntity then
@@ -1281,8 +1286,12 @@ function round(number, places) --use -ve places to round to tens, hundreds etc
     return math.floor(number * mult + 0.5) / mult
 end
 
+
+
 --# Main
 -- Soda
+Soda.version = "0.5"
+saveProjectInfo("Description", "Soda v"..Soda.version)
 
 displayMode(OVERLAY)
 displayMode(FULLSCREEN)
@@ -1292,7 +1301,7 @@ function setup()
     profiler.init()
     parameter.watch("#Soda.items")
     Soda.setup()
-   -- demo1() --do your setting up here
+  --  demo1() --do your setting up here
     overview{}
 end
 
@@ -1353,12 +1362,351 @@ function profiler.draw()
 end
 
 
+
+--# Gesture
+-- Sensor v02
+-- a class to interpret touch events
+-- author: jmv38
+-- usage:
+--[[
+    -- in setup():
+    screen = {x=0,y=0,w=WIDTH,h=HEIGHT} 
+    sensor = Sensor {parent=screen} -- tell the object you want to be listening to touches, here the screen
+    sensor:onTap( function(event) print("tap") end )
+    -- in touched(t):
+    if sensor:touched(t) then return true end
+
+    -- available:
+    sensor:onDrag(callback)
+    sensor:onDrop(callback)
+    sensor:onTap(callback)
+    sensor:onLongPress(callback)
+    sensor:onSwipe(callback)
+    sensor:onTouch(callback)
+    sensor:onTouched(callback)
+    sensor:onZoom(callback)
+--]]
+
+local Sensor = class()
+Soda.Gesture = Sensor
+
+function Sensor:init(t)
+    self.enabled = true     -- listen to touches
+    self.extra = t.extra or self.extra or 0   -- enlarge sensitive zone for small dots or fat fingers
+    self.touches = {}
+    self:setParent(t)
+    self.events = {}
+    self.doNotInterceptTouches = false
+end
+
+function Sensor:setParent(t)
+    -- a parent must have x,y,w,h coordinates (CORNER) to use the sensor
+    local p = t.parent or self.parent
+    if p.x and p.y and p.w and p.h then
+        self.parent = p
+    else
+        error("Sensor parent must have x,y,w,h coordinates")
+    end
+    -- the coordinates may be in different modes, use the appropriate function
+    self.xywhMode = t.xywhMode or self.xywhMode or CORNER
+    if self.xywhMode == CENTER then self.xywh = self.xywhCENTER
+    elseif self.xywhMode == CORNER then self.xywh = self.xywhCORNER
+    elseif self.xywhMode == RADIUS then self.xywh = self.xywhRADIUS
+    end
+end
+
+local abs = math.abs
+
+-- all gestures register themselves with this function
+function Sensor:register(eventName, update, callback)
+    if callback then
+        local event = {name=eventName, callback=callback, update=update}
+        for i,event in ipairs(self.events) do
+            -- if event already exists, modify it
+            if event.name == eventName then 
+                self.events[i] = event
+                return
+            end
+        end
+        -- if event do not exists, create it
+        table.insert(self.events, event)
+    else
+        -- if callback is nil, then remove the event
+        for i,event in ipairs(self.events) do
+            if event.name == eventName then 
+                table.remove(self.events,i)
+                return
+            end
+        end
+    end
+end
+
+-- gestures defined below. Note the that, because gestures are managed individually, the
+-- code is much more clear than when everything is mixed up. And only the needed computations are done.
+
+-- zoom gesture
+function Sensor:onZoom(callback)
+    self:register("onZoom", self.zoomUpdate, callback)
+end
+function Sensor.zoomUpdate(event,self,t,tpos)
+    event.touches = event.touches or {} -- init table
+    local touches = event.touches
+    local t1 = touches[1]
+    local t2 = touches[2]
+    if t.state == BEGAN then -- a new finger has come
+        if #touches >= 2 then
+            -- this is a 3rd finger, dont use it
+        else
+            -- register this touch and reset
+            table.insert(touches,t)
+        end
+    elseif t.state == MOVING then 
+        -- this is a zoom, if we have exactly 2 touches and t is one of them
+        if t1 and t2 and ( t1.id == t.id or t2.id == t.id ) then 
+            local tm,ts -- m moving, s static
+            if t1.id == t.id 
+            then touches[1]=t ; tm = t ; ts = t2
+            else touches[2]=t ; tm = t ; ts = t1
+            end
+            local dw,dh
+            if tm.x>ts.x 
+            then dw = tm.deltaX
+            else dw = - tm.deltaX
+            end
+            if tm.y>ts.y
+            then dh = tm.deltaY
+            else dh = - tm.deltaY
+            end
+            event.dw = dw
+            event.dh = dh
+            event:callback()
+        end
+    else
+        if t1 and t1.id == t.id then table.remove(touches,1) end
+        if t2 and t2.id == t.id then table.remove(touches,2) end
+    end
+end
+
+-- drag gesture
+function Sensor:onDrag(callback)
+    self:register("onDrag", self.dragUpdate, callback)
+end
+function Sensor.dragUpdate(event,self,t,tpos)
+    if self.touches[t.id] then
+        event.touch = t
+        event.tpos = tpos
+        event:callback()
+    end
+end
+
+-- drop gesture
+function Sensor:onDrop(callback)
+    self:register("onDrop", self.dropUpdate, callback)
+end
+local droppedObject, droppedTime
+function Sensor.dropUpdate(event,self,t,tpos)
+    if self:inbox(tpos) and t.state == ENDED then
+        if droppedTime ~= ElapsedTime then
+            droppedTime = ElapsedTime
+            droppedObject = self.parent
+            self.doNotInterceptOnce = true
+        else
+            event.object = droppedObject
+            event:callback()
+        end
+    end
+end
+
+-- touched gesture (this is like CODEA touched function)
+function Sensor:onTouched(callback)
+    self:register("onTouched", self.touchedUpdate, callback)
+end
+function Sensor.touchedUpdate(event,self,t,tpos)
+    if self:inbox(tpos) then 
+        event.touch = t
+        event.tpos = tpos
+        event:callback()
+    end
+end
+
+-- touch gesture
+function Sensor:onTouch(callback)
+    self:register("onTouch", self.touchUpdate, callback)
+end
+function Sensor.touchUpdate(event,self,t,tpos)
+    self.touching = self.touching or {} -- track touches, not only BEGAN
+    -- current touch
+    if self:inbox(tpos) then 
+        if t.state == BEGAN or t.state == MOVING then 
+            self.touching[t.id] = true -- this is touching
+        else
+            self.touching[t.id] = nil -- this is not
+        end
+    else
+        self.touching[t.id] = nil 
+    end
+    -- final state
+    local state1 = false -- one touch is enough to be touched
+    for i,t in pairs(self.touching) do state1= true ; break end
+    --if state has changed, send callback
+    if state1 ~= event.state then
+        event.state = state1
+        event.touch = t
+        event:callback()
+    end
+end
+
+-- tap gesture, Yojimbo2000 version
+function Sensor:onTap(callback)
+    self:register("onTap", self.tapUpdate, callback)
+end
+function Sensor.tapUpdate(event,self,t,tpos)
+    if self.touches[t.id] then -- the touch must have started on me
+        if t.state == BEGAN then
+            self.parent.highlighted = true
+        elseif t.state == MOVING then
+            if not self:inbox(tpos) then --if a touch begins within the element, but then drifts off it, it is cancelled. ie the user can change their mind. This is the same as on iOS.
+                self.parent.highlighted = false
+                event.cancelled = true
+            end
+        elseif t.state == ENDED and not event.cancelled then
+            self.parent.highlighted = false
+            event:callback()
+        end
+    end
+    if event.cancelled and (t.state == ENDED or t.state == CANCELLED ) then
+        event.cancelled = nil -- reset cancel
+    end
+end
+
+-- tap gesture, jmv38 initial version, renamed quickTap
+function Sensor:onQuickTap(callback)
+    self:register("onQuickTap", self.quickTapUpdate, callback)
+end
+function Sensor.quickTapUpdate(event,self,t,tpos)
+    if self.touches[t.id] then -- the touch must have started on me
+        if t.state == BEGAN then
+            event.totalMove = 0
+            event.t0 = ElapsedTime
+        elseif t.state == MOVING then
+            -- integrate finger movement
+            event.totalMove = event.totalMove + abs(t.deltaX) + abs(t.deltaY)
+        elseif t.state == ENDED 
+        and event.totalMove < 10  -- the finger should not have moved too much ...
+        and (ElapsedTime-event.t0) < 0.5 then -- and delay should not be too long
+            event.touch = t
+            event.tpos = tpos
+            event:callback()
+        end
+    end
+end
+
+-- long press gesture
+function Sensor:onLongPress(callback)
+    self:register("onLongPress", self.longPressUpdate, callback)
+end
+function Sensor.longPressUpdate(event,self,t,tpos)
+    local tmin = 1
+    if self.touches[t.id] then -- the touch must have started on me
+        if t.state == BEGAN then
+            event.totalMove = 0
+            event.cancel = false
+            event.id = t.id
+            event.tween = tween.delay(tmin,function()
+                event.tween = nil
+                if event.totalMove > 10 or event.id ~= t.id then  event.cancel = true end
+                if event.cancel then return end
+                event:callback()
+            end)
+        elseif t.state == MOVING and event.id == t.id then
+            -- integrate finger movement
+            event.totalMove = event.totalMove + abs(t.deltaX) + abs(t.deltaY)
+        elseif (t.state == ENDED or t.state == CANCELLED) and event.id == t.id then
+            event.cancel = true
+            if event.tween then tween.stop(event.tween) end
+        end
+    end
+end
+
+-- swipe gesture
+function Sensor:onSwipe(callback)
+    self:register("onSwipe", self.swipeUpdate, callback)
+end
+function Sensor.swipeUpdate(event,self,t,tpos)
+    if self.touches[t.id] then -- the touch must have started on me
+        if t.state == BEGAN then
+            event.dx = 0
+            event.dy = 0
+            event.t0 = ElapsedTime
+        elseif t.state == MOVING then
+            -- track net finger movement
+            event.dx = event.dx + t.deltaX
+            event.dy = event.dy + t.deltaY
+        elseif t.state == ENDED 
+        and (ElapsedTime-event.t0) < 1 then -- delay should not be too long
+            -- and the finger should have moved enough:
+            local minMove = 70
+            if abs(event.dx) < minMove  then event.dx = 0 end
+            if abs(event.dy) < minMove  then event.dy = 0 end
+            if event.dx ~= 0 or event.dy ~= 0 then
+                event:callback() -- use event.dx and .dy to know the swipe direction
+            end
+        end
+    end
+end
+
+function Sensor:touched(t,tpos)
+    if not self.enabled then return end
+    if t.state == BEGAN and self:inbox(tpos) then
+        self.touches[t.id] = true
+        self.parent:keyboardHideCheck()
+    end
+    for i,event in ipairs(self.events) do 
+        event:update(self,t,tpos) -- only registered events are computed
+    end
+    local intercepted = self.touches[t.id]
+    if self.doNotInterceptOnce then
+        intercepted = false
+        self.doNotInterceptOnce = false
+    end
+    if t.state == ENDED or t.state == CANCELLED then
+        self.touches[t.id] = nil
+    end
+    -- return true when touched (or concerned)
+    if self.doNotInterceptTouches then intercepted = false end
+    return intercepted 
+end
+
+-- functions to get x, y, w, h in different coordinates systems
+function Sensor:xywhCORNER()
+    local p = self.parent
+    local wr, hr = p.w/2.0, p.h/2.0
+    local xr, yr = p.x + wr, p.y + hr
+    return xr,yr,wr,hr
+end
+function Sensor:xywhCENTER()
+    local p = self.parent
+    return p.x, p.y, p.w/2, p.h/2
+end
+function Sensor:xywhRADIUS()
+    local p = self.parent
+    return p.x, p.y, p.w, p.h
+end
+
+-- check if the box is touched
+function Sensor:inbox(t)
+    local x,y,w,h = self:xywh()
+    return abs(t.x-x)<(w+self.extra) and abs(t.y-y)<(h+self.extra)
+end
+
+
+
 --# Style
 Soda.themes = {
 default = { 
-fill = color(255, 200)  ,stroke = color(152, 200)  ,stroke2 = color(69, 200)  , text = color(0, 97, 255)  ,
+fill = color(255, 240)  ,stroke = color(152, 200)  ,stroke2 = color(69, 200)  , text = color(0, 97, 255)  ,
 text2 = color(0)  ,warning = color(220, 0, 0)  ,darkFill = color(40, 40)  ,darkStroke = color(70, 128)  , 
-darkStroke2 = color(20,20)  ,darkText = color(195, 223, 255)  }
+darkStroke2 = color(20,20)  ,darkText = color(195, 223, 255) , grey = color(128, 128) }
 }
 
 Soda.style = {
@@ -1375,7 +1723,8 @@ Soda.style = {
             shape = {fill = "text",},
         }
     },
-    thickStroke = {shape = { strokeWidth = 10}, text = {}},
+    title = {text = {font = "HelveticaNeue"}, shape = {}},
+    thickStroke = {shape = {fill = "fill", stroke = "stroke", strokeWidth = 10}, text = {}},
     borderless = {
         shape = {strokeWidth = 0},
         text = {fill = "fill"}},
@@ -1465,6 +1814,10 @@ Soda.style = {
             }
         }
     },
+    inactive = {
+        shape = { fill = "fill", stroke = "grey"},
+        text = {fill = "grey"}
+    }
 }
 
 function Soda.setStyle(sty)
@@ -1544,6 +1897,7 @@ function Soda:outline(t) --edge 1=left, 2 = top, 4 = right, 8 = bottom
     end
 end
   ]]
+
 
 
 --# RoundRect
@@ -1731,6 +2085,8 @@ void main()
 }
 ]]
 }
+
+
 
 --# Blur
 Soda.Gaussian = class() --a component for nice effects like shadows and blur
@@ -1942,6 +2298,7 @@ void main()
 
 
 
+
 --# FRAME
 Soda.Frame = class() --the master class for all UI elements. 
 
@@ -1974,11 +2331,13 @@ function Soda.Frame:init(t)
     
     if t.parent then
         t.parent.child[#t.parent.child+1] = self --if this has a parent, add it to the parent's list of children
+  --      self.inactive = self.inactive or self.parent.inactive
     else
         table.insert( Soda.items, self) --no parent = top-level, added to Soda.items table
     end
     
-    self.inactive = self.hidden --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
+    self.inactive = self.inactive or self.hidden  --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
+   -- if self.inactive then self:deactivate() end
 end
 
 function Soda.Frame:storeParameters(t)
@@ -2073,6 +2432,20 @@ function Soda.Frame:toggle(direction)
     end
 end
 
+function Soda.Frame:activate()
+    self.inactive = false
+    for i,v in ipairs(self.child) do
+        v:activate()
+    end
+end
+
+function Soda.Frame:deactivate()
+    self.inactive = true
+    for i,v in ipairs(self.child) do
+        v:deactivate()
+    end
+end
+
 function Soda.Frame:draw(breakPoint)
     if breakPoint and breakPoint == self then return true end
     if self.hidden then return end
@@ -2088,6 +2461,9 @@ function Soda.Frame:draw(breakPoint)
     local sty = self.style
     if self.highlighted and self.highlightable then
         sty = self.style.highlight or Soda.style.default.highlight
+    end
+    if self.inactive then
+        sty = Soda.style.inactive
     end
     pushMatrix()
     pushStyle()
@@ -2215,6 +2591,7 @@ function Soda.Frame:orientationChanged()
 end
 
 
+
 --# Button
 Soda.Button = class(Soda.Frame) --one press, activates on release
 
@@ -2223,8 +2600,16 @@ function Soda.Button:init(t)
     t.label = t.label or { x=0.5, y=0.5}
     t.highlightable = true
     Soda.Frame.init(self, t)
-end
 
+--
+    -- #################################### <JMV38 changes>
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self.sensor:onTap(function(event) self:callback() end)
+end
+function Soda.Button:touched(t, tpos)
+    if self.sensor:touched(t, tpos) then sound(SOUND_PICKUP, 14386) return true end
+end
+--[[
 function Soda.Button:touched(t, tpos)
     if t.state == BEGAN then
         if self:pointIn(tpos.x, tpos.y) then
@@ -2249,6 +2634,8 @@ function Soda.Button:touched(t, tpos)
     end
    -- return Soda.Frame.touched(self, t, tpos) --a button shouldn't have children
 end
+--]]
+    -- #################################### </JMV38 changes>
 
 ----- Some button factories:
 
@@ -2316,13 +2703,27 @@ function Soda.QueryButton(t)
     return Soda.Button(t)
 end
 
+
+
 --# Toggle
 Soda.Toggle = class(Soda.Button) --press toggles on/ off states
 
 function Soda.Toggle:init(t)
     Soda.Button.init(self,t)
     self:toggleSettings(t)
+    -- #################################### <JMV38 changes>
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self.sensor:onTap(function(event) self:toggleMe() end)
 end
+function Soda.Toggle:toggleMe()
+    self.on = not self.on
+    if self.on then
+        self:switchOn()
+    else
+        self:switchOff()
+    end
+end
+    -- #################################### </JMV38 changes>
 
 function Soda.Toggle:toggleSettings(t)
     self.on = t.on or false    
@@ -2347,6 +2748,19 @@ function Soda.Toggle:switchOff()
     self:callbackOff()
 end
 
+----- Some toggle factories:
+
+function Soda.MenuToggle(t)
+    t.title = "\u{2630}" --the "hamburger" menu icon
+    t.w, t.h = 40, 40
+    t.style = t.style or Soda.style.darkIcon
+    return Soda.Toggle(t)
+end
+
+
+    -- #################################### <JMV38 changes>
+
+--[[
 function Soda.Toggle:touched(t, tpos)   
     if t.state == BEGAN then
         if self:pointIn(tpos.x, tpos.y) then
@@ -2377,15 +2791,18 @@ function Soda.Toggle:touched(t, tpos)
     end
    -- return Soda.Frame.touched(self, t, tpos) ---switch shouldn't have children
 end
+--]]
+    -- #################################### </JMV38 changes>
 
------ Some toggle factories:
 
-function Soda.MenuToggle(t)
-    t.title = "\u{2630}" --the "hamburger" menu icon
+
+function Soda.SettingsToggle(t)
+    t.title = "\u{2699}" -- the "gear" icon
     t.w, t.h = 40, 40
     t.style = t.style or Soda.style.darkIcon
     return Soda.Toggle(t)
 end
+
 
 
 
@@ -2402,6 +2819,11 @@ function Soda.Switch:init(t)
     self.knob = Soda.Knob{parent = self, x = 0, y = 0.5, w=40, h=40, shape = Soda.ellipse, style = Soda.style.switch, shadow = true}
     
     self:toggleSettings(t)
+    
+    -- #################################### <JMV38 changes>
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self.sensor:onTap(function(event) self:toggleMe() end)
+    -- #################################### </JMV38 changes>
 end
 
 function Soda.Switch:switchOn()
@@ -2448,6 +2870,8 @@ function Soda.Knob:unHighlight()
     self.tween2 = tween.sequence(t1, t2)
 
 end
+
+
 
 --# Slider
 Soda.Slider = class(Soda.Frame)
@@ -2593,6 +3017,7 @@ function Soda.SliderKnob:touched(t, tpos)
 
 end
 
+
 --# TextEntry
 Soda.TextEntry = class(Soda.Frame)
 
@@ -2700,8 +3125,15 @@ function Soda.TextEntry:keyboard(key)
             self.start = math.max(1, self.start - 1  )    
         end
     else
-        table.insert(self.input, self.cursor, key)
-        self.cursor = self.cursor + 1
+        if key:len()==1 then
+            table.insert(self.input, self.cursor, key)
+            self.cursor = self.cursor + 1
+        else --user has pasted multiple letters
+            for letter in key:gmatch(".") do
+                table.insert(self.input, self.cursor, letter)
+                self.cursor = self.cursor + 1               
+            end
+        end
     end
    -- self.text = table.concat(self.input, "", self.start)
     
@@ -2716,9 +3148,22 @@ function Soda.TextEntry:keyboard(key)
 end
 
 
+
 --# Selector
 Soda.Selector = class(Soda.Button) --press deactivates its siblings
 
+function Soda.Selector:init(t)
+    t.shape = t.shape or Soda.RoundedRectangle
+    t.label = t.label or { x=0.5, y=0.5}
+    t.highlightable = true
+    Soda.Frame.init(self, t)
+
+--
+    -- #################################### yojimbo changes <JMV38 changes>
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self.sensor:onQuickTap(function(event) self:callback() self.parent:selectFromList(self) end)
+end
+--[[
 function Soda.Selector:touched(t, tpos)
     if t.state == BEGAN then
         if self:pointIn(tpos.x, tpos.y) then
@@ -2738,6 +3183,9 @@ function Soda.Selector:touched(t, tpos)
         end
     end
 end
+  ]]
+
+
 
 --# Segment
 Soda.Segment = class(Soda.Frame) --horizontally segmented set of selectors
@@ -2778,6 +3226,7 @@ function Soda.Segment:init(t)
 end
 
 
+
 --# Scroll
 Soda.Scroll = class(Soda.Frame) --touch methods for scrolling classes, including distinguishing scroll gesture from touching a button within the scroll area, and elastic bounce back
 
@@ -2787,9 +3236,40 @@ function Soda.Scroll:init(t)
     self.scrollY = 0
     self.touchMove = 1
     Soda.Frame.init(self,t)
+    -- #################################### <JMV38 changes>
+    self.freeScroll = false
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self.sensor:onDrag(function(event) self:verticalScroll(event.touch) end)
+    self.sensor:onQuickTap(function(event) self:childrenTouched(event.touch, event.tpos) end)
 end
 
+function Soda.Scroll:childrenTouched(t,tpos)
+  --  sound(SOUND_PICKUP, 14386)
+    local off = tpos - vec2(self:left(), self:bottom() + self.scrollY)
+    for _, v in ipairs(self.child) do --children take priority over frame for touch
+        if v:touched(t, off) then return true end
+    end
+end
+
+function Soda.Scroll:verticalScroll(t)
+    if t.state == BEGAN or t.state == MOVING then
+        self.scrollVel = t.deltaY
+        self.scrollY = self.scrollY + t.deltaY
+        self.freeScroll = false
+    else
+        self.freeScroll = true
+    end
+end
+
+function Soda.Scroll:touched(t, tpos)
+    if self.inactive then return end
+    if self.sensor:touched(t, tpos) then return true end
+    return self.alert
+end
+    
 function Soda.Scroll:updateScroll()
+    if self.freeScroll == false then return end
+    -- #################################### </JMV38 changes>
     
     local scrollH = math.max(0, self.scrollHeight -self.h)
     if self.scrollY<0 then 
@@ -2804,6 +3284,8 @@ function Soda.Scroll:updateScroll()
     end
 end
 
+    -- #################################### <JMV38 changes>
+--[[
 function Soda.Scroll:touched(t, tpos)
     if self.inactive then return end
     if self:pointIn(tpos.x, tpos.y) then
@@ -2834,6 +3316,10 @@ function Soda.Scroll:touched(t, tpos)
     end
     return self.alert
 end
+
+--]]
+
+
 
 
 --# ScrollShape
@@ -2879,7 +3365,7 @@ function Soda.ScrollShape:draw(breakPoint)
     if not breakPoint then
         --  tween.delay(0.001, function() self:drawImage() end)
         setContext(self.image)
-        background(120, 120) --40,40 self.style.shape.stroke
+        background(150, 180) --40,40 self.style.shape.stroke
         
         pushMatrix()
         resetMatrix()
@@ -2915,7 +3401,6 @@ end
 
 
 
-
 --# TextScroll
 Soda.TextScroll = class(Soda.Scroll) --smooth scrolling of large text files (ie larger than screen height)
 
@@ -2930,12 +3415,12 @@ end
 
 function Soda.TextScroll:clearString()
     self.lines = {}
-  --  self.chunk = {}
+    self.chunk = {}
     self.cursorY = 0
     self.scrollHeight = 0    
 end
 
-function Soda.TextScroll:inputString(txt)
+function Soda.TextScroll:inputString(txt, bottom)
     --split text into lines and wrap them
   --  local lines = {}
     self.chunk = {}
@@ -2943,14 +3428,19 @@ function Soda.TextScroll:inputString(txt)
     for lin in txt:gmatch("[^\n\r]+") do
       --  local prefix = ""
         while lin:len()>boxW do --wrap the lines
-            self.lines[#self.lines+1] = lin:sub(1, boxW)
-            lin = lin:sub(boxW+1) 
+            local truncate = lin:sub(1, boxW)
+            local wrap,_ = truncate:find("(%W)%w-$")
+            self.lines[#self.lines+1] = lin:sub(1, wrap)
+            lin = lin:sub(wrap+1) 
           --  prefix = "  "    
         end
         self.lines[#self.lines+1] = lin
     end
     self.scrollHeight = #self.lines * self.characterH
-    
+    if bottom then 
+        --self.scrollY = self.scrollHeight -self.h 
+        self.scrollVel = ((self.scrollHeight -self.h) - self.scrollY ) * 0.1
+    end
     --put lines back into chunks of text, 10 lines high each
     local n = #self.lines//10
     for i = 0,n do
@@ -2978,7 +3468,7 @@ function Soda.TextScroll:drawContent()
         local mm = modelMatrix()
     translate(10, self.scrollY)
 
-    clip(mm[13]+10, mm[14]+10, self.w-20, self.h-20) --nb translate doesnt apply to clip. (idea: grab transformation from current model matrix?) --self.parent:left()+self:left(),self.parent:bottom()+self:bottom()
+    clip(mm[13]+2, mm[14]+2, self.w-4, self.h-4) --nb translate doesnt apply to clip. (idea: grab transformation from current model matrix?) --self.parent:left()+self:left(),self.parent:bottom()+self:bottom()
     
     --calculate which chunks to draw
     local lineStart = math.max(1, math.ceil(self.scrollY/self.characterH))
@@ -2993,6 +3483,7 @@ function Soda.TextScroll:drawContent()
   popMatrix()
     
 end
+
 
 
 --# List
@@ -3070,8 +3561,13 @@ function Soda.DropdownList(t)
 end
 
 
+
 --# Windows
 --factories for various window types
+
+--difference between dialog and window
+--dialog is designed to be disposable. ie, each time you want one to appear, you define a new one. the ok/cancel buttons DESTROY the dialog by default.
+--windows are designed for persistent elements (ie you want the state to be remembered). ie, define once and then use show/hide/toggle. the ok/cancel buttons HIDE the window by default.
 
 function Soda.Window(t)
     t.shape = t.shape or Soda.RoundedRectangle
@@ -3085,13 +3581,13 @@ function Soda.Window(t)
     if t.ok then
         local title = "OK"
         if type(t.ok)=="string" then title = t.ok end
-        Soda.Button{parent = this, title = title, x = -10, y = 10, w = 0.3, h = 40, callback = function() this.kill = true callback() end} --style = Soda.style.transparent,blurred = t.blurred,
+        Soda.Button{parent = this, title = title, x = -10, y = 10, w = 0.3, h = 40, callback = function() this:hide() callback() end} --style = Soda.style.transparent,blurred = t.blurred,
     end
     
     if t.cancel then
         local title = "Cancel"
         if type(t.cancel)=="string" then title = t.cancel end
-        Soda.Button{parent = this, title = title, x = 10, y = 10, w = 0.3, h = 40, callback = function() this.kill = true end,  style = Soda.style.warning} 
+        Soda.Button{parent = this, title = title, x = 10, y = 10, w = 0.3, h = 40, callback = function() this:hide() end,  style = Soda.style.warning} 
     end
    -- t.shadow = true
     return this
@@ -3123,13 +3619,13 @@ function Soda.TextWindow(t)
      --   shadow = t.shadow,
      --   style = t.style,
      parent = this,
-      x = 10, y = 10, w = -10, h = -10,
+      x = 10, y = 1, w = -20, h = -2,
      --   x = t.x or 0.5, y = t.y or 20, w = t.w or 700, h = t.h or -20,
         textBody = t.textBody,
     }  
     
     this.inputString = function(_, ...) scroll:inputString(...) end
-    this.clearString = function(_, ...) scroll:clearString(...) end
+    this.clearString = function() scroll:clearString() end
     --pass the textscroll's method to the enclosing wrapper (make this a subclass, not a wrapper)
     
     if t.closeButton then
@@ -3169,13 +3665,18 @@ end
   ]]
 
 function Soda.Alert2(t)
+        t.shape = t.shape or Soda.RoundedRectangle
+    t.shapeArgs = t.shapeArgs or {}
+    t.shapeArgs.radius = 25
+    t.label = t.label or {x=0.5, y=-15}
+
     t.h = t.h or 0.25
     t.shadow = true
-    t.label = {x=0.5, y=0.6}
+ --   t.label = {x=0.5, y=0.6}
     t.alert = true  --if alert=true, underlying elements are inactive and darkened until alert is dismissed
     local callback = t.callback or null
     
-    local this = Soda.Window(t) 
+    local this = Soda.Frame(t)
     
     local proceed = Soda.Button{parent = this, title = t.ok or "Proceed", x = 0.749, y = 0, w = 0.5, h = 50, shapeArgs = {corners = 8, radius = 25}, callback = function() this.kill = true callback() end,  style = Soda.style.transparent} --style = Soda.style.transparent,blurred = t.blurred,
     
@@ -3185,13 +3686,21 @@ function Soda.Alert2(t)
 end
 
 function Soda.Alert(t)
+    t.shape = t.shape or Soda.RoundedRectangle
+    t.shapeArgs = t.shapeArgs or {}
+    t.shapeArgs.radius = 25
+    t.label = t.label or {x=0.5, y=-15}
+
     t.h = t.h or 0.25
     t.shadow = true
-    t.label = {x=0.5, y=0.6}
+ --   t.label = {x=0.5, y=0.6}
     t.alert = true  --if alert=true, underlying elements are inactive and darkened until alert is dismissed
-    local this = Soda.Window(t) 
     local callback = t.callback or null
+    
+    local this = Soda.Frame(t)
+    
     local ok = Soda.Button{parent = this, title = t.ok or "OK", x = 0, y = 0, w = 1, h = 50, shapeArgs = {corners = 1 | 8, radius = 25}, callback = function() this.kill = true callback() end,  style = Soda.style.transparent} --style = Soda.style.transparent,blurred = t.blurred,
     return this
 end
+
 

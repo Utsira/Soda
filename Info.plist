@@ -3,14 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>Author</key>
-	<string>Utsira</string>
+	<string>Unknown</string>
 	<key>Buffer Order</key>
 	<array>
 		<string>Demo</string>
 		<string>Overview</string>
 		<string>Soda</string>
 		<string>Main</string>
-		<string>Sensor</string>
+		<string>Gesture</string>
 		<string>Style</string>
 		<string>RoundRect</string>
 		<string>Blur</string>
@@ -29,10 +29,8 @@
 		<string>Windows</string>
 	</array>
 	<key>Created</key>
-	<string>2015-09-20 22:29:05 +0000</string>
+	<string>2015-10-01 16:47:33 +0000</string>
 	<key>Description</key>
 	<string>Soda v0.5</string>
-	<key>Icon</key>
-	<string>Icon.png</string>
 </dict>
 </plist>

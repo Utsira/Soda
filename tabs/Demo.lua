@@ -231,3 +231,4 @@ function demo2()
     local inkey = Soda.TextEntry{parent = box, title = "Nick-name:", x=20, y=80, w=0.7, h=40} 
 end
 
+

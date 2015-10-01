@@ -4,7 +4,7 @@ function Soda.Toggle:init(t)
     Soda.Button.init(self,t)
     self:toggleSettings(t)
     -- #################################### <JMV38 changes>
-    self.sensor = Soda.Sensor{parent=self, xywhMode = CENTER}
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
     self.sensor:onTap(function(event) self:toggleMe() end)
 end
 function Soda.Toggle:toggleMe()
@@ -94,5 +94,6 @@ function Soda.SettingsToggle(t)
     t.style = t.style or Soda.style.darkIcon
     return Soda.Toggle(t)
 end
+
 
 
