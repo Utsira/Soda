@@ -1,12 +1,31 @@
 --factories for various window types
 
+--difference between dialog and window
+--dialog is designed to be disposable. ie, each time you want one to appear, you define a new one. the ok/cancel buttons DESTROY the dialog by default.
+--windows are designed for persistent elements (ie you want the state to be remembered). ie, define once and then use show/hide/toggle. the ok/cancel buttons HIDE the window by default.
+
 function Soda.Window(t)
     t.shape = t.shape or Soda.RoundedRectangle
     t.shapeArgs = t.shapeArgs or {}
     t.shapeArgs.radius = 25
-    t.label = t.label or {x=0.5, y=-15, text = t.title}
+    t.label = t.label or {x=0.5, y=-15}
+    
+    local callback = t.callback or null
+    local this = Soda.Frame(t)
+    
+    if t.ok then
+        local title = "OK"
+        if type(t.ok)=="string" then title = t.ok end
+        Soda.Button{parent = this, title = title, x = -10, y = 10, w = 0.3, h = 40, callback = function() this:hide() callback() end} --style = Soda.style.transparent,blurred = t.blurred,
+    end
+    
+    if t.cancel then
+        local title = "Cancel"
+        if type(t.cancel)=="string" then title = t.cancel end
+        Soda.Button{parent = this, title = title, x = 10, y = 10, w = 0.3, h = 40, callback = function() this:hide() end,  style = Soda.style.warning} 
+    end
    -- t.shadow = true
-    return Soda.Frame(t)
+    return this
 end
 
 function Soda.Window2(t)
@@ -14,7 +33,7 @@ function Soda.Window2(t)
     t.shapeArgs = t.shapeArgs or {}
     t.shapeArgs.radius = 25
     t.style = t.style or Soda.style.thickStroke
-    t.label = {x=0.5, y=-10, text = t.title}
+    t.label = {x=0.5, y=-10}
  --   t.shadow = true
     return Soda.Frame(t)
 end
@@ -35,13 +54,14 @@ function Soda.TextWindow(t)
      --   shadow = t.shadow,
      --   style = t.style,
      parent = this,
-      x = 10, y = 10, w = -10, h = -10,
+      x = 10, y = 1, w = -20, h = -2,
      --   x = t.x or 0.5, y = t.y or 20, w = t.w or 700, h = t.h or -20,
         textBody = t.textBody,
     }  
     
     this.inputString = function(_, ...) scroll:inputString(...) end
-    --pass the textscroll's method to the enclosing wrapper
+    this.clearString = function() scroll:clearString() end
+    --pass the textscroll's method to the enclosing wrapper (make this a subclass, not a wrapper)
     
     if t.closeButton then
         Soda.CloseButton{
@@ -80,13 +100,18 @@ end
   ]]
 
 function Soda.Alert2(t)
+        t.shape = t.shape or Soda.RoundedRectangle
+    t.shapeArgs = t.shapeArgs or {}
+    t.shapeArgs.radius = 25
+    t.label = t.label or {x=0.5, y=-15}
+
     t.h = t.h or 0.25
     t.shadow = true
-    t.label = {x=0.5, y=0.6, text = t.title}
+ --   t.label = {x=0.5, y=0.6}
     t.alert = true  --if alert=true, underlying elements are inactive and darkened until alert is dismissed
     local callback = t.callback or null
     
-    local this = Soda.Window(t) 
+    local this = Soda.Frame(t)
     
     local proceed = Soda.Button{parent = this, title = t.ok or "Proceed", x = 0.749, y = 0, w = 0.5, h = 50, shapeArgs = {corners = 8, radius = 25}, callback = function() this.kill = true callback() end,  style = Soda.style.transparent} --style = Soda.style.transparent,blurred = t.blurred,
     
@@ -96,13 +121,20 @@ function Soda.Alert2(t)
 end
 
 function Soda.Alert(t)
+    t.shape = t.shape or Soda.RoundedRectangle
+    t.shapeArgs = t.shapeArgs or {}
+    t.shapeArgs.radius = 25
+    t.label = t.label or {x=0.5, y=-15}
+
     t.h = t.h or 0.25
     t.shadow = true
-    t.label = {x=0.5, y=0.6, text = t.title}
+ --   t.label = {x=0.5, y=0.6}
     t.alert = true  --if alert=true, underlying elements are inactive and darkened until alert is dismissed
-    local this = Soda.Window(t) 
-    local ok = Soda.Button{parent = this, title = t.ok or "OK", x = 0, y = 0, w = 1, h = 50, shapeArgs = {corners = 1 | 8, radius = 25}, callback = function() this.kill = true end,  style = Soda.style.transparent} --style = Soda.style.transparent,blurred = t.blurred,
+    local callback = t.callback or null
+    
+    local this = Soda.Frame(t)
+    
+    local ok = Soda.Button{parent = this, title = t.ok or "OK", x = 0, y = 0, w = 1, h = 50, shapeArgs = {corners = 1 | 8, radius = 25}, callback = function() this.kill = true callback() end,  style = Soda.style.transparent} --style = Soda.style.transparent,blurred = t.blurred,
     return this
 end
-
 

@@ -1,8 +1,8 @@
 Soda.themes = {
 default = { 
-fill = color(255, 200)  ,stroke = color(152, 200)  ,stroke2 = color(69, 200)  , text = color(0, 97, 255)  ,
+fill = color(255, 240)  ,stroke = color(152, 200)  ,stroke2 = color(69, 200)  , text = color(0, 97, 255)  ,
 text2 = color(0)  ,warning = color(220, 0, 0)  ,darkFill = color(40, 40)  ,darkStroke = color(70, 128)  , 
-darkStroke2 = color(20,20)  ,darkText = color(195, 223, 255)  }
+darkStroke2 = color(20,20)  ,darkText = color(195, 223, 255) , grey = color(128, 128) }
 }
 
 Soda.style = {
@@ -19,24 +19,25 @@ Soda.style = {
             shape = {fill = "text",},
         }
     },
-    thickStroke = {shape = { strokeWidth = 10}, text = {}},
+    title = {text = {font = "HelveticaNeue"}, shape = {}},
+    thickStroke = {shape = {fill = "fill", stroke = "stroke", strokeWidth = 10}, text = {}},
     borderless = {
         shape = {strokeWidth = 0},
         text = {fill = "fill"}},
         highlight = {shape = {}, text = {}},
     transparent = {
         shape = {noFill = true, --color(0,0),
-                }, --stroke = "stroke2"
-        text = { }, --fill = "darkText"
+                stroke = "darkStroke"}, --stroke = "stroke2"
+        text = {fill = "fill"}, --fill = "darkText"
         highlight = { 
         shape = {fill = "darkText"},
         text = {} --fill = "stroke2"
         }
     },
     translucent = {
-        shape = {fill = color(255, 40),
+        shape = {fill = "darkFill", --color(255, 40),
                 stroke = "stroke2"},
-        text = {}, -- fill = "darkText"
+        text = {fill = "fill"}, -- fill = "darkText"
         highlight = { 
         shape = {},--fill = "darkText"
         text = {}--fill = "stroke2"
@@ -84,7 +85,7 @@ Soda.style = {
     },
     shadow = {shape = { fill = color(0, 90), stroke = color(0, 90)}}, --a special style used to produce shadows 20, 100
     textEntry = {fill = color(0), font = "Inconsolata", fontSize = 24}, --a special style for user input in text entry fields. Must be a fixed-width (monotype) font
-    textBox = {fill = color(29, 61, 31, 255), font = "Inconsolata", fontSize = 16},
+    textBox = {font = "Inconsolata", fontSize = 16}, --fill = color(29, 61, 31, 255), 
     darkIcon = {
         shape = {noFill = true, strokeWidth = 1, stroke = "fill"}, 
         text = {fontSize = 26, 
@@ -109,6 +110,10 @@ Soda.style = {
             }
         }
     },
+    inactive = {
+        shape = { fill = "fill", stroke = "grey"},
+        text = {fill = "grey"}
+    }
 }
 
 function Soda.setStyle(sty)
@@ -116,7 +121,7 @@ function Soda.setStyle(sty)
         if type(v)=="string" and Soda.theme[v] then
             Soda[k](Soda.theme[v])
         else
-        Soda[k](v)
+            Soda[k](v)
         end
     end
 end
@@ -158,10 +163,17 @@ function Soda.rect(t)
     rect(t.x, t.y, t.w, t.h)
 end
 
+function Soda.line(t)
+    local hw, hh = t.w * 0.5, t.h * 0.5
+    line(t.x - hw, t.y - hh, t.x + hw, t.y + hh)
+end
+
 function Soda.ellipse(t)
     ellipse(t.x, t.y, t.w)
  --   ellipse(0, 0, self.w or self.parent.w)
 end
+
+--Soda.setup()
 
 --[[
 LEFTEDGE, TOPEDGE, RIGHTEDGE, BOTTOMEDGE = 1,2,4,8
@@ -181,29 +193,4 @@ function Soda:outline(t) --edge 1=left, 2 = top, 4 = right, 8 = bottom
     end
 end
   ]]
-
-function Soda.Assets()
-    Soda.items = {} --holds all top-level ui elements (i.e. anything without a parent)
-    
-    Soda.darken.assets() --used to darken underlying interface elements when alert flag is set.
-    
-    Soda.UIoffset = 0 --used to scroll up screen when keyboard appears
-end
-
-Soda.darken = {}
-
-function Soda.darken.assets()
-    Soda.darken.m = mesh()
-    local s = math.max(WIDTH, HEIGHT)
-    Soda.darken.m:addRect(s/2, s/2, s, s)
-    Soda.darken.m:setColors(color(0,128))
-end
-
-function Soda.darken.draw()
-    pushMatrix()
-    resetMatrix()
-    Soda.darken.m:draw()
-    popMatrix()
-end
-
 

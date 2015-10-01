@@ -1,20 +1,15 @@
 
 --# Welcome
 function setupUI()
-    Soda.Window{
-    y = 0.75,
-    title = 
-[[Hello!
-
-Welcome to the Soda Tutorial
-v 1.5
-
-Select steps of the tutorial
-from the "Tutorial Step"
-drop down menu button
+    overview{content = [[This is a tutorial that introduces the basic features of Soda.
+    This tutorial will gradually build an interface like this one, 
+    adding elements one at a time. You will be able to navigate the 
+    tutorial, and browse the extensively commented source code 
+    for each step in the window in the bottom half of the screen.
     
-    ]]
-    }
+    When you're ready, press "Begin Tutorial".]], 
+    ok = "Begin Tutorial",
+    callback = function() stepSelector.list:selectFromList(stepSelector.list.child[2]) end}
 end
 
 --# HelloWorld
@@ -23,7 +18,7 @@ function setupUI()
     --in Lua, if a function's sole argument is a table or a string,
     --you can omit the enclosing () and just use "" or, in this case, {}
     
-    Soda.Frame{  --Soda.Frame is a basic holder for other elements.
+    Soda.Window{  --Soda.Window is a basic window, with rounded corners and a title.
         title = "Hello World", --title at the top of the window
         --when coordinates are between 0 and 1, they represent proportions of the parent
         --and the drawing mode is set to CENTER 
@@ -32,22 +27,10 @@ function setupUI()
         y=-0.001, --And as we can't write -0, we fix it to the top edge with -0.001
         w=0.7, --Its dimensions cover 70% of the screen's width
         h=0.51, --and just over half of its height
-        shape = Soda.rect --give the frame a visible shape
     }
     --the advantage of making all coordinates relative to a parent (in this case the screen)
     --is that elements automatically resize when device orientation changes.
     --try flipping your device now.
-end
-
---# AWindow
-function setupUI()
-    --shapes and presets
-    --Soda.Window is a basic window with a title. We're not going to set a shape argument, because Window automatically selects the Soda.roundedRectangle shape. We can override this if we want.
-    Soda.Window{ 
-        title = "Hello World", 
-        x=0.5, y=-0.001, w=0.7, h=0.51, 
-
-    }
 end
 
 --# SpecialEffects
@@ -59,40 +42,13 @@ function setupUI()
 
         blurred = true, --add a blurred effect
         --note that because the background is slightly translucent, we can see the underlying area through the blur, creating an interesting glow effect
-        shadow = true, --add a drop shadow
-
-    }
-end
---# GetStyling
-function setupUI()
-    --lets style our panel
-    Soda.Window{ 
-        title = "Hello World", 
-        x=0.5, y=-0.001, w=0.7, h=0.51, 
     
-        blurred = true, 
-        shadow = true, 
+        shadow = true, --add a drop shadow
+    
         --the Style tab of the Soda library contains the Soda.style table 
         -- this defines what colours, fonts, line widths etc the buttons are drawn with.
         --if you don't supply a "style" parameter, the buttons are drawn with Soda.style.default
         style = Soda.style.darkBlurred, --this is a style designed to complement the blurred effect
-      
-    }
-end
---# ThrowSomeShapes
-function setupUI()
-    --throw some shapes
-    Soda.Window{ 
-        title = "Hello World", 
-        x=0.5, y=-0.001, w=0.7, h=0.51, 
-    
-        blurred = true, 
-        shadow = true, 
-
-        style = Soda.style.darkBlurred, 
-        --you can pass a table of arguments to the shape function, such as choosing which corners will be rounded
-        --Corners are numbered 1,2,4,8 starting in bottom-left and proceeding clockwise. Defaults to 15 (all corners). Use bitwise operators to set. eg to only round the bottom corners set this to `1 | 8` (1 or 8). To round all but the top-right corner, use `~4` (not 4)
-        shapeArgs = { corners = 1 | 8} --only round bottom corners
     }
 end
 --# Parenthood
@@ -106,7 +62,6 @@ function setupUI()
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
         blurred = true, shadow = true, style = Soda.style.darkBlurred, 
-        shapeArgs = { corners = 1 | 8} 
     }
     
     --lets put a button in it. It's going to be one of the pre-defined buttons, a question mark.
@@ -123,23 +78,31 @@ function setupUI()
     --oh, and try pressing your button!
 end
 --# Callbacks
-function setupUI()
     --lets make our button do something
+
+    --to do this, we use the callback parameter, and assign it a function.
+    --A question mark button is something you press when you want help, so we're going to make it open
+    --the help file for Soda using openURL. 
+
+    --lets define our openHelp function:
+
+function openHelp()
+    openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) 
+end
+    
+function setupUI()
+
     local panel = Soda.Window{ 
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
         blurred = true, shadow = true, style = Soda.style.darkBlurred, 
-        shapeArgs = { corners = 1 | 8} 
     }
     
-    --to do this, we use the callback parameter, and assign it a closure (a function within a function).
-    --A question mark button is something you press when you want help, so we're going to make it open
-    --the help file for Soda using openURL. 
-    
+    -- now we make the callback attribute point to the openHelp function (nb the openHelp function can be defined anywhere in our code, it doesn't have to be above the button definition, or in the same tab)
     Soda.QueryButton{
         parent = panel, 
         x = 10, y = -10,
-        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
+        callback = openHelp --note that when we point to a function like this, we just use the function name. Do not add () or the function will be triggered when we define the button, instead of when the button is pressed
     }
     --You can use this button if you want to check anything in the documentation. Check that it works now.
 end
@@ -150,18 +113,17 @@ function setupUI()
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
         blurred = true, shadow = true, style = Soda.style.darkBlurred, 
-        shapeArgs = { corners = 1 | 8} 
     }
     
     Soda.QueryButton{
         parent = panel, 
         x = 10, y = -10,
-        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
+        callback = openHelp --nb this still works, even though openHelp is in another tab
     }
     
     --this panel will eventually allow for the user to enter details about themselves, a user account. 
     --I'm calling it accountPanel.
-    local accountPanel = Soda.Frame{
+    local accountPanel = Soda.Frame{ --Frame is a basic holder for other elements
         parent = panel,
         x = 10, y = 10, w = -10, h = -60, -- a 10 pixel border, except at the top (to give room for the Window title and query button)
         shape = Soda.RoundedRectangle, style = Soda.style.translucent, --omit shape to make the frame invisible
@@ -176,13 +138,12 @@ function setupUI()
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
         blurred = true, shadow = true, style = Soda.style.darkBlurred, 
-        shapeArgs = { corners = 1 | 8} 
     }
     
     Soda.QueryButton{
         parent = panel, 
         x = 10, y = -10,
-        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
+        callback = openHelp
     }
     
     local accountPanel = Soda.Frame{
@@ -208,13 +169,12 @@ function setupUI()
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
         blurred = true, shadow = true, style = Soda.style.darkBlurred, 
-        shapeArgs = { corners = 1 | 8} 
     }
     
     Soda.QueryButton{
         parent = panel, 
         x = 10, y = -10,
-        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
+        callback = openHelp
     }
     
     local accountPanel = Soda.Frame{
@@ -225,6 +185,10 @@ function setupUI()
     }
     
     --just as we did with the query button, we're going to add a callback to text entry.
+    --this time however, instead of pointing to a predefined function, 
+    --the callback itself will be a function. Nesting a function inside another block is called
+    --a closure. 
+    
     --text entry callbacks are triggered when the user hits return or the close keyboard button.
     --our callback is going to produce an alert dialog acknowledging the users input.
     --callbacks always pass the sender (ie this particular text entry box, its "self") as the first argument.
@@ -251,13 +215,12 @@ function setupUI()
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
         blurred = true, shadow = true, style = Soda.style.darkBlurred, 
-        shapeArgs = { corners = 1 | 8} 
     }
     
     Soda.QueryButton{
         parent = panel, 
         x = 10, y = -10,
-        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
+        callback = openHelp
     }
     
     --account panel
@@ -291,7 +254,8 @@ function setupUI()
         --so, y = -60 (the top of the textbox) -40 (height of text box) -10(gap between boxes) = -110
         x = 10, y = -110, w = -10, h=40, 
         title = "Favourite fruit",
-        --like the segmented button, we pass "text" an array of strings for the various options
+    
+        --we pass "text" an array of strings for each item in the list
         text = {"Apples", "Oranges", "Pears", "Bananas", "Strawberries", "Jack Fruit", "Dorian", "Paw paw"},
         
         --list callbacks return 3 values: self, the selected item, and the label text of the selected item
@@ -311,13 +275,12 @@ function setupUI()
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
         blurred = true, shadow = true, style = Soda.style.darkBlurred, 
-        shapeArgs = { corners = 1 | 8} 
     }
     
     Soda.QueryButton{
         parent = panel, 
         x = 10, y = -10,
-        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
+        callback = openHelp
     }
     
     --account panel
@@ -376,6 +339,13 @@ function setupUI()
                     userName:inputString("") --blank the username
                     faveFruit:clearSelection() --and fave fruit
                 end
+                --this is one of the most powerful aspects of callbacks:
+                --they store and remember the variables of the enclosing function (called "upvalues")
+                --even the local variables, and can continue to access them after this function has ended.
+                --Here userName and faveFruit are setupUI's local variables. Once setupUI has finished
+                --executing, there's no way to access them. This stops our project's namespace geting too
+                --cluttered, and stops us accidentally overwriting or reasigning them.
+                --But the reset button can continue to access them, because it stores setupUI's local variables.
             }
         end
     }
@@ -389,7 +359,6 @@ function setupUI()
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
         blurred = true, shadow = true, style = Soda.style.darkBlurred, 
-        shapeArgs = { corners = 1 | 8} 
     }
     
     Soda.MenuToggle{ --menu toggle is a preset displaying the "hamburger" menu icon
@@ -414,7 +383,7 @@ function setupUI()
     Soda.QueryButton{
         parent = panel, 
         x = 10, y = -10,
-        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
+        callback = openHelp
     }
     
     --account panel
@@ -481,13 +450,12 @@ function setupUI()
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
         blurred = true, shadow = true, style = Soda.style.darkBlurred, 
-        shapeArgs = { corners = 1 | 8} 
     }
     
     Soda.QueryButton{
         parent = panel, 
         x = 10, y = -10,
-        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
+        callback = openHelp
     }
     
     local accountPanel = Soda.Frame{
@@ -510,9 +478,9 @@ function setupUI()
     Soda.Segment{
         parent = panel,
         x = 20, y = -70, w = -20, h = 40,
-        text = {"Account details", "Settings"}, --the labels for each panel
-        panels = {accountPanel, settingsPanel}, --the panels we just defined
-        defaultNo = 2 --display the second panel by default
+        text = {"Account details", "Settings"}, --like dropdownList, we pass "text" an array of strings. It contains the labels for each button segment
+        panels = {accountPanel, settingsPanel}, --the panels we just defined, whch correspond to the labels in "text"
+        defaultNo = 2 --display the second panel ("Settings") by default 
     }
     
     --our text entry box from the previous step:
@@ -570,7 +538,6 @@ function setupUI()
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
         blurred = true, shadow = true, style = Soda.style.darkBlurred, 
-        shapeArgs = { corners = 1 | 8} 
     }
     
     Soda.MenuToggle{ 
@@ -583,7 +550,7 @@ function setupUI()
     Soda.QueryButton{
         parent = panel, 
         x = 10, y = -10,
-        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
+        callback = openHelp
     }
     
     --2 panels plus the segmented selector
@@ -679,17 +646,140 @@ function setupUI()
         end
     }
 end
+--# ThrowSomeShapes
+function setupUI()
+    --Finally, let's tweak the shape of our main window slightly. We're going to set the shapeArgs attribute so that only the bottom corners of the window are rounded
+    local panel = Soda.Window{ 
+        title = "Tutorial", 
+        x=0.5, y=-0.001, w=0.7, h=0.51, 
+    
+        blurred = true, 
+        shadow = true, 
+
+        style = Soda.style.darkBlurred, 
+        --you can pass a table of arguments to the shape function, such as choosing which corners will be rounded
+        --Corners are numbered 1,2,4,8 starting in bottom-left and proceeding clockwise. Defaults to 15 (all corners). Use bitwise operators to set. eg to only round the bottom corners set this to `1 | 8` (1 or 8). To round all but the top-right corner, use `~4` (not 4)
+        shapeArgs = { corners = 1 | 8} --only round bottom corners
+    }
+    
+    Soda.MenuToggle{ 
+        x = -10, y = -10, 
+        callback = function() panel:show(LEFT) end, 
+        callbackOff = function() panel:hide(LEFT) end,
+        on = true
+    }
+    
+    Soda.QueryButton{
+        parent = panel, 
+        x = 10, y = -10,
+        callback = openHelp
+    }
+    
+    --2 panels plus the segmented selector
+    
+    local accountPanel = Soda.Frame{
+        parent = panel,
+        x = 10, y = 10, w = -10, h = -60, 
+        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shapeArgs = {radius = 16} 
+    }
+    
+    --text scroll
+    local backStory = Soda.TextScroll{
+        parent = panel,
+        x = 10, y = 10, w = -10, h = -60, 
+        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shapeArgs = {radius = 16},
+        textBody = 
+[[
+   
+     
+    
+    OK, I'll talk! In third grade, I cheated on my history exam. 
+                            
+    In fourth grade, I stole my uncle Max's toupee and I glued it on my face when I was Moses in my Hebrew School play. 
+
+    
+    In fifth grade, I knocked my sister Edie down the stairs and I blamed it on the dog... 
+    
+    when my mom sent me to the summer camp for fat kids and then they served lunch I got nuts and I pigged out and they kicked me out! 
+    
+    
+            [much later]
+    
+    ...but the worst thing I ever done: 
+    
+    I mixed up all this fake puke at home and then I went to this movie theater, hid the puke in my jacket, climbed up to the balcony and then, t-t-then, I made a noise like this: 
+    
+    hua-hua-hua-huaaaaaaa - 
+    
+    and then I dumped it over the side, all over the people in the audience. 
+    
+    And then, this was horrible, all the people started getting sick and throwing up all over each other. And I never felt so bad in my entire life!]]
+    }
+    
+    Soda.Segment{
+        parent = panel,
+        x = 20, y = -70, w = -20, h = 40,
+        text = {"Account details", "Life story"}, 
+        panels = {accountPanel, backStory}, 
+        defaultNo = 2
+    }
+    
+    --text entry:
+    local userName = Soda.TextEntry{
+        parent = accountPanel, 
+        x = 10, y = -60, w = -10, h = 40,
+        title = "User name:",
+        default = "Chunk", 
+        callback = function(self, inkey) 
+            Soda.Alert{ 
+                title = "User name registered as \n"..inkey,
+                ok = "Got it", 
+                style = Soda.style.darkBlurred, blurred = true 
+            }
+        end
+    }
+    
+    --dropdown list:
+    local faveFruit = Soda.DropdownList{
+        parent = accountPanel,
+        x = 10, y = -110, w = -10, h=40, 
+        title = "Favourite fruit",
+        text = {"Apples", "Oranges", "Pears", "Bananas", "Strawberries", "Jack Fruit", "Dorian", "Paw paw", "Babe Ruth"},
+        defaultNo = 9
+    }
+    
+    --reset button:
+    Soda.Button{ 
+        parent = accountPanel,
+        x = -10, y = 10, h = 40, 
+        title = "Truffle Shuffle",
+        style = Soda.style.warning,
+    
+        callback = function()      
+            Soda.Alert2{
+                title = "This will reset the values\nentered in the account panel",
+                callback = function()
+                    userName:inputString("") 
+                    faveFruit:clearSelection() 
+                end
+            }     
+        end
+    }
+end
+
 --# AndFinally
 function setupUI()
     Soda.Window{
     y = 0.75,
     title = [[ 
      
-In the last two steps of this
-tutorial you will see the code 
-that is running the entire
-tutorial interface.
-    
+In the final step of this
+tutorial you will see the Main 
+tab which has the hooks needed
+to connect Soda to your own
+projects
     ]]
     }
 end
@@ -702,28 +792,34 @@ displayMode(FULLSCREEN)
 
 function setup()
     Soda.setup()
+    --do your setting up here:
     tutorial()
 end
 
 function draw()
     --do your updating here
+    
+    --end of updating
+    
     pushMatrix()
-    Soda.camera()
+    Soda.camera() --this scrolls the screen to stop the keyboard covering textEntry fields
     Soda.drawing()
     popMatrix()
 end
 
-function Soda.drawing(breakPoint) 
+function Soda.drawing(breakPoint) --the breakPoint variable stops a blurred window itself from being incorporated into the blurred effect: it ensure only things under the blurred area get drawn.
+    
     --in order for gaussian blur to work, do all your drawing here
     background(40, 40, 50)
-    sprite("Cargo Bot:Game Area", WIDTH*0.5, HEIGHT*0.5, WIDTH, HEIGHT)
+    sprite("Cargo Bot:Game Area", WIDTH*0.5, HEIGHT*0.5, WIDTH, HEIGHT)   
     pushStyle()
     Soda.setStyle(Soda.style.default.text)
     fontSize(40)
     text("Output\narea", WIDTH * 0.5, HEIGHT * 0.75)
     popStyle()
+    --end of your drawing
     
-    Soda.draw(breakPoint)
+    Soda.draw(breakPoint) --pass the breakPoint variable
 end
 
 --user inputs:
@@ -758,10 +854,11 @@ orientationChanged routines.
     }
 end
 
---# Tutorial
+--# TutorialInterface
 function tutorial()
     --  parameter.watch("#Soda.items")
     local steps = listProjectTabs() --get the steps of the tutorial
+    table.remove(steps) --remove this tab
     local bookmark = readLocalData("bookmark", 1) --remember last tutorial step looked at
     --grab the names of each tutorial step
     local stepNames = {}
@@ -769,7 +866,7 @@ function tutorial()
         stepNames[i] = v:gsub("(%w)(%u)", "%1 %2") --insert spaces into tabnames 
     end
     
-    local codeWindow = Soda.TextWindow{ --the window that you're looking at RIGHT NOW. Yes, you have swallowed the red pill. Or is it the blue pill? I always get those two confused.
+    local codeWindow = Soda.TextWindow{ 
         shapeArgs = {corners = 2 | 4, radius = 25}, --just round the top corners
         style = Soda.style.default,
         x = 0, y = 0, w = 1, h = 0.5,
@@ -777,7 +874,7 @@ function tutorial()
         textBody = "",
     }
     
-    Soda.DropdownList{
+    stepSelector = Soda.DropdownList{
         parent = codeWindow,
         shapeArgs = {radius = 20},
         x = 0.5, y = -5, w = 400, h = 40,
@@ -788,6 +885,7 @@ function tutorial()
         callback = function(self, obj)  
             saveLocalData("bookmark", obj.idNo) --save user's place in tutorial
             local code = readProjectTab(steps[obj.idNo])
+            codeWindow:clearString()
             codeWindow:inputString(code)   --place new code in code window  
             while #Soda.items>1 do --remove all Soda interface elements except for the code window
                 table.remove(Soda.items)
@@ -797,21 +895,5 @@ function tutorial()
                 setupUI() --run the code
             end) 
         end
-    }
-end
-
-function setupUI()
-    Soda.Window{
-    y = 0.75,
-    title = 
-[[Finally, the interface that runs
-this tutorial. Incredible that the
-entire UI for this tutorial takes up
-less than 40 lines of code! 
-I hope this tutorial has shown you
-some of the power of Soda, and I 
-look forward to seeing your Soda
-interfaces on Codea Talk
-    ]]
     }
 end

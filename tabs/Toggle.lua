@@ -88,3 +88,11 @@ end
 
 
 
+function Soda.SettingsToggle(t)
+    t.title = "\u{2699}" -- the "gear" icon
+    t.w, t.h = 40, 40
+    t.style = t.style or Soda.style.darkIcon
+    return Soda.Toggle(t)
+end
+
+

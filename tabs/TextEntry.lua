@@ -2,7 +2,7 @@ Soda.TextEntry = class(Soda.Frame)
 
 function Soda.TextEntry:init(t)
     t.shape = Soda.RoundedRectangle
-    t.label = {text = t.title, x=10, y=0.5} 
+    t.label = {x=10, y=0.5} 
     Soda.Frame.init(self, t)
     
     self.offset = vec2(self.label.w + 15, (self.h-self.label.h)*0.5) --bottom corner of text-entry (because left-aligned text needs to be drawn in CORNER mode)
@@ -104,8 +104,15 @@ function Soda.TextEntry:keyboard(key)
             self.start = math.max(1, self.start - 1  )    
         end
     else
-        table.insert(self.input, self.cursor, key)
-        self.cursor = self.cursor + 1
+        if key:len()==1 then
+            table.insert(self.input, self.cursor, key)
+            self.cursor = self.cursor + 1
+        else --user has pasted multiple letters
+            for letter in key:gmatch(".") do
+                table.insert(self.input, self.cursor, letter)
+                self.cursor = self.cursor + 1               
+            end
+        end
     end
    -- self.text = table.concat(self.input, "", self.start)
     
@@ -118,5 +125,4 @@ function Soda.TextEntry:keyboard(key)
    -- self:getCursorPos()
     self.cursorPos = ((self.cursor - self.start)) * self.characterW
 end
-
 

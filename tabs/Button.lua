@@ -2,7 +2,7 @@ Soda.Button = class(Soda.Frame) --one press, activates on release
 
 function Soda.Button:init(t)
     t.shape = t.shape or Soda.RoundedRectangle
-    t.label = t.label or { x=0.5, y=0.5, text = t.title}
+    t.label = t.label or { x=0.5, y=0.5}
     t.highlightable = true
     Soda.Frame.init(self, t)
 
@@ -53,9 +53,18 @@ end
 
 function Soda.BackButton(t)
     t.title = "\u{ff1c}" -- full-width less-than symbol. alt \u{276e}
+    --[[
     if  t.direction == RIGHT then
         t.title = "\u{ff1e}" --greater-than, in case you need a right-facing back button. alt \u{276f}
     end
+      ]]
+    t.w, t.h = 40, 40
+    t.style = t.style or Soda.style.darkIcon
+    return Soda.Button(t)
+end
+
+function Soda.ForwardButton(t)
+    t.title = "\u{ff1e}" --greater-than, in case you need a right-facing back button. alt \u{276f}
     t.w, t.h = 40, 40
     t.style = t.style or Soda.style.darkIcon
     return Soda.Button(t)

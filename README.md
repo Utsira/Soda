@@ -20,11 +20,12 @@ Forum Discussion: http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerfu
     1. [Toggle](#sodatoggle)
     1. [Segment](#sodasegment)
     1. [List](#sodalist)
-    1. [Text entry](#sodatextentry)
-    1. [Text scroll](#sodatextscroll-sodatextwindow)
-    1. [Alerts and dialogs](#various-alerts-and-dialogs)
-  1. [General parameters](#general-parameters)
-  1. [Methods](#methods)
+    2. [Slider](#sodaslider)
+    3. [Text entry](#sodatextentry)
+    4. [Text scroll](#sodatextscroll-sodatextwindow)
+    5. [Alerts and dialogs](#various-alerts-and-dialogs)
+  6. [Attributes](#attributes)
+  7. [Methods](#methods)
 
 1. [Known issues](#known-issues)
 
@@ -62,12 +63,26 @@ Forum Discussion: http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerfu
 
 ## Version Notes
 
+### v0.5
+
+* NEW `Soda.Sliders` - Sliders can be any length (default to 300 pixels), can be integer or floating point, can have an optional set of "snap points" that the value will snap to, support tapping either side of the handle for fine +/- adjustments, and at slow drag speeds have a cubic relation to touch allowing for up to 1/20,000 accuracy.
+
+* New, more comprehensive overview of all the elements supported by Soda when you run the program.
+
+* In `TextScroll` and `TextWindow`, method `inputString(text)` now appends `text` to whatever is already in the window, instead of clearing the window. New method `clearString()` clears the window.
+
+* Panel switching functionality of `Soda.Segment` now also available in `Soda.List` via `panels` parameter
+
+* `Soda.Window` can now have optional automatic ok and cancel buttons by setting ok and cancel attributes.
+
+![Sliders](https://puffinturtle.files.wordpress.com/2015/09/image3.png) Sliders
+
 ### v0.4
 
 *  Vertical list selectors now less aggressive at rejecting scroll gestures
 * Lists now have :clearSelection() method
 * Lists now have an `enumerate` flag. Set this to true to automatically number the items in the list
-* To populate a TextScroll or TextWindow with text, constructor argument is now `textBody`, instead of `text`
+* To populate a TextScroll or TextWindow with text, constructor attribute is now `textBody`, instead of `text`
 * `Soda.Alert2` - 2-Button proceed/ cancel alerts have been fixed 
 * Fixed a bug in the appearance of buttons in alerts
 * Close button is now a proper X
@@ -165,7 +180,7 @@ NB for performance reasons, currently the blurred panels do not have live updati
 
 ### Interface elements
 
-Add interface elements to your code with constructors consisting of a Soda element and a table of arguments. All Soda elements take a single table of parameters as an argument. In Lua, if a function takes a single table or a single string as its argument, then the `()` brackets that ususally enclose the arguments can be omitted. So, `Soda.Button{title = "Press Me"}` is the same as `Soda.Button({title = "Press Me"})`, but with less typing. Keys can be supplied in any order, and very few are compulsory (Soda will supply defaults for certain missing values).
+Add interface elements to your code with constructors consisting of a Soda element and a table of arguments. All Soda elements take a single table of parameters as an argument. In Lua, if a function takes a single table or a single string as its argument, then the `()` brackets that usually enclose the arguments can be omitted. So, `Soda.Button{title = "Press Me"}` is the same as `Soda.Button({title = "Press Me"})`, but with less typing. Keys can be supplied in any order, and very few are compulsory (Soda will supply defaults for certain missing values).
 
 Soda will automatically record each UI element you create. Therefore Soda constructors are "fire and forget". Soda does this in order to ensure the correct order of drawing and touching (so that, for example, you cannot touch a button hidden beneath a pop-up dialog window). You will ony need to define local handles for UI elements if you need to refer to that element, usually in either a callback, or to make that element the parent of others (see /tabs/Demo for examples).
 
@@ -187,7 +202,7 @@ One press to activate a callback. Has a variety of built-in variants for frequen
 
 #### `Soda.Toggle`
 
-Toggles on and off. Additional arguments:
+Toggles on and off. Additional attributes:
 
   + `on` - flag. `Soda.Toggle` is off by default. Set this to true to override this behaviour.
   + `callback`, `callbackOff` - in addition to `callback` parameter (see General Parameters below), fired when switch turns on, there is a `callbackOff`, triggered when the switch is turned off.
@@ -204,7 +219,7 @@ Toggles on and off. Additional arguments:
 
 #### `Soda.Segment`
 
-Horizontally segmented buttons that activate different frames/ panels. Define the panels first, before defining the segment button that will switch between them. Additional arguments:
+Horizontally segmented buttons that activate different frames/ panels. Define the panels first, before defining the segment button that will switch between them. Additional attributes:
 
   + `text` - array of strings. Describes how each segment will be labelled. eg: `text = {"Buttons", "Switches"}`
   + `panels` - array of UI element identifiers. Identifies which panels the segmented button will flick between, corresponds with `text` array. eg: `panels = {buttonPanel, switchPanel}` where `buttonPanel`, `switchPanel` are handles (local variables are fine here) for prior defined Soda elements.
@@ -212,10 +227,11 @@ Horizontally segmented buttons that activate different frames/ panels. Define th
 
 #### `Soda.List`
 
-A vertically scrolling list of elements that the user can select from. Has elastic snap-back when user scrolls past edge of list. Additional arguments:
+A vertically scrolling list of elements that the user can select from. Has elastic snap-back when user scrolls past edge of list. Additional attributes:
 
   + `text` - array of strings. One string for each item in the list. eg `text = {"apples", "oranges", "bananas"}`
   + `enumerate` - flag. Set to true and the list items will automatically be numbered, eg `1) apples 2) oranges 3) bananas`
+  + `panels` - array of UI element identifiers. Same as in `Soda.Segment`, identifies which panels the list will flick between, corresponds with `text` array. eg: `panels = {applesPanel, orangesPanel}` where `applesPanel`, `orangesPanel` are handles (local variables are fine here) for prior defined Soda elements.
   + `defaultNo` - integer. Similar to `Soda.Segment`, if you want an item in the list to be selected by default, set this to the number of the item in the `text` array. eg `defaultNo = 2` to default to `"oranges"` from the above list. Omit this for no selection.
   + `callback` - list callbacks return 3 variables, eg: `callback = function(self, selected, txt)`
     1. as always, the sender (the list object itself).
@@ -232,9 +248,20 @@ Variant:
   + `title` - the title of the button, will be prepended to the user's list selection. A downward-facing triangle is automatically prepended to the title to indicate that a dropdown menu is available
   + `defaultNo` - the list item selected by default, same as `Soda.List`. If you omit this, there will be no selection by default, and the text "Select from list" will be appended to the button's label.
 
+####  `Soda.Slider`
+
+A slider. Sliders can be integer or floating point, can have an optional set of "snap points" that the value will snap to, support tapping either side of the handle for fine +/- adjustments, and at drag speeds of less than 1 pixel delta have a cubic relation to touch allowing for up to 1 in 20,000 accuracy. They can be any length (default to 300 pixels). Callback is triggered on touch ended.
+
+Attributes:
+
+* `min`, `max` - number, required. The minimum and maximum values for the slider
+* `start` - number. Start point of slider. Omit to start at minimum.
+* `snapPoints` - table of numbers. Points between min and max that the slider will snap to, eg `snapPoints = {0, 100}`
+* `decimalPlaces` - integer. Sets the number of decimal places of floating point sliders. Omit this to default to an integer slider.
+
 #### `Soda.TextEntry`
 
-A text entry field with a touchable cursor, and scrolling if the input is too long for the field. Additional arguments:
+A text entry field with a touchable cursor, and scrolling if the input is too long for the field. Additional attributes:
 
   + `default` - string. Default text that can be overwritten by the user.
 
@@ -244,23 +271,26 @@ A text entry field with a touchable cursor, and scrolling if the input is too lo
 
 #### `Soda.TextScroll`, `Soda.TextWindow`
 
-`Soda.TextScroll` is a window for handling scrolling through large bodies of text. `Soda.TextWindow` is a wrapper that adds a close button to the text window. Additional argument:
+`Soda.TextScroll` is a window for handling scrolling through large bodies of text. `Soda.TextWindow` is a wrapper that adds a close button to the text window. Additional attribute:
 
   + `textBody` - string. the body of text to be scrolled.
 
 Additional method:
 
-   + `:inputString(string)` - as above
+   + `:inputString(string)` - appends string to the contents of the window
+   + `:clearString()` - clears the contents of the window
 
 #### Various alerts and dialogs
 
   - `Soda.Alert` - alert message plus single OK button
-  - `Soda.Alert2` - OK and cancel buttons. Additional arguments:
+  - `Soda.Alert2` - OK and cancel buttons. Additional attributes:
     * `ok` - override default "OK" button text
     * `cancel` - override "cancel" button text
   - `Soda.Window` - a standard window with a title and rounded corners.
-
-### General Parameters
+    * `ok` - flag/ string. Set to true to add an OK button that will trigger `callback`. Set to a string (eg "Proceed" etc) to override the title of the button
+    * `cancel` - flag/ string. Set to true to add a cancel button that closes the window. Set to a string (eg "No" etc) to override the title of the button.
+    
+### Attributes
 
 Not all parameters are currently supported by all Soda UI elements.
 
@@ -294,11 +324,13 @@ Not all parameters are currently supported by all Soda UI elements.
 
 + `hidden` - flag. Set to true for elements that are hidden initially. (NB make sure you add a button that will `:show()` or `:toggle()` the element)
 
++ `kill` - flag. Set this to `true` to delete the element
+
 + `shape` - function pointer. Set (or override) the default shape of the element. Currently, only `Soda.RoundedRectangle` supports blurred panels
 
 + `style` - table pointer. set (or override) the default style of the element (see Style tab)
 
-+ `panels` - table of UI element identifiers. Used only by [`Soda.Segment`](#sodasegment) to identify which panels the segmented button will flick between
++ `panels` - table of UI element identifiers. Used by [`Soda.Segment`](#sodasegment) and [`Soda.List`](#sodalist) to identify which panels the segmented button will flick between
 
 + `alert` - flag. Set to true to darken and disable the underlying interface elements until this element has been dismissed. Automatically set by `Soda.Alert` dialog.
 
@@ -323,10 +355,13 @@ Not all parameters are currently supported by all Soda UI elements.
 * ~~Sometimes vertical lists return the wrong result~~
 * Can only scroll a textbox by adding and deleting text (waiting to see if Codea will add support for iOS 9 keyboard touchpad to its touched API)
 * ~~New keyboard height in iOS 9 has not been accounted for~~
+* Drop shadows sometimes only offset on Y-axis, not X-axis
+* If TextEntry input is too long for the box, text scroll position is not recalculated on orientationChanged
+* Dropdown lists do not disappear on selecting another interface element
 
 ## Roadmap
 
-+ Sliders.
++ ~~ADDED V0.5 Sliders.~~
 
 + Improvements to TextEntry:
 
@@ -337,3 +372,17 @@ Not all parameters are currently supported by all Soda UI elements.
 + ~~DONE. Add a factory for easier creation of the drop-down list seen in the demo~~
 
 + Add a rect shape that supports textures and aliased strokes, so that you can have rectangular blurred panels that match the same stroke as the rounded rectangles
+
++ Add optional support for live-updating blurred panels
+
++ Add option to emulate various iDevices to prepare interfaces for universalisation 
+
++ Add optional filters (eg Codea syntax highlighting, markdown parsing) to TextWindows
+
++ ~~Make gesture recognition (refusal of swipe-to-scroll gestures) universal across Soda (currently just applies to List classes)~~
+
++ Make styles list cascading
+
++ Add scroll-bar indicator to text windows
+
+

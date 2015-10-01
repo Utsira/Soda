@@ -22,7 +22,7 @@ function demo1()
     local panel = Soda.Window{ --give parent a local handle, in this case "panel", to define children
         title = "Demonstration", 
         hidden = true, --not visible or active initially
-        x=0.7, y=0.5, w=0, h=0.7, 
+        x=0.4, y=0.5, w=0, h=0.7, 
         blurred = true, style = Soda.style.darkBlurred, --gaussian blurs what is underneath it
         shadow = true,
         shapeArgs = { corners = 1 | 2} --only round left-hand corners
@@ -82,7 +82,7 @@ function demo1()
       --  shapeArgs = {corners = 8},
         blurred = true, shadow = true,
         update = function(self) --update will be called every frame
-            self.label.text = string.format("Profiler\n\nFPS: %.2f\nMem: %.2f", profiler.fps, profiler.mem)
+            self.title = string.format("Profiler\n\nFPS: %.2f\nMem: %.2f", profiler.fps, profiler.mem)
         end
     }
     
@@ -230,5 +230,4 @@ function demo2()
     
     local inkey = Soda.TextEntry{parent = box, title = "Nick-name:", x=20, y=80, w=0.7, h=40} 
 end
-
 

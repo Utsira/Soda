@@ -4,32 +4,48 @@ function Soda.TextScroll:init(t)
    -- t.shape = t.shape or Soda.rect
     self.characterW, self.characterH = self:getTextSize(Soda.style.textBox, "a")
     Soda.Scroll.init(self, t)
+    
+    self:clearString()
     self:inputString(t.textBody)
 end
 
-function Soda.TextScroll:inputString(txt)
+function Soda.TextScroll:clearString()
+    self.lines = {}
+    self.chunk = {}
+    self.cursorY = 0
+    self.scrollHeight = 0    
+end
+
+function Soda.TextScroll:inputString(txt, bottom)
     --split text into lines and wrap them
-    local lines = {}
+  --  local lines = {}
+    self.chunk = {}
     local boxW = (self.w//self.characterW)-2 --how many characters can we fit in?
     for lin in txt:gmatch("[^\n\r]+") do
-        local prefix = ""
+      --  local prefix = ""
         while lin:len()>boxW do --wrap the lines
-            lines[#lines+1] = prefix..lin:sub(1, boxW)
-            lin = lin:sub(boxW+1) 
-            prefix = "  "    
+            local truncate = lin:sub(1, boxW)
+            local wrap,_ = truncate:find("(%W)%w-$")
+            self.lines[#self.lines+1] = lin:sub(1, wrap)
+            lin = lin:sub(wrap+1) 
+          --  prefix = "  "    
         end
-        lines[#lines+1] = prefix..lin
+        self.lines[#self.lines+1] = lin
     end
-    self.scrollHeight = #lines * self.characterH
-    
+    self.scrollHeight = #self.lines * self.characterH
+    if bottom then 
+        --self.scrollY = self.scrollHeight -self.h 
+        self.scrollVel = ((self.scrollHeight -self.h) - self.scrollY ) * 0.1
+    end
     --put lines back into chunks of text, 10 lines high each
-    self.chunk = {}
-    local n = #lines//10
+    local n = #self.lines//10
     for i = 0,n do
         local start = (i * 10)+1
-        local stop = math.min(#lines, start + 9) --nb concat range is inclusive, hence +9
-        self.chunk[i+1] = {y = self.h - stop * self.characterH, text = table.concat(lines, "\n", start, stop)}
+        local stop = math.min(#self.lines, start + 9) --nb concat range is inclusive, hence +9
+        self.chunk[#self.chunk+1] = {y = self.h - (stop * self.characterH), text = table.concat(self.lines, "\n", start, stop)} --self.cursorY + 
     end
+  --  print(#self.lines, #self.chunk)
+   -- self.cursorY = self.scrollHeight
 end
 
 function Soda.TextScroll:drawContent()
@@ -48,7 +64,7 @@ function Soda.TextScroll:drawContent()
         local mm = modelMatrix()
     translate(10, self.scrollY)
 
-    clip(mm[13]+10, mm[14]+10, self.w-20, self.h-20) --nb translate doesnt apply to clip. (idea: grab transformation from current model matrix?) --self.parent:left()+self:left(),self.parent:bottom()+self:bottom()
+    clip(mm[13]+2, mm[14]+2, self.w-4, self.h-4) --nb translate doesnt apply to clip. (idea: grab transformation from current model matrix?) --self.parent:left()+self:left(),self.parent:bottom()+self:bottom()
     
     --calculate which chunks to draw
     local lineStart = math.max(1, math.ceil(self.scrollY/self.characterH))
@@ -63,5 +79,4 @@ function Soda.TextScroll:drawContent()
   popMatrix()
     
 end
-
 

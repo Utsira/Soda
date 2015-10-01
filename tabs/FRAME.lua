@@ -1,10 +1,10 @@
-Soda.Frame = class() --the master class for all UI elements. I know that some people are down on inheritance, but I think it works very well when used like this, ie wide but shallow
+Soda.Frame = class() --the master class for all UI elements. 
 
 function Soda.Frame:init(t)
     t.shapeArgs = t.shapeArgs or {}
     t.style = t.style or Soda.style.default
     if not t.label and t.title then
-        t.label = {x=0.5, y=-10, text = t.title}
+        t.label = {x=0.5, y=-10}
     end
     self:storeParameters(t)
  
@@ -29,11 +29,13 @@ function Soda.Frame:init(t)
     
     if t.parent then
         t.parent.child[#t.parent.child+1] = self --if this has a parent, add it to the parent's list of children
+  --      self.inactive = self.inactive or self.parent.inactive
     else
         table.insert( Soda.items, self) --no parent = top-level, added to Soda.items table
     end
     
-    self.inactive = self.hidden --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
+    self.inactive = self.inactive or self.hidden  --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
+   -- if self.inactive then self:deactivate() end
 end
 
 function Soda.Frame:storeParameters(t)
@@ -85,7 +87,7 @@ function Soda.Frame:getTextSize(sty, tex)
     pushStyle()
     Soda.setStyle(Soda.style.default.text)
     Soda.setStyle(sty or self.style.text)
-    local w,h = textSize(tex or self.label.text)
+    local w,h = textSize(tex or self.title)
     popStyle()
     return w,h
 end
@@ -128,6 +130,20 @@ function Soda.Frame:toggle(direction)
     end
 end
 
+function Soda.Frame:activate()
+    self.inactive = false
+    for i,v in ipairs(self.child) do
+        v:activate()
+    end
+end
+
+function Soda.Frame:deactivate()
+    self.inactive = true
+    for i,v in ipairs(self.child) do
+        v:deactivate()
+    end
+end
+
 function Soda.Frame:draw(breakPoint)
     if breakPoint and breakPoint == self then return true end
     if self.hidden then return end
@@ -144,24 +160,33 @@ function Soda.Frame:draw(breakPoint)
     if self.highlighted and self.highlightable then
         sty = self.style.highlight or Soda.style.default.highlight
     end
+    if self.inactive then
+        sty = Soda.style.inactive
+    end
     pushMatrix()
+    pushStyle()
     
     translate(self:left(), self:bottom())
     if self.shape then
         self:drawShape(sty)
     end
-    
-    if self.label then
-        pushStyle()
-        Soda.setStyle(Soda.style.default.text)
-        --Soda.setStyle(self.style.text)
-        Soda.setStyle(sty.text)
-        
-        text(self.label.text, self.label.x, self.label.y)
-        popStyle()
-    end
-    
+     Soda.setStyle(sty.text)
     self:drawContent()
+    --pushStyle()
+    if self.label then
+        
+        --Soda.setStyle(Soda.style.default.text)
+       
+        
+        text(self.title, self.label.x, self.label.y)
+        
+    end
+    if self.content then
+        textWrapWidth(self.w * 0.9)
+        text(self.content, self.w * 0.5, self.h * 0.6)
+        textWrapWidth()
+    end
+   -- popStyle()
     
     for i, v in ipairs(self.child) do --nb children are drawn with parent's transformation
         --[[
@@ -175,16 +200,17 @@ function Soda.Frame:draw(breakPoint)
         end
     end
     popMatrix()
+    popStyle()
 end
 
 function Soda.Frame:drawContent() end --overridden by subclasses
 
 function Soda.Frame:drawShape(sty)
-    pushStyle()
-    Soda.setStyle(Soda.style.default.shape)
+  --  pushStyle()
+    --Soda.setStyle(Soda.style.default.shape)
     Soda.setStyle(sty.shape)
     self.shape(self.shapeArgs)
-    popStyle()
+   -- popStyle()
 end
 
 function Soda.Frame:bottom()
@@ -215,11 +241,12 @@ function Soda.Frame:touched(t, tpos)
     local trans = tpos - vec2(self:left(), self:bottom()) --translate the touch position
     for i = #self.child, 1, -1 do --children take priority over frame for touch
         local v = self.child[i]
-        if v:touched(t, trans) then 
+        if not v.inactive and v:touched(t, trans) then 
             return true 
         end
     end
-    if self.alert or self:pointIn(tpos.x, tpos.y) then return true end
+  --  if self.alert then return true end --or self:pointIn(tpos.x, tpos.y) 
+    return self.alert
 end
 
 function Soda.Frame:selectFromList(child) --method used by parents of selectors. 
@@ -239,8 +266,9 @@ function Soda.Frame:selectFromList(child) --method used by parents of selectors.
             if self.selected.panel then self.selected.panel:hide() end
         end
         self.selected = child
+        child.highlighted = true
         if child.panel then child.panel:show() end
-        tween.delay(0.1, function() self:callback(child, child.label.text) end) --slight delay for list animation to register before panel disappears
+        tween.delay(0.1, function() self:callback(child, child.title) end) --slight delay for list animation to register before panel disappears
     end
 end
 
@@ -259,5 +287,4 @@ function Soda.Frame:orientationChanged()
         v:orientationChanged()
     end
 end
-
 
