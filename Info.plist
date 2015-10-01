@@ -9,6 +9,7 @@
 		<string>Demo</string>
 		<string>Soda</string>
 		<string>Main</string>
+		<string>Sensor</string>
 		<string>Style</string>
 		<string>RoundRect</string>
 		<string>Blur</string>
@@ -25,9 +26,9 @@
 		<string>List</string>
 		<string>Windows</string>
 	</array>
+	<key>Created</key>
+	<string>2015-09-27 16:07:57 +0000</string>
 	<key>Description</key>
 	<string>No description available</string>
-	<key>Icon</key>
-	<string>Icon.png</string>
 </dict>
 </plist>

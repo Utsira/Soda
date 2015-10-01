@@ -37,6 +37,10 @@ function Soda.touched(t)
     end
 end
 
+
+
+
+
 function Soda.keyboard(key)
     if Soda.keyboardEntity then
         Soda.keyboardEntity:keyboard(key)
@@ -96,3 +100,5 @@ function smoothstep(t,a,b)
     local t = math.min(1,math.max(0,(t-a)/(b-a)))
     return t * t * (3 - 2 * t)
 end
+
+

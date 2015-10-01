@@ -10,6 +10,11 @@ function Soda.Switch:init(t)
     self.knob = Soda.Knob{parent = self, x = 0, y = 0.5, w=40, h=40, shape = Soda.ellipse, style = Soda.style.switch, shadow = true}
     
     self:toggleSettings(t)
+    
+    -- #################################### <JMV38 changes>
+    self.sensor = Soda.Sensor{parent=self, xywhMode = CENTER}
+    self.sensor:onTap(function(event) self:toggleMe() end)
+    -- #################################### </JMV38 changes>
 end
 
 function Soda.Switch:switchOn()
@@ -56,3 +61,4 @@ function Soda.Knob:unHighlight()
     self.tween2 = tween.sequence(t1, t2)
 
 end
+

@@ -66,3 +66,5 @@ function profiler.draw()
         profiler.mem=collectgarbage("count", 2)
     end
 end
+
+

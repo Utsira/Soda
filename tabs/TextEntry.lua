@@ -118,3 +118,5 @@ function Soda.TextEntry:keyboard(key)
    -- self:getCursorPos()
     self.cursorPos = ((self.cursor - self.start)) * self.characterW
 end
+
+

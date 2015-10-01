@@ -6,9 +6,39 @@ function Soda.Scroll:init(t)
     self.scrollY = 0
     self.touchMove = 1
     Soda.Frame.init(self,t)
+    -- #################################### <JMV38 changes>
+    self.freeScroll = false
+    self.sensor = Soda.Sensor{parent=self, xywhMode = CENTER}
+    self.sensor:onDrag(function(event) self:verticalScroll(event.touch) end)
+    self.sensor:onQuickTap(function(event) self:childrenTouched(event.touch, event.tpos) end)
 end
 
+function Soda.Scroll:childrenTouched(t,tpos)
+    local off = tpos - vec2(self:left(), self:bottom() + self.scrollY)
+    for _, v in ipairs(self.child) do --children take priority over frame for touch
+        if v:touched(t, off) then return true end
+    end
+end
+
+function Soda.Scroll:verticalScroll(t)
+    if t.state == BEGAN or t.state == MOVING then
+        self.scrollVel = t.deltaY
+        self.scrollY = self.scrollY + t.deltaY
+        self.freeScroll = false
+    else
+        self.freeScroll = true
+    end
+end
+
+function Soda.Scroll:touched(t, tpos)
+    if self.inactive then return end
+    if self.sensor:touched(t, tpos) then return true end
+    return self.alert
+end
+    
 function Soda.Scroll:updateScroll()
+    if self.freeScroll == false then return end
+    -- #################################### </JMV38 changes>
     
     local scrollH = math.max(0, self.scrollHeight -self.h)
     if self.scrollY<0 then 
@@ -23,6 +53,8 @@ function Soda.Scroll:updateScroll()
     end
 end
 
+    -- #################################### <JMV38 changes>
+--[[
 function Soda.Scroll:touched(t, tpos)
     if self.inactive then return end
     if self:pointIn(tpos.x, tpos.y) then
@@ -53,3 +85,5 @@ function Soda.Scroll:touched(t, tpos)
     end
     return self.alert
 end
+--]]
+
