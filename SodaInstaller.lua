@@ -84,7 +84,7 @@ function demo1()
       --  shapeArgs = {corners = 8},
         blurred = true, shadow = true,
         update = function(self) --update will be called every frame
-            self.title = string.format("Profiler\n\nFPS: %.2f\nMem: %.2f", profiler.fps, profiler.mem)
+            self.label.text = string.format("Profiler\n\nFPS: %.2f\nMem: %.2f", profiler.fps, profiler.mem)
         end
     }
     
@@ -233,945 +233,18 @@ function demo2()
     local inkey = Soda.TextEntry{parent = box, title = "Nick-name:", x=20, y=80, w=0.7, h=40} 
 end
 
-
---# Overview
-function overview(t)
-    local win =Soda.Window{
-        title = "Soda v"..Soda.version.." Overview",
-        w = 0.97, h = 0.7,
-        blurred = true, 
-        shadow = true, 
-        style = Soda.style.darkBlurred, 
-    }
-    
-    local aboutPanel = Soda.Frame{
-        parent = win,
-        x = 10, y = 10, w = -10, h = -110, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16},
-        label = { x = 0.5, y = 0.5},
-        title = 
-    [[Soda is a library for producing graphic user interfaces like 
-    the one you are looking at now.
-    
-    Press the segment buttons to see some of the things Soda is 
-    capable of.
-    
-    ]]..(t.content or "")
-    }
-    
-    Soda.Button{
-        parent = aboutPanel, 
-        x = 10, y = 10, h = 40,
-        title = "Online Documentation",
-        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
-    }
-   
-    if t.ok then 
-    Soda.Button{
-        parent = aboutPanel,
-        x = -10, y = 10, h = 40,
-      --  shapeArgs = {radius = 16},
-          style = Soda.style.warning,
-        title = t.ok,
-        callback = t.callback
-    }
-    end
-    
-    local buttonPanel = Soda.Frame{
-        parent = win,
-        x = 10, y = 10, w = -10, h = -110,
-       -- shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        --shapeArgs = {radius = 16}
-    }
-           
-    local switchPanel = Soda.Frame{
-        parent = win,
-        x = 10, y = 10, w = -10, h = -110,
-      --  shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-      --  shapeArgs = {radius = 16}
-    }
-    
-    local sliderPanel = Soda.Frame{
-        parent = win,
-        title = "Sliders. At slow slide speeds movement becomes more fine-grained",
-        x = 10, y = 10, w = -10, h = -110,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    local dialogPanel = Soda.Frame{
-        parent = win,
-        x = 10, y = 10, w = -10, h = -110,
-       -- shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-      --  shapeArgs = {radius = 16}
-    }
-    
-    local textEntryPanel = Soda.Frame{
-        parent = win,
-        title = "Text Entry fields with a draggable cursor",
-        x = 10, y = -110, w = -10, h = 0.6,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    local listPanel = Soda.Frame{
-        parent = win,
-        title = "Vertically scrolling lists are another way of selecting one choice from many",
-        x = 10, y = 10, w = -10, h = -110,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    scrollPanel = Soda.TextScroll{
-        parent = win,
-        title = "Text Scrolls for scrolling through large bodies of text",
-    
-        textBody = string.rep([[
-    
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae massa in sem mattis ullamcorper a eget metus. Nam ac maximus nulla, vel faucibus sapien. Aenean faucibus volutpat tristique. Curabitur condimentum volutpat velit, sit amet commodo tellus placerat a. 
-    
-    Sed vitae metus quis mauris congue tincidunt vel sit amet lorem. Mauris lectus lorem, facilisis in dapibus et, congue quis nunc. Fusce convallis mi urna, vitae mattis felis sodales et. Aliquam et fringilla purus, eu vehicula diam. Sed facilisis mauris vitae augue sodales aliquam. In ultrices metus ut eleifend condimentum. Praesent venenatis rhoncus felis, eget vehicula orci ornare non. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Vivamus eget vulputate mauris. Pellentesque id tempus sapien.
-    ]], 100),
-        x = 10, y = 10, w = -10, h = -110,
-        shape = Soda.RoundedRectangle, style = Soda.style.default,
-        shapeArgs = {radius = 16}    
-    }
-    
-    Soda.Segment{
-        parent = win,
-        x = 12, y = -60, w = -12, h = 40,
-        text = {"About", "Buttons", "Switches", "Sliders", "Dialogs", "Text Entry", "Lists", "Scrolls"}, 
-        panels = {aboutPanel, buttonPanel, switchPanel, sliderPanel, dialogPanel, textEntryPanel, listPanel, scrollPanel}, 
-    }
-    
-    --button panel!
-    
-    local buttonPresets = Soda.Frame{
-        parent = buttonPanel,
-        title = "Presets for frequently-used buttons",
-        x = 0, y = 0.5, w = 1, h = 0.32,
-          shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-          shapeArgs = {radius = 16}
-    }
-    
-    local div = 1/8
-    local div2 = div/2
-    
-    Soda.BackButton{
-    parent = buttonPresets,
-    x = div2, y = 0.4}
-    
-    Soda.ForwardButton{
-    parent = buttonPresets,
-    x = div2 + div, y = 0.4}
-    
-    Soda.SettingsButton{
-    parent = buttonPresets,
-    x = div2 + div * 2, y = 0.4}
-    
-    Soda.AddButton{
-    parent = buttonPresets,
-    x = div2 + div * 3, y = 0.4}
-    
-    Soda.QueryButton{
-    parent = buttonPresets,
-    x = div2 + div * 4, y = 0.4}
-    
-    Soda.MenuButton{
-    parent = buttonPresets,
-    x = div2 + div * 5, y = 0.4}
-    
-    Soda.DropdownButton{
-    parent = buttonPresets,
-    x = div2 + div * 6, y = 0.4}
-    
-    Soda.CloseButton{
-    parent = buttonPresets,
-    x = div2 + div * 7, y = 0.4
-    }
-    
-    local textButtons = Soda.Frame{
-        parent = buttonPanel,
-        title = "Text and symbol based buttons in various shapes and styles",
-        x = 0, y = -0.001, w = 1, h = 0.32,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    div = 1/6
-    div2 = div/2
-    local w = div -0.01
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "Standard", 
-        x = div2, y = 0.4, w = w, h = 40,
-    }
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "Dark", 
-        style = Soda.style.dark,
-        x = div2 + div, y = 0.4, w = w, h = 40,
-    }
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "Warning", 
-        style = Soda.style.warning, 
-        x = div2 + div * 2, y = 0.4, w = w, h = 40, 
-    }
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "Square", 
-        shape = Soda.rect,
-        x = div2 + div * 3, y = 0.4, w = w, h = 40,
-    }
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "Lozenge", 
-        shapeArgs = {radius = 20},
-        x = div2 + div * 4, y = 0.4, w = w, h = 40,
-    }
-    
-    local div3 = div/5
-    local base = div2 + div * 5
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "\u{1f310}", 
-        style = Soda.style.darkIcon,
-        shape = Soda.ellipse,
-        x = base - div3, y = 0.4, w = 40, h = 40,
-    }
-    
-    --[[
-    Soda.Button{
-        parent = textButtons, 
-        title = "\u{267b}", 
-     --   shape = Soda.ellipse,
-     --   style = Soda.style.icon,
-        x = base, y = 0.4, w = 40, h = 40,
-    }
-      ]]
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "\u{1f374}", 
-      --  shape = Soda.ellipse,
-        style = Soda.style.darkIcon,
-        x = base + div3, y = 0.4, w = 40, h = 40,
-    }
-    
-    local segmentPanel = Soda.Frame{
-        parent = buttonPanel,
-        title = "Segmented buttons for selecting one option from many",
-        x = 0, y = 0, w = 1, h = 0.32,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    Soda.Segment{
-        parent = segmentPanel, 
-        x = 20, y = 0.4, w = -20, h = 40,
-        text = {"Only one", "segmented", "button can", "be selected", "at a time"}
-    }
-    
-    --switch panel
-    
-    local switches = Soda.Frame{
-        parent = switchPanel,
-        title = "iOS-style switches",
-        x = 0, y = -10, w = 0.49, h = 0.75,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    Soda.Switch{ --a switch to toggle the profiler stats panel
-        parent = switches,
-        x = 20, y = 0.75,
-        title = "Use switches to toggle",
-
-    }
-    
-    Soda.Switch{
-        parent = switches,
-        x = 20, y = 0.5,
-        title = "...between two states",
-        on = true
-    }
-    
-    Soda.Switch{
-        parent = switches,
-        x = 20, y = 0.25,
-        title = "...on and off",
-    }
-    
-    local toggles = Soda.Frame{
-        parent = switchPanel,
-        title = "Text and preset-based toggles",
-        x = -0.001, y = -10, w = 0.49, h = 0.75,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    Soda.Toggle{
-        parent = toggles,
-        x = 20, y = 0.8, w = -20, h = 40,
-        title = "Standard" 
-    }
-    
-    Soda.Toggle{
-        parent = toggles,
-        x = 20, y = 0.6, w = -20, h = 40,
-        shape = Soda.rect,
-        title = "Square" 
-    }
-    
-    Soda.Toggle{
-        parent = toggles,
-        x = 20, y = 0.4, w = -20, h = 40,
-        shapeArgs = {radius = 20},
-        title = "Over-rounded" 
-    }
-    
-    Soda.MenuToggle{
-        parent = toggles,
-        x = 20, y = 0.2,
-        on = true,
-    }
-    
-    --[[
-    local sliders = Soda.Frame{
-        parent = switchPanel,
-        title = "Sliders",
-        x = 0.5, y = 0, w = 0.49, h = 0.32,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-      ]]
-    
-    --slider panel 
-    
-    Soda.Slider{
-        parent = sliderPanel,
-        title = "Integer slider",
-        x = 0.5, y = 0.8, w = 300,
-        min = 1000, max = 2000, start = 1500,
-    }
-    
-    Soda.Slider{
-        parent = sliderPanel,
-        title = "Floating point slider (3 decimal places)",
-        x = 0.5, y = 0.6, w = 400,
-        min = -10, max = 10, start = 0,
-        decimalPlaces = 3
-    }
-    
-    Soda.Slider{
-        parent = sliderPanel,
-        title = "Slider with snap points",
-        x = 0.5, y = 0.4, w = 500,
-        min = -50, max = 150,
-        decimalPlaces = 1,
-        snapPoints = {0, 100}
-    }
-    
-    Soda.Slider{
-        parent = sliderPanel,
-        title = "Make fine +/- adjustments by tapping either side of the lever",
-        x = 0.5, y = 0.2, w = 0.9,
-        min = -10000, max = 10000, start = 0,
-        snapPoints = {0}
-    }
-    
-    --dialog panel!
-    
-    local regularAlert = Soda.Frame{
-        parent = dialogPanel,
-        title = "Press the buttons to trigger alerts in the default style",
-        x = 0, y = 0.85, w = 1, h = 0.3,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    Soda.Button{
-        parent = regularAlert, 
-        title = "Proceed dialog", 
-        x = 10, y = 0.4, w = 0.4, h = 40,
-        callback = function() 
-            Soda.Alert2{
-                title = "A 2-button\nProceed or cancel dialog",
-            }
-        end
-    }
-    
-    Soda.Button{
-    parent = regularAlert, 
-    title = "Alert", 
-    style = Soda.style.warning, 
-    x = -10, y = 0.4, w = 0.4, h = 40, 
-    callback = 
-        function()
-            Soda.Alert{ --an alert box with a single button
-                title = "A one-button\nalert", 
-                y=0.6, h = 0.3,
-            }
-        end
-    }
-    
-    local blurAlert = Soda.Frame{
-        parent = dialogPanel,
-        title = "Press the buttons to trigger alerts with dark, blurred panels",
-        x = 0, y = 0.53, w = 1, h = 0.3,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    Soda.Button{
-        parent = blurAlert, 
-        title = "Proceed dialog (blurred)", 
-        x = 10, y = 0.4, w = 0.4, h = 40,
-        callback = function() 
-            Soda.Alert2{
-                title = "A 2-button\nProceed or cancel dialog",
-                style = Soda.style.darkBlurred, blurred = true, 
-            }
-        end
-    }
-    
-    Soda.Button{
-    parent = blurAlert, 
-    title = "Alert (blurred)", 
-    style = Soda.style.warning, 
-    x = -10, y = 0.4, w = 0.4, h = 40, 
-    callback = 
-        function()
-            Soda.Alert{ --an alert box with a single button
-                title = "A one-button\nalert", 
-                y=0.6, h = 0.3,
-                style = Soda.style.darkBlurred, blurred = true, 
-            }
-        end
-    }
-    
-    --text entry panel
-    
-    Soda.TextEntry{ --text entry box
-        parent = textEntryPanel,
-        x = 10, y = -50, w = -10, h = 40,
-        title = "Text Entry:",
-       -- default = "Some place-holder text the user overwrites",
-    }    
-    
-    Soda.TextEntry{
-        parent = textEntryPanel,
-        x = 10, y = 0.45, w = -10, h = 40,
-        title = "Text Entry:",
-        default = "Some place-holder text the user overwrites"
-    }
-    
-    Soda.TextEntry{
-        parent = textEntryPanel,
-        x = 10, y = 10, w = -10, h = 40,
-        title = "Text Entry:",
-        default = "Interface scrolls up if text entry is below the height of the keyboard"
-    }
-    
-    --list panel
-    
-    Soda.List{
-        parent = listPanel,
-        x = 10, y = 10, h = -50, w = 0.45,
-        text = {"Lists", "allow", "the", "user", "to", "select", "one", "option", "from", "a", "vertically", "scrolling", "list."}
-    }
-    
-    Soda.DropdownList{
-        parent = listPanel,
-        x = -10, y = -110, w = 0.45, h = 40,
-        title = "A numbered list",
-        enumerate = true,
-        text = {"Lists", "and", "dropdown lists", "can", "be", "automatically", "enumerated", "if", "you", "wish"}
-    }
-      
-    Soda.DropdownList{
-        parent = listPanel,
-        x = -10, y = -50, w = 0.45, h = 40,
-        title = "A dropdown list",
-        text = {"Dropdown", "lists", "are", "lists", "that", "dropdown", "from", "a", "button.", "Note", "that", "the", "button", "reports", "the", "selection", "made"}
-    }
-end
-
---[==[
-function splashScreen()
-    local win =Soda.Window{
-        title = "Soda Overview",
-        w = 0.98, h = 0.7,
-        blurred = true, 
-        shadow = true, 
-        style = Soda.style.darkBlurred, 
-    }
-    
-    local aboutPanel = Soda.Frame{
-        parent = win,
-        x = 150, y = 10, w = -10, h = -50, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16},
-        label = { x = 0.5, y = 0.5, text = 
-    [[Soda is a library for producing graphic user interfaces like 
-    the one you are looking at now.
-    
-    Press the segment buttons to see some of the things Soda is 
-    capable of.
-    
-    This is a tutorial that introduces the basic features of Soda.
-    
-    This tutorial will gradually build an interface like this one, 
-    adding elements one at a time. You will be able to navigate the 
-    tutorial, and browse the extensively commented source code 
-    for each step in the window in the bottom half of the screen.
-    
-    When you're ready, press "Begin Tutorial".
-    ]]}
-    }
-    
-    Soda.Button{
-        parent = aboutPanel, 
-        x = 10, y = 10, h = 40,
-        title = "Online Documentation",
-        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
-    }
-    
-    Soda.Button{
-        parent = aboutPanel,
-        x = -10, y = 10, h = 40,
-      --  shapeArgs = {radius = 16},
-          style = Soda.style.warning,
-        title = "Begin Tutorial"
-    }
-    
-    local buttonPanel = Soda.Frame{
-        parent = win,
-        x = 150, y = 10, w = -10, h = -50, 
-       -- shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        --shapeArgs = {radius = 16}
-    }
-           
-    local switchPanel = Soda.Frame{
-        parent = win,
-        x = 150, y = 10, w = -10, h = -50, 
-      --  shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-      --  shapeArgs = {radius = 16}
-    }
-    
-    local dialogPanel = Soda.Frame{
-        parent = win,
-        x = 150, y = 10, w = -10, h = -50, 
-       -- shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-      --  shapeArgs = {radius = 16}
-    }
-    
-    local textEntryPanel = Soda.Frame{
-        parent = win,
-        title = "Text Entry fields with a draggable cursor",
-        x = 150, y = 10, w = -10, h = -50, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    local listPanel = Soda.Frame{
-        parent = win,
-        title = "Vertically scrolling lists are another way of selecting one choice from many",
-        x = 150, y = 10, w = -10, h = -50, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    local scrollPanel = Soda.TextScroll{
-        parent = win,
-        title = "Text Scrolls for scrolling through large bodies of text",
-        textBody = string.rep([[
-    
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae massa in sem mattis ullamcorper a eget metus. Nam ac maximus nulla, vel faucibus sapien. Aenean faucibus volutpat tristique. Curabitur condimentum volutpat velit, sit amet commodo tellus placerat a. 
-    
-    Sed vitae metus quis mauris congue tincidunt vel sit amet lorem. Mauris lectus lorem, facilisis in dapibus et, congue quis nunc. Fusce convallis mi urna, vitae mattis felis sodales et. Aliquam et fringilla purus, eu vehicula diam. Sed facilisis mauris vitae augue sodales aliquam. In ultrices metus ut eleifend condimentum. Praesent venenatis rhoncus felis, eget vehicula orci ornare non. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Vivamus eget vulputate mauris. Pellentesque id tempus sapien.
-    ]], 100),
-        x = 150, y = 10, w = -10, h = -50, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}    
-    }
-    
-    --[[
-    Soda.Segment{
-        parent = win,
-        x = 12, y = -60, w = -12, h = 40,
-        text = {"About", "Buttons", "Switches", "Dialogs", "Text Entry", "Lists", "Text Scrolls"}, 
-        panels = {aboutPanel, buttonPanel, switchPanel, dialogPanel, textEntryPanel, listPanel, scrollPanel}, 
-    }
-      ]]
-    Soda.List{
-        parent = win,
-        x = 10, y = 10, w = 130, h = -50,
-        shapeArgs = {radius = 16},--, corners = 1 | 2
-        text = {"About", "Buttons", "Switches", "Dialogs", "Text Entry", "Lists", "Text Scrolls"}, 
-        panels = {aboutPanel, buttonPanel, switchPanel, dialogPanel, textEntryPanel, listPanel, scrollPanel},
-        defaultNo = 1
-    }
-    
-    --button panel!
-    
-    local buttonPresets = Soda.Frame{
-        parent = buttonPanel,
-        title = "Presets for frequently-used buttons",
-        x = 0, y = 0.5, w = 1, h = 0.32,
-          shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-          shapeArgs = {radius = 16}
-    }
-    
-    local div = 1/8
-    local div2 = div/2
-    
-    Soda.BackButton{
-    parent = buttonPresets,
-    x = div2, y = 0.4}
-    
-    Soda.ForwardButton{
-    parent = buttonPresets,
-    x = div2 + div, y = 0.4}
-    
-    Soda.SettingsButton{
-    parent = buttonPresets,
-    x = div2 + div * 2, y = 0.4}
-    
-    Soda.AddButton{
-    parent = buttonPresets,
-    x = div2 + div * 3, y = 0.4}
-    
-    Soda.QueryButton{
-    parent = buttonPresets,
-    x = div2 + div * 4, y = 0.4}
-    
-    Soda.MenuButton{
-    parent = buttonPresets,
-    x = div2 + div * 5, y = 0.4}
-    
-    Soda.DropdownButton{
-    parent = buttonPresets,
-    x = div2 + div * 6, y = 0.4}
-    
-    Soda.CloseButton{
-    parent = buttonPresets,
-    x = div2 + div * 7, y = 0.4
-    }
-    
-    local textButtons = Soda.Frame{
-        parent = buttonPanel,
-        title = "Text based buttons",
-        x = 0, y = -0.001, w = 1, h = 0.32,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    div = 1/6
-    div2 = div/2
-    local w = div -0.01
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "Standard", 
-        x = div2, y = 0.4, w = w, h = 40,
-    }
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "Dark", 
-        style = Soda.style.dark,
-        x = div2 + div, y = 0.4, w = w, h = 40,
-    }
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "Warning", 
-        style = Soda.style.warning, 
-        x = div2 + div * 2, y = 0.4, w = w, h = 40, 
-    }
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "Square", 
-        shape = Soda.rect,
-        x = div2 + div * 3, y = 0.4, w = w, h = 40,
-    }
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "Lozenge", 
-        shapeArgs = {radius = 20},
-        x = div2 + div * 4, y = 0.4, w = w, h = 40,
-    }
-    
-    local div3 = div/5
-    local base = div2 + div * 5
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "\u{1f310}", 
-        style = Soda.style.darkIcon,
-        shape = Soda.ellipse,
-        x = base - div3, y = 0.4, w = 40, h = 40,
-    }
-    
-    --[[
-    Soda.Button{
-        parent = textButtons, 
-        title = "\u{267b}", 
-     --   shape = Soda.ellipse,
-     --   style = Soda.style.icon,
-        x = base, y = 0.4, w = 40, h = 40,
-    }
-      ]]
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "\u{1f374}", 
-      --  shape = Soda.ellipse,
-        style = Soda.style.darkIcon,
-        x = base + div3, y = 0.4, w = 40, h = 40,
-    }
-    
-    local segmentPanel = Soda.Frame{
-        parent = buttonPanel,
-        title = "Segmented buttons for selecting one option from many",
-        x = 0, y = 0, w = 1, h = 0.32,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    Soda.Segment{
-        parent = segmentPanel, 
-        x = 20, y = 0.4, w = -20, h = 40,
-        text = {"Only one", "segmented", "button can", "be selected", "at a time"}
-    }
-    
-    --switch panel
-    
-    local switches = Soda.Frame{
-        parent = switchPanel,
-        title = "iOS-style switches",
-        x = 0, y = -10, w = 0.49, h = 0.7,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    Soda.Switch{ --a switch to toggle the profiler stats panel
-        parent = switches,
-        x = 20, y = 0.75,
-        title = "Use switches to toggle",
-
-    }
-    
-    Soda.Switch{
-        parent = switches,
-        x = 20, y = 0.5,
-        title = "...between two states",
-        on = true
-    }
-    
-    Soda.Switch{
-        parent = switches,
-        x = 20, y = 0.25,
-        title = "...on and off",
-    }
-    
-    local toggles = Soda.Frame{
-        parent = switchPanel,
-        title = "Text and preset-based toggles",
-        x = -0.001, y = -10, w = 0.49, h = 0.7,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    Soda.Toggle{
-        parent = toggles,
-        x = 20, y = 0.8, w = -20, h = 40,
-        title = "Standard" 
-    }
-    
-    Soda.Toggle{
-        parent = toggles,
-        x = 20, y = 0.6, w = -20, h = 40,
-        shape = Soda.rect,
-        title = "Square" 
-    }
-    
-    Soda.Toggle{
-        parent = toggles,
-        x = 20, y = 0.4, w = -20, h = 40,
-        shapeArgs = {radius = 20},
-        title = "Over-rounded" 
-    }
-    
-    Soda.MenuToggle{
-        parent = toggles,
-        x = 20, y = 0.2,
-        on = true,
-    }
-    
-    --dialog panel!
-    local regularAlert = Soda.Frame{
-        parent = dialogPanel,
-        title = "Press the buttons to trigger alerts in the default style",
-        x = 0, y = 0.85, w = 1, h = 0.3,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    Soda.Button{
-        parent = regularAlert, 
-        title = "Proceed dialog", 
-        x = 10, y = 0.4, w = 0.4, h = 40,
-        callback = function() 
-            Soda.Alert2{
-                title = "A 2-button\nProceed or cancel dialog",
-            }
-        end
-    }
-    
-    Soda.Button{
-    parent = regularAlert, 
-    title = "Alert", 
-    style = Soda.style.warning, 
-    x = -10, y = 0.4, w = 0.4, h = 40, 
-    callback = 
-        function()
-            Soda.Alert{ --an alert box with a single button
-                title = "A one-button\nalert", 
-                y=0.6, h = 0.3,
-            }
-        end
-    }
-    
-    local blurAlert = Soda.Frame{
-        parent = dialogPanel,
-        title = "Press the buttons to trigger alerts with dark, blurred panels",
-        x = 0, y = 0.53, w = 1, h = 0.3,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    Soda.Button{
-        parent = blurAlert, 
-        title = "Proceed dialog (blurred)", 
-        x = 10, y = 0.4, w = 0.4, h = 40,
-        callback = function() 
-            Soda.Alert2{
-                title = "A 2-button\nProceed or cancel dialog",
-                style = Soda.style.darkBlurred, blurred = true, 
-            }
-        end
-    }
-    
-    Soda.Button{
-    parent = blurAlert, 
-    title = "Alert (blurred)", 
-    style = Soda.style.warning, 
-    x = -10, y = 0.4, w = 0.4, h = 40, 
-    callback = 
-        function()
-            Soda.Alert{ --an alert box with a single button
-                title = "A one-button\nalert", 
-                y=0.6, h = 0.3,
-                style = Soda.style.darkBlurred, blurred = true, 
-            }
-        end
-    }
-    
-    --text entry panel
-    Soda.TextEntry{ --text entry box
-        parent = textEntryPanel,
-        x = 10, y = -50, w = -10, h = 40,
-        title = "Text Entry:",
-       -- default = "Some place-holder text the user overwrites",
-    }    
-    
-    Soda.TextEntry{
-        parent = textEntryPanel,
-        x = 10, y = 0.45, w = -10, h = 40,
-        title = "Text Entry:",
-        default = "Some place-holder text the user overwrites"
-    }
-    
-    Soda.TextEntry{
-        parent = textEntryPanel,
-        x = 10, y = 10, w = -10, h = 40,
-        title = "Text Entry:",
-        default = "Interface scrolls up if text entry is below the height of the keyboard"
-    }
-    
-    --list panel
-    
-    Soda.List{
-        parent = listPanel,
-        x = 10, y = 10, h = -50, w = 0.45,
-        text = {"Lists", "allow", "the", "user", "to", "select", "one", "option", "from", "a", "vertically", "scrolling", "list."}
-    }
-    
-    Soda.DropdownList{
-        parent = listPanel,
-        x = -10, y = -110, w = 0.45, h = 40,
-        title = "A numbered list",
-        enumerate = true,
-        text = {"Lists", "and", "dropdown lists", "can", "be", "automatically", "enumerated", "if", "you", "wish"}
-    }
-      
-    Soda.DropdownList{
-        parent = listPanel,
-        x = -10, y = -50, w = 0.45, h = 40,
-        title = "A dropdown list",
-        text = {"Dropdown", "lists", "are", "lists", "that", "dropdown", "from", "a", "button.", "Note", "that", "the", "button", "reports", "the", "selection", "made"}
-    }
-end
-  ]==]
-
 --# Soda
 Soda = {}
-Soda.version = "0.5"
 
 function Soda.setup()
     --  parameter.watch("#Soda.items")
     parameter.watch("Soda.UIoffset")
     Soda.Assets()
     Soda.theme = Soda.themes.default
+
     textAlign(CENTER)
     rectMode(CENTER)
 
-end
-
-function Soda.Assets()
-    Soda.items = {} --holds all top-level ui elements (i.e. anything without a parent)
-    
-    Soda.darken.assets() --used to darken underlying interface elements when alert flag is set.
-    
-    Soda.UIoffset = 0 --used to scroll up screen when keyboard appears
-end
-
-Soda.darken = {}
-
-function Soda.darken.assets()
-    Soda.darken.m = mesh()
-    local s = math.max(WIDTH, HEIGHT)
-    Soda.darken.m:addRect(s/2, s/2, s, s)
-    Soda.darken.m:setColors(color(0,128))
-end
-
-function Soda.darken.draw()
-    pushMatrix()
-    resetMatrix()
-    Soda.darken.m:draw()
-    popMatrix()
 end
 
 function Soda.camera()
@@ -1183,7 +256,6 @@ function Soda.camera()
 end
 
 function Soda.draw(breakPoint)
-    Soda.setStyle(Soda.style.default.text)
     for i,v in ipairs(Soda.items) do --draw most recent item last
         if v.kill then
             table.remove(Soda.items, i)
@@ -1227,7 +299,7 @@ function Soda.parseCoordSize(loc, size, edge)
     if size>1 then
         len = size --standard length coord
     elseif size>0 then
-        len = math.ceil(edge * size) --proportional length
+        len = edge * size --proportional length
     end --nb defer if size is negative
     if len then
         local half = len * 0.5
@@ -1236,25 +308,18 @@ function Soda.parseCoordSize(loc, size, edge)
         elseif loc<0 then
             pos = edge - half + loc --negative coord
         else
-            pos = math.ceil(edge * loc) --proportional coord
+            pos = edge * loc --proportional coord
         end
     else --negative size
         if loc%1==0 and loc>=0 then 
             len = edge - loc + size --loc and size describing the two edges
             pos = loc + len * 0.5
-        elseif loc>0 then  --proportional loc coord
+        elseif loc>0 then 
+            pos = edge * loc --proportional loc coord
             local x2 = edge + size
-            local x1 = math.ceil(edge * loc)
-            len = x2 - x1
-            pos = x1 + len * 0.5
-          --  pos = edge * loc 
-            
-            --len = (x2 - pos) * 2
-        else --both negative
-            local x2 = edge + size
-            local x1 = edge + loc
-            len = x2 - x1
-            pos = x1 + len * 0.5
+            len = (x2 - pos) * 2
+        else
+            alert("negative length must be coupled with positive position")
         end
     end
     return pos, len
@@ -1268,22 +333,9 @@ function smoothstep(t,a,b)
     return t * t * (3 - 2 * t)
 end
 
-function clamp(v,low,high)
-    return math.min(math.max(v, low), high)
-end
-
-function lerp(v,a,b)
-    return a * (1 - v) + b * v
-end
-
-function round(number, places) --use -ve places to round to tens, hundreds etc
-    local mult = 10^(places or 0)
-    return math.floor(number * mult + 0.5) / mult
-end
-
 --# Main
 -- Soda
-
+-- v0.4
 displayMode(OVERLAY)
 displayMode(FULLSCREEN)
 -- Use this as a template for your projects that have Soda as a dependency. 
@@ -1292,8 +344,7 @@ function setup()
     profiler.init()
     parameter.watch("#Soda.items")
     Soda.setup()
-   -- demo1() --do your setting up here
-    overview{}
+    demo1() --do your setting up here
 end
 
 function draw()
@@ -1352,7 +403,6 @@ function profiler.draw()
     end
 end
 
-
 --# Style
 Soda.themes = {
 default = { 
@@ -1382,17 +432,17 @@ Soda.style = {
         highlight = {shape = {}, text = {}},
     transparent = {
         shape = {noFill = true, --color(0,0),
-                stroke = "darkStroke"}, --stroke = "stroke2"
-        text = {fill = "fill"}, --fill = "darkText"
+                }, --stroke = "stroke2"
+        text = { }, --fill = "darkText"
         highlight = { 
         shape = {fill = "darkText"},
         text = {} --fill = "stroke2"
         }
     },
     translucent = {
-        shape = {fill = "darkFill", --color(255, 40),
+        shape = {fill = color(255, 40),
                 stroke = "stroke2"},
-        text = {fill = "fill"}, -- fill = "darkText"
+        text = {}, -- fill = "darkText"
         highlight = { 
         shape = {},--fill = "darkText"
         text = {}--fill = "stroke2"
@@ -1440,7 +490,7 @@ Soda.style = {
     },
     shadow = {shape = { fill = color(0, 90), stroke = color(0, 90)}}, --a special style used to produce shadows 20, 100
     textEntry = {fill = color(0), font = "Inconsolata", fontSize = 24}, --a special style for user input in text entry fields. Must be a fixed-width (monotype) font
-    textBox = {font = "Inconsolata", fontSize = 16}, --fill = color(29, 61, 31, 255), 
+    textBox = {fill = color(29, 61, 31, 255), font = "Inconsolata", fontSize = 16},
     darkIcon = {
         shape = {noFill = true, strokeWidth = 1, stroke = "fill"}, 
         text = {fontSize = 26, 
@@ -1472,7 +522,7 @@ function Soda.setStyle(sty)
         if type(v)=="string" and Soda.theme[v] then
             Soda[k](Soda.theme[v])
         else
-            Soda[k](v)
+        Soda[k](v)
         end
     end
 end
@@ -1514,17 +564,10 @@ function Soda.rect(t)
     rect(t.x, t.y, t.w, t.h)
 end
 
-function Soda.line(t)
-    local hw, hh = t.w * 0.5, t.h * 0.5
-    line(t.x - hw, t.y - hh, t.x + hw, t.y + hh)
-end
-
 function Soda.ellipse(t)
     ellipse(t.x, t.y, t.w)
  --   ellipse(0, 0, self.w or self.parent.w)
 end
-
---Soda.setup()
 
 --[[
 LEFTEDGE, TOPEDGE, RIGHTEDGE, BOTTOMEDGE = 1,2,4,8
@@ -1545,11 +588,34 @@ function Soda:outline(t) --edge 1=left, 2 = top, 4 = right, 8 = bottom
 end
   ]]
 
+function Soda.Assets()
+    Soda.items = {} --holds all top-level ui elements (i.e. anything without a parent)
+    
+    Soda.darken.assets() --used to darken underlying interface elements when alert flag is set.
+    
+    Soda.UIoffset = 0 --used to scroll up screen when keyboard appears
+end
+
+Soda.darken = {}
+
+function Soda.darken.assets()
+    Soda.darken.m = mesh()
+    local s = math.max(WIDTH, HEIGHT)
+    Soda.darken.m:addRect(s/2, s/2, s, s)
+    Soda.darken.m:setColors(color(0,128))
+end
+
+function Soda.darken.draw()
+    pushMatrix()
+    resetMatrix()
+    Soda.darken.m:draw()
+    popMatrix()
+end
 
 --# RoundRect
 local __RRects = {}
 --[[
-true mesh rounded rectangle. Original by @LoopSpace
+true mesh rounded rectangle
 with anti-aliasing, optional fill and stroke components, optional texture that preserves aspect ratio of original image, automatic mesh caching
 usage: RoundedRectangle{key = arg, key2 = arg2}
 required: x;y;w;h:  dimensions of the rectangle
@@ -1731,7 +797,6 @@ void main()
 }
 ]]
 }
-
 --# Blur
 Soda.Gaussian = class() --a component for nice effects like shadows and blur
 --Gaussian blur
@@ -1941,15 +1006,14 @@ void main()
 }
 
 
-
 --# FRAME
-Soda.Frame = class() --the master class for all UI elements. 
+Soda.Frame = class() --the master class for all UI elements. I know that some people are down on inheritance, but I think it works very well when used like this, ie wide but shallow
 
 function Soda.Frame:init(t)
     t.shapeArgs = t.shapeArgs or {}
     t.style = t.style or Soda.style.default
     if not t.label and t.title then
-        t.label = {x=0.5, y=-10}
+        t.label = {x=0.5, y=-10, text = t.title}
     end
     self:storeParameters(t)
  
@@ -2030,7 +1094,7 @@ function Soda.Frame:getTextSize(sty, tex)
     pushStyle()
     Soda.setStyle(Soda.style.default.text)
     Soda.setStyle(sty or self.style.text)
-    local w,h = textSize(tex or self.title)
+    local w,h = textSize(tex or self.label.text)
     popStyle()
     return w,h
 end
@@ -2090,29 +1154,23 @@ function Soda.Frame:draw(breakPoint)
         sty = self.style.highlight or Soda.style.default.highlight
     end
     pushMatrix()
-    pushStyle()
     
     translate(self:left(), self:bottom())
     if self.shape then
         self:drawShape(sty)
     end
-     Soda.setStyle(sty.text)
-    self:drawContent()
-    --pushStyle()
+    
     if self.label then
+        pushStyle()
+        Soda.setStyle(Soda.style.default.text)
+        --Soda.setStyle(self.style.text)
+        Soda.setStyle(sty.text)
         
-        --Soda.setStyle(Soda.style.default.text)
-       
-        
-        text(self.title, self.label.x, self.label.y)
-        
+        text(self.label.text, self.label.x, self.label.y)
+        popStyle()
     end
-    if self.content then
-        textWrapWidth(self.w * 0.9)
-        text(self.content, self.w * 0.5, self.h * 0.6)
-        textWrapWidth()
-    end
-   -- popStyle()
+    
+    self:drawContent()
     
     for i, v in ipairs(self.child) do --nb children are drawn with parent's transformation
         --[[
@@ -2126,17 +1184,16 @@ function Soda.Frame:draw(breakPoint)
         end
     end
     popMatrix()
-    popStyle()
 end
 
 function Soda.Frame:drawContent() end --overridden by subclasses
 
 function Soda.Frame:drawShape(sty)
-  --  pushStyle()
-    --Soda.setStyle(Soda.style.default.shape)
+    pushStyle()
+    Soda.setStyle(Soda.style.default.shape)
     Soda.setStyle(sty.shape)
     self.shape(self.shapeArgs)
-   -- popStyle()
+    popStyle()
 end
 
 function Soda.Frame:bottom()
@@ -2167,12 +1224,11 @@ function Soda.Frame:touched(t, tpos)
     local trans = tpos - vec2(self:left(), self:bottom()) --translate the touch position
     for i = #self.child, 1, -1 do --children take priority over frame for touch
         local v = self.child[i]
-        if not v.inactive and v:touched(t, trans) then 
+        if v:touched(t, trans) then 
             return true 
         end
     end
-  --  if self.alert then return true end --or self:pointIn(tpos.x, tpos.y) 
-    return self.alert
+    if self.alert or self:pointIn(tpos.x, tpos.y) then return true end
 end
 
 function Soda.Frame:selectFromList(child) --method used by parents of selectors. 
@@ -2192,9 +1248,8 @@ function Soda.Frame:selectFromList(child) --method used by parents of selectors.
             if self.selected.panel then self.selected.panel:hide() end
         end
         self.selected = child
-        child.highlighted = true
         if child.panel then child.panel:show() end
-        tween.delay(0.1, function() self:callback(child, child.title) end) --slight delay for list animation to register before panel disappears
+        tween.delay(0.1, function() self:callback(child, child.label.text) end) --slight delay for list animation to register before panel disappears
     end
 end
 
@@ -2214,13 +1269,12 @@ function Soda.Frame:orientationChanged()
     end
 end
 
-
 --# Button
 Soda.Button = class(Soda.Frame) --one press, activates on release
 
 function Soda.Button:init(t)
     t.shape = t.shape or Soda.RoundedRectangle
-    t.label = t.label or { x=0.5, y=0.5}
+    t.label = t.label or { x=0.5, y=0.5, text = t.title}
     t.highlightable = true
     Soda.Frame.init(self, t)
 end
@@ -2261,18 +1315,9 @@ end
 
 function Soda.BackButton(t)
     t.title = "\u{ff1c}" -- full-width less-than symbol. alt \u{276e}
-    --[[
     if  t.direction == RIGHT then
         t.title = "\u{ff1e}" --greater-than, in case you need a right-facing back button. alt \u{276f}
     end
-      ]]
-    t.w, t.h = 40, 40
-    t.style = t.style or Soda.style.darkIcon
-    return Soda.Button(t)
-end
-
-function Soda.ForwardButton(t)
-    t.title = "\u{ff1e}" --greater-than, in case you need a right-facing back button. alt \u{276f}
     t.w, t.h = 40, 40
     t.style = t.style or Soda.style.darkIcon
     return Soda.Button(t)
@@ -2315,7 +1360,6 @@ function Soda.QueryButton(t)
     t.shape = t.shape or Soda.ellipse
     return Soda.Button(t)
 end
-
 --# Toggle
 Soda.Toggle = class(Soda.Button) --press toggles on/ off states
 
@@ -2388,7 +1432,6 @@ function Soda.MenuToggle(t)
 end
 
 
-
 --# Switch
 Soda.Switch = class(Soda.Toggle) --an iOS-style switch with a lever that moves back and forth
 
@@ -2397,7 +1440,7 @@ function Soda.Switch:init(t)
     local tw,_ = textSize(t.title or "")
    -- t.w, t.h = 120+tw,40
 
-    Soda.Frame.init(self, {parent = t.parent, x = t.x, y=t.y, w = 120+tw, h = 40, on = t.on or false, style = t.style or Soda.style.switch, shape = Soda.RoundedRectangle, shapeArgs = {w = 70, h = 36, radius = 18, x = 0, y = 2}, highlightable = true, label = {x=80, y=0.5} , title = t.title})
+    Soda.Frame.init(self, {parent = t.parent, x = t.x, y=t.y, w = 120+tw, h = 40, on = t.on or false, style = Soda.style.switch, shape = Soda.RoundedRectangle, shapeArgs = {w = 70, h = 36, radius = 18, x = 0, y = 2}, highlightable = true, label = {x=80, y=0.5, text = t.title}})
 
     self.knob = Soda.Knob{parent = self, x = 0, y = 0.5, w=40, h=40, shape = Soda.ellipse, style = Soda.style.switch, shadow = true}
     
@@ -2448,157 +1491,12 @@ function Soda.Knob:unHighlight()
     self.tween2 = tween.sequence(t1, t2)
 
 end
-
---# Slider
-Soda.Slider = class(Soda.Frame)
-
-function Soda.Slider:init(t)
-  --  t.shape = Soda.line
-    t.w = t.w or 300
-    t.h = 60
-    t.style = Soda.style.switch
-    self.value = t.start or t.min
-    self.value = clamp(self.value, t.min, t.max)
-    self.decimalPlaces = t.decimalPlaces or 0
-
-    t.label = {x = 0, y = -0.001}
-  --  t.shapeArgs = {x = 0, y = 20, h = 0}
-
-    Soda.Frame.init(self, t)
-    self.sliderLen = self.w - 40
-    self.shapeArgs.w = self.sliderLen
-    self.snapPoints = t.snapPoints or {}
-    --calculate snap positions
-    self.snapPos = {}
-    for i,v in ipairs(self.snapPoints) do
-        self.snapPos[i] = 20 + self:posFromValue(v)
-    end
-    self.range = self.max - self.min
-  self.snapStep = lerp(5 / self.sliderLen, 0, self.range)
-    self.knob = Soda.SliderKnob{
-        parent = self, 
-        x = 0, y = 0, w=35, h=35, 
-        shape = Soda.ellipse, 
-        style = Soda.style.switch, 
-       -- highlightable = true,
-        shadow = true
-    }
-    self.knob.x = 20 + self:posFromValue()
-    
-    self.valueLabel = Soda.Frame{
-        parent = self,
-        style = Soda.style.switch,
-        x = -0.001, y = -0.001,
-        title = string.format("%."..self.decimalPlaces.."f", self.value),
-        label = {x = -0.001, y = -0.001}
-    }
-    
-end
-
-function Soda.Slider:posFromValue(val)
-    local val = val or self.value
-    return ((val - self.min)/(self.max-self.min)) * self.sliderLen
-end
-
-function Soda.Slider:valueFromPos(x)
-    
-    self.value = round(lerp((x - 20) / self.sliderLen, self.min, self.max), self.decimalPlaces)
-   for _,v in ipairs(self.snapPoints) do
-      if math.abs(self.value - v) < self.snapStep then
-        self.value = v 
-    --[[
-    for i,v in ipairs(self.snapPos) do 
-        if math.abs(x - v) < 5 then 
-            self.value = self.snapPoints[i] ]]
-            self.knob.x = 20 + self:posFromValue()
-        end
-    end
-      
-
-    if self.decimalPlaces == 0 then self.value = math.tointeger( self.value ) end
-  --  self.title = tostring(self.value)
-    self.valueLabel.title = string.format("%."..self.decimalPlaces.."f", self.value) --tostring(self.value)
-end
-
-function Soda.Slider:drawContent()
-    local x, y = self:posFromValue() + 20, 20
---  Soda.setStyle(Soda.style.switch.shape)
-    pushStyle()
-    stroke(Soda.themes.default.text)
-    strokeWidth(2)
-    line(20, y, x,y)
-    noStroke()
-    fill(Soda.themes.default.text)
-    for i,v in ipairs(self.snapPos) do
-        if v > x then 
-            --Soda.setStyle(Soda.style.switch.shape) 
-            fill(Soda.themes.default.stroke)
-        end
-     --   line(v,y-10,v,y+10)
-        ellipse(v,y,8)
-    end
- --   Soda.setStyle(Soda.style.switch.shape)
-    stroke(Soda.themes.default.stroke)
-    strokeWidth(2)
-    line(x, y, self.w-20,y)
-    popStyle()
-end
---[[
-function Soda.Slider:draw()
-    
-end
-
-function Soda.Slider:draw()
-    -- Codea does not automatically call this method
-end
-]]
-function Soda.Slider:touched(t, tpos)
-   if Soda.Frame.touched(self, t, tpos) then return true end
-  --  Soda.Frame.touched(self, t, tpos)
-    if t.state == ENDED and self:pointIn(tpos.x, tpos.y) then
-        if tpos.x < self:left() + self.knob.x then
-            self.value = math.max(self.min, self.value - 1 )
-        else
-            self.value = math.min(self.max, self.value + 1)
-        end
-        --  self.label.text = tostring(self.value)
-        self.knob.x = 20 + self:posFromValue()
-        self.valueLabel.title = tostring(self.value)
-        self:callback(self.value)
-    end
-    
-end
-
-Soda.SliderKnob = class(Soda.Frame)
-
-function Soda.SliderKnob:touched(t, tpos)
-    if t.state == BEGAN then
-        if self:pointIn(tpos.x, tpos.y) then
-            self.touchId = t.id
-            self.highlighted = true
-            self:keyboardHideCheck()
-            return true
-        end
-    elseif self.touchId and self.touchId == t.id then
-        
-        self.x = clamp(self.x + t.deltaX * math.min(1, (t.deltaX * 0.5)^ 2),20,20 + self.parent.sliderLen)
-        self.parent:valueFromPos(self.x)
-        if t.state == ENDED then    
-            self.touchId = nil
-            self.highlighted = false   
-            self.parent:callback(self.parent.value)   
-        end
-        return true
-    end
-
-end
-
 --# TextEntry
 Soda.TextEntry = class(Soda.Frame)
 
 function Soda.TextEntry:init(t)
     t.shape = Soda.RoundedRectangle
-    t.label = {x=10, y=0.5} 
+    t.label = {text = t.title, x=10, y=0.5} 
     Soda.Frame.init(self, t)
     
     self.offset = vec2(self.label.w + 15, (self.h-self.label.h)*0.5) --bottom corner of text-entry (because left-aligned text needs to be drawn in CORNER mode)
@@ -2715,30 +1613,18 @@ function Soda.TextEntry:keyboard(key)
     self.cursorPos = ((self.cursor - self.start)) * self.characterW
 end
 
-
 --# Selector
 Soda.Selector = class(Soda.Button) --press deactivates its siblings
 
 function Soda.Selector:touched(t, tpos)
-    if t.state == BEGAN then
-        if self:pointIn(tpos.x, tpos.y) then
-            self.touchId = t.id
-            self:keyboardHideCheck()
-            return true
-        end
-    elseif self.touchId and self.touchId == t.id then
-        if t.state == ENDED and self:pointIn(tpos.x, tpos.y) then
-    
-            self:keyboardHideCheck()
-            self:callback()
-            self.touchId = nil
-            --  self.highlighted = true
-            self.parent:selectFromList(self)
-            return true
-        end
+    if t.state == ENDED and self:pointIn(tpos.x, tpos.y) then
+        self:keyboardHideCheck()
+        self:callback()
+        self.highlighted = true
+        self.parent:selectFromList(self)
+        return true
     end
 end
-
 --# Segment
 Soda.Segment = class(Soda.Frame) --horizontally segmented set of selectors
 
@@ -2763,20 +1649,16 @@ function Soda.Segment:init(t)
             panel = t.panels[i]
             panel:hide() --hide the panel by default
         end
-        local this = Soda.Selector{parent = self, idNo = i, title = t.text[i], x = x, y = 0.5, w = w+0.002, h=t.h, shape = shape, shapeArgs={corners=corners}, panel = panel}  --self.h * 0.5, w++0.004
+        local this = Soda.Selector{parent = self, idNo = i, title = t.text[i], x = x, y = 0.5, w = w+0.004, h=t.h, shape = shape, shapeArgs={corners=corners}, panel = panel}  --self.h * 0.5, w+0.001
         
         if not t.noSelectionPossible and i==defaultNo then 
-            self:selectFromList(this)
-            --[[
             this.highlighted = true
             self.selected = this
             if this.panel then this.panel:show() end
-              ]]
         end
         
     end
 end
-
 
 --# Scroll
 Soda.Scroll = class(Soda.Frame) --touch methods for scrolling classes, including distinguishing scroll gesture from touching a button within the scroll area, and elastic bounce back
@@ -2834,7 +1716,6 @@ function Soda.Scroll:touched(t, tpos)
     end
     return self.alert
 end
-
 
 --# ScrollShape
 Soda.ScrollShape = class(Soda.Scroll) --scrolling inside a shape, eg a rounded rectangle
@@ -2915,7 +1796,6 @@ end
 
 
 
-
 --# TextScroll
 Soda.TextScroll = class(Soda.Scroll) --smooth scrolling of large text files (ie larger than screen height)
 
@@ -2923,43 +1803,32 @@ function Soda.TextScroll:init(t)
    -- t.shape = t.shape or Soda.rect
     self.characterW, self.characterH = self:getTextSize(Soda.style.textBox, "a")
     Soda.Scroll.init(self, t)
-    
-    self:clearString()
     self:inputString(t.textBody)
-end
-
-function Soda.TextScroll:clearString()
-    self.lines = {}
-  --  self.chunk = {}
-    self.cursorY = 0
-    self.scrollHeight = 0    
 end
 
 function Soda.TextScroll:inputString(txt)
     --split text into lines and wrap them
-  --  local lines = {}
-    self.chunk = {}
+    local lines = {}
     local boxW = (self.w//self.characterW)-2 --how many characters can we fit in?
     for lin in txt:gmatch("[^\n\r]+") do
-      --  local prefix = ""
+        local prefix = ""
         while lin:len()>boxW do --wrap the lines
-            self.lines[#self.lines+1] = lin:sub(1, boxW)
+            lines[#lines+1] = prefix..lin:sub(1, boxW)
             lin = lin:sub(boxW+1) 
-          --  prefix = "  "    
+            prefix = "  "    
         end
-        self.lines[#self.lines+1] = lin
+        lines[#lines+1] = prefix..lin
     end
-    self.scrollHeight = #self.lines * self.characterH
+    self.scrollHeight = #lines * self.characterH
     
     --put lines back into chunks of text, 10 lines high each
-    local n = #self.lines//10
+    self.chunk = {}
+    local n = #lines//10
     for i = 0,n do
         local start = (i * 10)+1
-        local stop = math.min(#self.lines, start + 9) --nb concat range is inclusive, hence +9
-        self.chunk[#self.chunk+1] = {y = self.h - (stop * self.characterH), text = table.concat(self.lines, "\n", start, stop)} --self.cursorY + 
+        local stop = math.min(#lines, start + 9) --nb concat range is inclusive, hence +9
+        self.chunk[i+1] = {y = self.h - stop * self.characterH, text = table.concat(lines, "\n", start, stop)}
     end
-  --  print(#self.lines, #self.chunk)
-   -- self.cursorY = self.scrollHeight
 end
 
 function Soda.TextScroll:drawContent()
@@ -2994,7 +1863,6 @@ function Soda.TextScroll:drawContent()
     
 end
 
-
 --# List
 Soda.List = class(Soda.ScrollShape)
 
@@ -3012,15 +1880,9 @@ function Soda.List:init(t)
     for i,v in ipairs(t.text) do
         local number = ""
         if t.enumerate then number = i..") " end
-        
-        if t.panels then
-            panel = t.panels[i]
-            panel:hide() --hide the panel by default
-        end
-        
-        local item = Soda.Selector{parent = self, idNo = i, title = number..v, label = {x = 10, y = 0.5}, style = t.style, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42, panel = panel} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
+        local item = Soda.Selector{parent = self, idNo = i, label = { text = number..v, x = 10, y = 0.5}, style = t.style, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
         if t.defaultNo and i==t.defaultNo then
-          --  item.highlighted = true
+            item.highlighted = true
             self:selectFromList(item)
         end
     end
@@ -3036,13 +1898,12 @@ end
 function Soda.DropdownList(t)
     local this = Soda.Button{
         parent = t.parent, x = t.x, y = t.y, w = t.w, h = t.h,
-        title = "\u{25bc} "..t.title..": Select from list",
-        label = {x = 10, y = 0.5}
+        label = {text = "\u{25bc} "..t.title..": Select from list", x = 10, y = 0.5}
     }
 
     local callback = t.callback or null
 
-    this.list = Soda.List{
+    local list = Soda.List{
         parent = t.parent,
         hidden = true,
         x = t.x, y = this:bottom() - t.parent.h, w = t.w, h = this:bottom(),
@@ -3050,7 +1911,7 @@ function Soda.DropdownList(t)
         defaultNo = t.defaultNo,  
         enumerate = t.enumerate,
         callback = function(self, selected, txt) 
-            this.title = "\u{25bc} "..t.title..": "..txt
+            this.label.text = "\u{25bc} "..t.title..": "..txt
             this:setPosition() --to recalculate left-justified label
             self:hide() 
             callback(self, selected, txt)
@@ -3058,17 +1919,16 @@ function Soda.DropdownList(t)
     } 
     
     this.clearSelection = function() 
-        this.list:clearSelection() 
-        this.title = "\u{25bc} "..t.title..": Select from list"
+        list:clearSelection() 
+        this.label.text = "\u{25bc} "..t.title..": Select from list"
         this:setPosition() --to recalculate left-justified label
     end
     --add clear list method (...perhaps this should be a class, not a wrapper?)
     
-    this.callback = function() this.list:toggle() end --callback has to be outside of constructor only when two elements' callbacks both refer to each-other.
+    this.callback = function() list:toggle() end --callback has to be outside of constructor only when two elements' callbacks both refer to each-other.
     
     return this
 end
-
 
 --# Windows
 --factories for various window types
@@ -3077,24 +1937,9 @@ function Soda.Window(t)
     t.shape = t.shape or Soda.RoundedRectangle
     t.shapeArgs = t.shapeArgs or {}
     t.shapeArgs.radius = 25
-    t.label = t.label or {x=0.5, y=-15}
-    
-    local callback = t.callback or null
-    local this = Soda.Frame(t)
-    
-    if t.ok then
-        local title = "OK"
-        if type(t.ok)=="string" then title = t.ok end
-        Soda.Button{parent = this, title = title, x = -10, y = 10, w = 0.3, h = 40, callback = function() this.kill = true callback() end} --style = Soda.style.transparent,blurred = t.blurred,
-    end
-    
-    if t.cancel then
-        local title = "Cancel"
-        if type(t.cancel)=="string" then title = t.cancel end
-        Soda.Button{parent = this, title = title, x = 10, y = 10, w = 0.3, h = 40, callback = function() this.kill = true end,  style = Soda.style.warning} 
-    end
+    t.label = t.label or {x=0.5, y=-15, text = t.title}
    -- t.shadow = true
-    return this
+    return Soda.Frame(t)
 end
 
 function Soda.Window2(t)
@@ -3102,7 +1947,7 @@ function Soda.Window2(t)
     t.shapeArgs = t.shapeArgs or {}
     t.shapeArgs.radius = 25
     t.style = t.style or Soda.style.thickStroke
-    t.label = {x=0.5, y=-10}
+    t.label = {x=0.5, y=-10, text = t.title}
  --   t.shadow = true
     return Soda.Frame(t)
 end
@@ -3129,8 +1974,7 @@ function Soda.TextWindow(t)
     }  
     
     this.inputString = function(_, ...) scroll:inputString(...) end
-    this.clearString = function(_, ...) scroll:clearString(...) end
-    --pass the textscroll's method to the enclosing wrapper (make this a subclass, not a wrapper)
+    --pass the textscroll's method to the enclosing wrapper
     
     if t.closeButton then
         Soda.CloseButton{
@@ -3171,7 +2015,7 @@ end
 function Soda.Alert2(t)
     t.h = t.h or 0.25
     t.shadow = true
-    t.label = {x=0.5, y=0.6}
+    t.label = {x=0.5, y=0.6, text = t.title}
     t.alert = true  --if alert=true, underlying elements are inactive and darkened until alert is dismissed
     local callback = t.callback or null
     
@@ -3187,11 +2031,9 @@ end
 function Soda.Alert(t)
     t.h = t.h or 0.25
     t.shadow = true
-    t.label = {x=0.5, y=0.6}
+    t.label = {x=0.5, y=0.6, text = t.title}
     t.alert = true  --if alert=true, underlying elements are inactive and darkened until alert is dismissed
     local this = Soda.Window(t) 
-    local callback = t.callback or null
-    local ok = Soda.Button{parent = this, title = t.ok or "OK", x = 0, y = 0, w = 1, h = 50, shapeArgs = {corners = 1 | 8, radius = 25}, callback = function() this.kill = true callback() end,  style = Soda.style.transparent} --style = Soda.style.transparent,blurred = t.blurred,
+    local ok = Soda.Button{parent = this, title = t.ok or "OK", x = 0, y = 0, w = 1, h = 50, shapeArgs = {corners = 1 | 8, radius = 25}, callback = function() this.kill = true end,  style = Soda.style.transparent} --style = Soda.style.transparent,blurred = t.blurred,
     return this
 end
-
