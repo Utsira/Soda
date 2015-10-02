@@ -28,10 +28,12 @@ function Soda.Frame:init(t)
     end
     
     if t.parent then
-        t.parent.child[#t.parent.child+1] = self --if this has a parent, add it to the parent's list of children
+        local priority = t.priority or #t.parent.child+1
+        table.insert(t.parent.child, priority, self) --if this has a parent, add it to the parent's list of children
   --      self.inactive = self.inactive or self.parent.inactive
     else
-        table.insert( Soda.items, self) --no parent = top-level, added to Soda.items table
+        local priority = t.priority or #Soda.items+1
+        table.insert( Soda.items, priority, self) --no parent = top-level, added to Soda.items table
     end
     
     self.inactive = self.inactive or self.hidden  --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
@@ -94,6 +96,7 @@ end
 
 function Soda.Frame:show(direction)
     self.hidden = false --so that we can see animation
+    self.inactive=false
     if direction then --animation
         self:setPosition()
         local targetX = self.x
@@ -102,15 +105,17 @@ function Soda.Frame:show(direction)
         elseif direction==RIGHT then
             self.x = WIDTH + self.w * 0.5
         end
-        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut, function() self.inactive=false end) --user cannot touch buttons until animation completes
+        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut) --, function() self.inactive=false enduser cannot touch buttons until animation completes
+    --[[
     else --no animation
         self.inactive = false
+          ]]
     end
     if self.shapeArgs and self.shapeArgs.tex then self.shapeArgs.resetTex = self.shapeArgs.tex end --force roundedrect to switch texture (because two rects of same dimensions are cached as one mesh)
 end
 
 function Soda.Frame:hide(direction)
-    self.inactive=true --cannot touch element during deactivation animation
+    --self.inactive=true --cannot touch element during deactivation animation
     if direction then
         local targetX
         if direction==LEFT then
@@ -118,9 +123,10 @@ function Soda.Frame:hide(direction)
         elseif direction==RIGHT then
             targetX = WIDTH + self.w * 0.5
         end
-        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut, function() self.hidden = true end) --user cannot touch buttons until animation completes
+        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut, function() self.hidden = true self.inactive=true  end) --user cannot touch buttons until animation completes
     else
         self.hidden = true
+        self.inactive = true
     end
 end
 
@@ -132,16 +138,20 @@ end
 
 function Soda.Frame:activate()
     self.inactive = false
+    --[[
     for i,v in ipairs(self.child) do
         v:activate()
     end
+      ]]
 end
 
 function Soda.Frame:deactivate()
     self.inactive = true
+    --[[
     for i,v in ipairs(self.child) do
         v:deactivate()
     end
+      ]]
 end
 
 function Soda.Frame:draw(breakPoint)
@@ -170,12 +180,17 @@ function Soda.Frame:draw(breakPoint)
     if self.shape then
         self:drawShape(sty)
     end
-     Soda.setStyle(sty.text)
+    
+        popStyle()
+    pushStyle()
+    Soda.setStyle(Soda.style.default.text)
+  Soda.setStyle(sty.text)
+    
     self:drawContent()
-    --pushStyle()
+
     if self.label then
         
-        --Soda.setStyle(Soda.style.default.text)
+       -- Soda.setStyle(Soda.style.default.text)
        
         
         text(self.title, self.label.x, self.label.y)
@@ -186,7 +201,7 @@ function Soda.Frame:draw(breakPoint)
         text(self.content, self.w * 0.5, self.h * 0.6)
         textWrapWidth()
     end
-   -- popStyle()
+    popStyle()
     
     for i, v in ipairs(self.child) do --nb children are drawn with parent's transformation
         --[[
@@ -200,14 +215,14 @@ function Soda.Frame:draw(breakPoint)
         end
     end
     popMatrix()
-    popStyle()
+  --  popStyle()
 end
 
 function Soda.Frame:drawContent() end --overridden by subclasses
 
 function Soda.Frame:drawShape(sty)
   --  pushStyle()
-    --Soda.setStyle(Soda.style.default.shape)
+    Soda.setStyle(Soda.style.default.shape)
     Soda.setStyle(sty.shape)
     self.shape(self.shapeArgs)
    -- popStyle()
@@ -241,8 +256,9 @@ function Soda.Frame:touched(t, tpos)
     local trans = tpos - vec2(self:left(), self:bottom()) --translate the touch position
     for i = #self.child, 1, -1 do --children take priority over frame for touch
         local v = self.child[i]
-        if not v.inactive and v:touched(t, trans) then 
-            return true 
+        if not v.inactive then
+            if v:touched(t, trans) then
+            return true end
         end
     end
   --  if self.alert then return true end --or self:pointIn(tpos.x, tpos.y) 
@@ -257,6 +273,7 @@ function Soda.Frame:selectFromList(child) --method used by parents of selectors.
         end
     else
         if self.selected then 
+
             self.selected.highlighted = false 
             --[[
             for i,v in ipairs(self.child) do
