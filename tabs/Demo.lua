@@ -1,3 +1,162 @@
+calculator = {}
+function calculator.init()
+    calculator.window = Soda.Window{
+        title = "Calculator",
+        x = -10, y = 10, w = 350, h = 450,
+        close = true,
+        blurred = true,
+        shadow = true,
+        style = {shape = {fill = color(255), stroke = color(50, 128)}, text = {fontSize = 25, fill = color(255), font = "HelveticaNeue-Light" }}-- Soda.style.darkBlurred
+    }
+    local s = 70
+    local result = true
+    
+    local display = Soda.Frame{
+        parent = calculator.window,
+        x = 0, y = -50, w = 1, h = 120,
+        label = {x = -5, y = 0}, --justify right
+        title = "0",
+        shape = Soda.rect, --Soda.RoundedRectangle,
+        --style = Soda.style.darkIcon,
+        style = {shape = {fill = color(200, 230, 255, 160)}, text = {fontSize = 40, font = "HelveticaNeue", fill = color(59, 240), textWrapWidth = 340}}
+    }
+    
+    local history = Soda.Frame{
+        parent = display,
+        x = 0, y = -0.001, w = 1, h = 30,
+        label = {x = -5, y = 0}, --justify right
+        title = "",
+        style = {shape = {}, text = {fontSize = 18, font = "HelveticaNeue", fill = color(59, 240), textWrapWidth = 340}}
+    }
+    
+    local function onPress(sender)
+        local inkey = sender.title
+        if inkey:find("%d") then --number
+            if display.title == "0" or result then --
+                display.title = inkey --overwrite
+                result = false
+            else
+                display.title = display.title..inkey --append
+            end
+            
+        elseif inkey == "." then --decimal point
+            if not result and display.title:find("%d$") and not display.title:find("%.%d-$") then --display cannot be a result,  and last character of display must be digit and last number must not already contain decimal
+                result = false
+                display.title = display.title..inkey 
+            end
+            
+        else --operator    
+             if display.title ~= "0" and display.title:find("%d$") then --last character of display must be digit
+                result = false
+                display.title = display.title..inkey 
+            end           
+        end
+        display:setPosition() --recalculate justify right
+    end
+    
+    local buttonStyle1 = {shape = {noFill = true, stroke = color(160,128)}, text = {fontSize = 30, fill = color(255), font = "HelveticaNeue"}}
+    local buttonStyle2 = {shape = {fill = color(255, 180, 0, 200)}, text = buttonStyle1.text}
+    local buttonStyle3 = {shape = {fill = color(255), stroke = color(128)}, text = {fontSize = 25, 
+    fill = color(0, 49, 255, 255), font = "HelveticaNeue-Light"}}
+    Soda.Button{
+        parent = calculator.window,
+        w = s*2, h = s,
+        x = 0, y = 0,
+        title = "0",
+        style = buttonStyle1,
+        shapeArgs = {radius = 25, corners = 1},
+        callback = onPress
+    }
+    
+    Soda.Button{
+        parent = calculator.window,
+        w = s, h = s,
+        x = s*2, y = 0,
+        title = ".",
+        style = buttonStyle1,
+        shapeArgs = {corners = 0},
+        callback = onPress
+    }
+ 
+    for n = 0,8 do       
+        Soda.Button{
+            parent = calculator.window,
+            w = s, h = s,
+            x = s * (n%3), y = s * (1 + n//3),
+            title = tostring(n+1),
+            style = buttonStyle1,
+            shapeArgs = {corners = 0},
+           -- shape = Soda.rect,
+            callback = onPress
+        }
+    end
+    local buttons = {"\u{00F7}", "\u{00D7}", "-", "+"}
+    
+    for n = 0,3 do
+        Soda.Button{
+            parent = calculator.window,
+            w = s, h = s,
+            x = s * 3, y = s * n,
+            title = buttons[n+1],
+            style = buttonStyle2, --Soda.style.darkIcon,
+            shapeArgs = {corners = 0},
+            callback = onPress
+        }        
+    end
+    
+    --backspace
+    Soda.Button{
+        parent = calculator.window,
+        w = s, h = s,
+        x = s * 4, y = s * 3,
+        title = "\u{232B}",
+         style = buttonStyle3,
+        shapeArgs = {corners = 0},
+        callback = function() 
+            if display.title:find("[\u{00F7}\u{00D7}]$") then
+                display.title = display.title:gsub("\u{00F7}$", ""):gsub("\u{00D7}$", "") --delete multibyte unicode character
+            else
+                display.title = display.title:sub(1,-2) 
+            end
+            if display.title == "" then display.title = "0" end
+            display:setPosition() --recalculate justify right
+        end
+    }  
+    
+    Soda.Button{
+        parent = calculator.window,
+        w = s, h = s,
+        x = s * 4, y = s * 2,
+        title = "AC",
+        shapeArgs = {corners = 0},
+        style = buttonStyle3,
+        callback = function() 
+            display.title = "0" 
+            display:setPosition() --recalculate justify right
+        end
+    }  
+    
+    Soda.Button{
+        parent = calculator.window,
+        w = s, h = s * 2,
+        x = s * 4, y = 0,
+        title = "=",
+        style = buttonStyle2,
+        shapeArgs = {radius = 25, corners = 8},
+        callback = function()
+            if display.title:find("%d$") then --string must end with a digit
+                history.title = display.title.."="
+                history:setPosition()
+                local out = loadstring("return "..display.title:gsub("\u{00D7}", "*"):gsub("\u{00F7}", "/"))() --substitute multiply and divide signs
+                if out%1 == 0 then out = math.tointeger(out) end --lop off trailing .0
+                display.title = tostring(out)
+                display:setPosition() --recalculate justify right
+                result = true --ie, next press will replace this output
+            end
+        end
+    }  
+end
+    
 function demo1()
     --[[
     You only need to give an element a temporary handle (a local variable name) if it is the parent of other elements, or you need to refer to it in a callback
@@ -59,7 +218,7 @@ function demo1()
         parent = panel, 
         x = 20, y = 20, w = -20, h = -140,
         text = listProjectTabs(), -- text of list items taken from current project tabs
-        callback = function (self, selected, txt) Soda.TextWindow{title = txt, textBody = readProjectTab(txt), shadow = true, closeButton = true, style = Soda.style.thickStroke, shapeArgs = {radius = 25}} end --a window for scrolling through large blocks of text
+        callback = function (self, selected, txt) Soda.TextWindow{title = txt, textBody = readProjectTab(txt), shadow = true, close = true, style = Soda.style.thickStroke, shapeArgs = {radius = 25}} end --a window for scrolling through large blocks of text
     }
     
     --a segmented button to choose between the above 3 panels:
