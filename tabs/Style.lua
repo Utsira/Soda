@@ -116,6 +116,8 @@ Soda.style = {
     }
 }
 
+Soda.symbol = {menu = "\u{2630}", back = "\u{ff1c}", forward = "\u{ff1e}", close = "\u{2715}", down = "\u{25bc}", gear = "\u{2699}", add = "\u{FF0B}", delete = "\u{232B}"}
+
 function Soda.setStyle(sty)
     for k,v in pairs(sty) do
         if type(v)=="string" and Soda.theme[v] then
@@ -142,8 +144,8 @@ function Soda.fontSize(v)
     fontSize(v)
 end
 
-function Soda.textWrap()
-    
+function Soda.textWrapWidth(v)
+    textWrapWidth(v)
 end
 
 function Soda.strokeWidth(v)
@@ -160,7 +162,7 @@ end
 
 function Soda.rect(t)
   --  rect(0, 0, self.w or self.parent.w, self.h or self.parent.h)
-    rect(t.x, t.y, t.w, t.h)
+    rect(t.x, t.y, t.w+1, t.h+2)
 end
 
 function Soda.line(t)
