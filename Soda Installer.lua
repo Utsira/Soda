@@ -1,5 +1,179 @@
-
 --# Demo
+calculator = {}
+function calculator.init()
+    calculator.window = Soda.Window{
+        title = "Calculator",
+        x = -10, y = 10, w = 350, h = 450,
+        close = true,
+        blurred = true,
+        shadow = true,
+        hidden = true,
+        doNotKill = true
+      --  style = {shape = {fill = color(255), stroke = color(50, 128)}, text = {fontSize = 1.25, fill = color(255), font = "HelveticaNeue-Light" }}-- Soda.style.darkBlurred
+    }
+    local s = 70
+    local result = true
+    
+    local display = Soda.Frame{
+        parent = calculator.window,
+        x = 0, y = -50, w = 1, h = 120,
+        label = {x = -5, y = 0}, --justify right
+        title = "0",
+        shape = Soda.rect, --Soda.RoundedRectangle,
+        --style = Soda.style.darkIcon,
+        style = {shape = {fill = color(200, 230, 255, 160)}, text = {fontSize = 2, font = "HelveticaNeue", fill = color(59, 240), textWrapWidth = 340, textAlign = RIGHT}}
+    }
+    
+    local history = Soda.Frame{
+        parent = display,
+        x = 0, y = -0.001, w = 1, h = 30,
+        label = {x = -5, y = 0}, --justify right
+        title = "",
+        style = {shape = {}, text = {fontSize = 0.9, font = "HelveticaNeue", fill = color(59, 240), textWrapWidth = 340}}
+    }
+    
+    local function onPress(sender)
+        local inkey = sender.title
+        if inkey:find("%d") then --number
+            if display.title == "0" or result then --
+                display.title = inkey --overwrite
+                result = false
+            else
+                display.title = display.title..inkey --append
+            end
+            
+        elseif inkey == "." then --decimal point
+            if not result and display.title:find("%d$") and not display.title:find("%.%d-$") then --display cannot be a result,  and last character of display must be digit and last number must not already contain decimal
+                result = false
+                display.title = display.title..inkey 
+            end
+            
+        else --operator    
+             if display.title ~= "0" and display.title:find("%d$") then --last character of display must be digit
+                result = false
+                display.title = display.title..inkey 
+            end           
+        end
+        display:setPosition() --recalculate justify right
+    end
+    
+    local buttonStyle1 = {shape = {noFill = true, stroke = color(160,128)}, text = {fontSize = 1.5, fill = color(255), font = "HelveticaNeue"}}
+    local buttonStyle2 = {
+        shape = {fill = color(255, 180, 0, 200)}, 
+        text = {fill = "white", fontSize = 1.5}, 
+        highlight = {
+            shape = {fill = "white", stroke = color(255, 180, 0)}, 
+            text = {fill = color(255, 180, 0), fontSize = 1.5}
+        }
+    }
+    local buttonStyle3 = {shape = {fill = color(255), stroke = color(128)}, text = {fontSize = 1.25, 
+    fill = color(0, 49, 255, 255), font = "HelveticaNeue-Light"}}
+
+    
+    Soda.Button{
+        parent = calculator.window,
+        w = s*2, h = s,
+        x = 0, y = 0,
+        title = "0",
+        -- style = buttonStyle1,
+        subStyle = {"icon"},
+        shapeArgs = {radius = 25, corners = 1},
+        callback = onPress
+    }
+    
+    Soda.Button{
+        parent = calculator.window,
+        w = s, h = s,
+        x = s*2, y = 0,
+        title = ".",
+        -- style = buttonStyle1,
+        subStyle = {"icon"},
+        shapeArgs = {corners = 0},
+        callback = onPress
+    }
+ 
+    for n = 0,8 do       
+        Soda.Button{
+            parent = calculator.window,
+            w = s, h = s,
+            x = s * (n%3), y = s * (1 + n//3),
+            title = tostring(n+1),
+         --   style = buttonStyle1,
+            subStyle = {"icon"},
+            shapeArgs = {corners = 0},
+           -- shape = Soda.rect,
+            callback = onPress
+        }
+    end
+    local buttons = {"\u{00F7}", "\u{00D7}", "-", "+"}
+    
+    for n = 0,3 do
+        Soda.Button{
+            parent = calculator.window,
+            w = s, h = s,
+            x = s * 3, y = s * n,
+            title = buttons[n+1],
+            style = buttonStyle2, --Soda.style.darkIcon,
+            shapeArgs = {corners = 0},
+            callback = onPress
+        }        
+    end
+    
+    --backspace
+    Soda.Button{
+        parent = calculator.window,
+        w = s, h = s,
+        x = s * 4, y = s * 3,
+        title = "\u{232B}",
+       --  style = buttonStyle3,
+       -- subStyle = {"icon", "button"},
+        shapeArgs = {corners = 0},
+        callback = function() 
+            if display.title:find("[\u{00F7}\u{00D7}]$") then
+                display.title = display.title:gsub("\u{00F7}$", ""):gsub("\u{00D7}$", "") --delete multibyte unicode character
+            else
+                display.title = display.title:sub(1,-2) 
+            end
+            if display.title == "" then display.title = "0" end
+            display:setPosition() --recalculate justify right
+        end
+    }  
+    
+    Soda.Button{
+        parent = calculator.window,
+        w = s, h = s,
+        x = s * 4, y = s * 2,
+        title = "AC",
+        shapeArgs = {corners = 0},
+      --  style = buttonStyle3,
+       -- subStyle = {"icon", "button"},
+        callback = function() 
+            display.title = "0" 
+            display:setPosition() --recalculate justify right
+        end
+    }  
+    
+    Soda.Button{
+        parent = calculator.window,
+        w = s, h = s * 2,
+        x = s * 4, y = 0,
+        title = "=",
+        style = buttonStyle2,
+        shapeArgs = {radius = 25, corners = 8},
+        callback = function()
+            if display.title:find("%d$") then --string must end with a digit
+                history.title = display.title.."="
+                history:setPosition()
+                local out = loadstring("return "..display.title:gsub("\u{00D7}", "*"):gsub("\u{00F7}", "/"))() --substitute multiply and divide signs
+                if out%1 == 0 then out = math.tointeger(out) end --lop off trailing .0
+                display.title = tostring(out)
+                display:setPosition() --recalculate justify right
+                result = true --ie, next press will replace this output
+            end
+        end
+    }  
+end
+    
 function demo1()
     --[[
     You only need to give an element a temporary handle (a local variable name) if it is the parent of other elements, or you need to refer to it in a callback
@@ -24,15 +198,15 @@ function demo1()
     local panel = Soda.Window{ --give parent a local handle, in this case "panel", to define children
         title = "Demonstration", 
         hidden = true, --not visible or active initially
-        x=0.7, y=0.5, w=0, h=0.7, 
-        blurred = true, style = Soda.style.darkBlurred, --gaussian blurs what is underneath it
+        x=0.4, y=0.5, w=0, h=0.7, 
+        blurred = true, --style = Soda.style.darkBlurred, --gaussian blurs what is underneath it
         shadow = true,
         shapeArgs = { corners = 1 | 2} --only round left-hand corners
     }
     
     --A menu button to show & hide the main panel
     
-    local menu = Soda.MenuToggle{x = -20, y = -20, --a button to activate the above panel
+    local menu = Soda.MenuToggle{x = -20, y = -20, subStyle = {"darkIcon"}, --a button to activate the above panel
     callback = function() panel:show(RIGHT) end,
     callbackOff = function() panel:hide(RIGHT) end,
     }
@@ -48,20 +222,21 @@ function demo1()
     local buttonPanel = Soda.Frame{
         parent = panel,
         x = 20, y = 20, w = -20, h = -140, --20 pixel border on left, right, bottom
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, --style = Soda.style.translucent,
+        subStyle = {"translucent"}, --
     }
     
     local textEntryPanel = Soda.Frame{
         parent = panel,
         x = 20, y = 20, w = -20, h = -140,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,     
+        shape = Soda.RoundedRectangle, subStyle = {"translucent"}, --style = Soda.style.translucent,     
     }
     
     local list = Soda.List{ --a vertically scrolling list of items
         parent = panel, 
         x = 20, y = 20, w = -20, h = -140,
         text = listProjectTabs(), -- text of list items taken from current project tabs
-        callback = function (self, selected, txt) Soda.TextWindow{title = txt, textBody = readProjectTab(txt), shadow = true, closeButton = true, style = Soda.style.thickStroke, shapeArgs = {radius = 25}} end --a window for scrolling through large blocks of text
+        callback = function (self, selected, txt) Soda.TextWindow{title = txt, textBody = readProjectTab(txt), shadow = true, close = true, style = Soda.style.thickStroke, shapeArgs = {radius = 25}} end --a window for scrolling through large blocks of text
     }
     
     --a segmented button to choose between the above 3 panels:
@@ -98,7 +273,8 @@ function demo1()
         callback = function(self, inkey)
             Soda.Alert{
                 title = inkey.."?!?\n\nWas that really your nickname?",
-               style = Soda.style.darkBlurred, blurred = true,
+             --  style = Soda.style.darkBlurred, 
+                blurred = true,
             }
         end
     }    
@@ -111,7 +287,8 @@ function demo1()
         callback = function(self, inkey)
             Soda.Alert{
               title = inkey.."!\n\u{1f63b}\u{1f436}\u{1f430}\n\nAwwww. Cute name.",
-               style = Soda.style.darkBlurred, blurred = true,
+             --  style = Soda.style.darkBlurred, 
+                blurred = true,
             }
         end
     }
@@ -191,7 +368,7 @@ function demo1()
     Soda.Button{
     parent = buttonPanel, 
     title = "Do not press", 
-    style = Soda.style.warning, 
+    subStyle = {"warning"}, --style = Soda.style.warning, 
     x = -20, y = 20, w = 0.4, h = 40, 
     callback = 
         function()
@@ -200,7 +377,8 @@ function demo1()
                 ok = "Here, have a medal",
                 y=0.6, h = 0.3,
         
-                style = Soda.style.darkBlurred, blurred = true, 
+                --style = Soda.style.darkBlurred, 
+                blurred = true, 
             }
         end
     }
@@ -219,7 +397,7 @@ function demo2()
     end}
       local   ok = Soda.Button{parent = box, title = "OK", x = 20, y = 20, w = 0.3, h = 40}
     
-      local  warning = Soda.Button{parent = box, title = "Do not press", style = Soda.style.warning, x = -20, y = 20, w = 0.3, h = 40, callback = 
+      local  warning = Soda.Button{parent = box, title = "Do not press", subStyle = {"warning"}, --style = Soda.style.warning, x = -20, y = 20, w = 0.3, h = 40, callback = 
         function()
             Soda.Alert{title = "CONGRATULATIONS!\n\nYou held out\n"..(ElapsedTime - t).." seconds", y=0.6, style = Soda.style.darkBlurred, blurred = true, alert = true}
         end} --blurred = true, alert = true,
@@ -239,29 +417,34 @@ function overview(t)
     local win =Soda.Window{
         title = "Soda v"..Soda.version.." Overview",
         w = 0.97, h = 0.7,
-        blurred = true, 
+         blurred = true, 
         shadow = true, 
-        style = Soda.style.darkBlurred, 
+      --  style = Soda.style.darkBlurred, 
     }
     
     local aboutPanel = Soda.Frame{
         parent = win,
         x = 10, y = 10, w = -10, h = -110, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+    }
+    
+    local about = Soda.Frame{
+        parent = aboutPanel,
+        x = 0, y = -0.001, w = 1, h = 0.7,
+        shape = Soda.RoundedRectangle, --style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16},
-        label = { x = 0.5, y = 0.5},
+        title = "About Soda",
+         label = { x = 0.5, y = 0.5},
         title = 
     [[Soda is a library for producing graphic user interfaces like 
     the one you are looking at now.
     
-    Press the segment buttons to see some of the things Soda is 
-    capable of.
-    
+    Press the segment buttons above to see the interface elements Soda produces.   
     ]]..(t.content or "")
     }
     
     Soda.Button{
-        parent = aboutPanel, 
+        parent = about, 
         x = 10, y = 10, h = 40,
         title = "Online Documentation",
         callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
@@ -269,14 +452,30 @@ function overview(t)
    
     if t.ok then 
     Soda.Button{
-        parent = aboutPanel,
+        parent = about,
         x = -10, y = 10, h = 40,
       --  shapeArgs = {radius = 16},
-          style = Soda.style.warning,
+          subStyle = {"warning"}, --style = Soda.style.warning,
         title = t.ok,
         callback = t.callback
     }
     end
+    
+    local demo = Soda.Frame{
+        parent = aboutPanel,
+        x = 0, y = 0, w = 1, h = 0.29,
+        shape = Soda.RoundedRectangle, --style = Soda.style.translucent,
+        subStyle = {"translucent"},
+        shapeArgs = {radius = 16},
+        title = "Demos",        
+    }
+    
+    Soda.Button{
+        parent = demo,
+        x = 0.3, y = 0.4, w = 250, h = 40,
+        title = "Calculator",
+        callback = function() calculator.window:show(RIGHT) end
+    }
     
     local buttonPanel = Soda.Frame{
         parent = win,
@@ -296,7 +495,8 @@ function overview(t)
         parent = win,
         title = "Sliders. At slow slide speeds movement becomes more fine-grained",
         x = 10, y = 10, w = -10, h = -110,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, -- style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
@@ -311,7 +511,8 @@ function overview(t)
         parent = win,
         title = "Text Entry fields with a draggable cursor",
         x = 10, y = -110, w = -10, h = 0.6,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, -- style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
@@ -319,7 +520,8 @@ function overview(t)
         parent = win,
         title = "Vertically scrolling lists are another way of selecting one choice from many",
         x = 10, y = 10, w = -10, h = -110,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, -- style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
@@ -334,7 +536,8 @@ function overview(t)
     Sed vitae metus quis mauris congue tincidunt vel sit amet lorem. Mauris lectus lorem, facilisis in dapibus et, congue quis nunc. Fusce convallis mi urna, vitae mattis felis sodales et. Aliquam et fringilla purus, eu vehicula diam. Sed facilisis mauris vitae augue sodales aliquam. In ultrices metus ut eleifend condimentum. Praesent venenatis rhoncus felis, eget vehicula orci ornare non. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Vivamus eget vulputate mauris. Pellentesque id tempus sapien.
     ]], 100),
         x = 10, y = 10, w = -10, h = -110,
-        shape = Soda.RoundedRectangle, style = Soda.style.default,
+        shape = Soda.RoundedRectangle, --style = Soda.style.default,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}    
     }
     
@@ -351,35 +554,42 @@ function overview(t)
         parent = buttonPanel,
         title = "Presets for frequently-used buttons",
         x = 0, y = 0.5, w = 1, h = 0.32,
-          shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+          shape = Soda.RoundedRectangle, --style = Soda.style.translucent,
+        subStyle = {"translucent"},
           shapeArgs = {radius = 16}
     }
     
-    local div = 1/8
+    local div = 1/9
     local div2 = div/2
     
     Soda.BackButton{
     parent = buttonPresets,
+    subStyle = {"darkIcon"},
     x = div2, y = 0.4}
     
     Soda.ForwardButton{
     parent = buttonPresets,
+    subStyle = {"darkIcon"},
     x = div2 + div, y = 0.4}
     
     Soda.SettingsButton{
     parent = buttonPresets,
+    subStyle = {"darkIcon"},
     x = div2 + div * 2, y = 0.4}
     
     Soda.AddButton{
     parent = buttonPresets,
+    subStyle = {"icon"},
     x = div2 + div * 3, y = 0.4}
     
     Soda.QueryButton{
     parent = buttonPresets,
+    subStyle = {"icon"},
     x = div2 + div * 4, y = 0.4}
     
     Soda.MenuButton{
     parent = buttonPresets,
+    subStyle = {"icon"},
     x = div2 + div * 5, y = 0.4}
     
     Soda.DropdownButton{
@@ -391,15 +601,21 @@ function overview(t)
     x = div2 + div * 7, y = 0.4
     }
     
+    Soda.DeleteButton{
+    parent = buttonPresets,
+    x = div2 + div * 8, y = 0.4
+    }
+    
     local textButtons = Soda.Frame{
         parent = buttonPanel,
         title = "Text and symbol based buttons in various shapes and styles",
         x = 0, y = -0.001, w = 1, h = 0.32,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, --style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
-    div = 1/6
+    div = 1/5
     div2 = div/2
     local w = div -0.01
     
@@ -409,41 +625,45 @@ function overview(t)
         x = div2, y = 0.4, w = w, h = 40,
     }
     
+    --[[
     Soda.Button{
         parent = textButtons, 
         title = "Dark", 
-        style = Soda.style.dark,
+        --style = Soda.style.dark,
+        subStyle = {"listItem"},
         x = div2 + div, y = 0.4, w = w, h = 40,
     }
+      ]]
     
     Soda.Button{
         parent = textButtons, 
         title = "Warning", 
-        style = Soda.style.warning, 
-        x = div2 + div * 2, y = 0.4, w = w, h = 40, 
+        subStyle = {"warning"}, --style = Soda.style.warning, 
+        x = div2 + div , y = 0.4, w = w, h = 40, 
     }
     
     Soda.Button{
         parent = textButtons, 
         title = "Square", 
         shape = Soda.rect,
-        x = div2 + div * 3, y = 0.4, w = w, h = 40,
+        x = div2 + div * 2, y = 0.4, w = w, h = 40,
     }
     
     Soda.Button{
         parent = textButtons, 
         title = "Lozenge", 
         shapeArgs = {radius = 20},
-        x = div2 + div * 4, y = 0.4, w = w, h = 40,
+        x = div2 + div * 3, y = 0.4, w = w, h = 40,
     }
     
     local div3 = div/5
-    local base = div2 + div * 5
+    local base = div2 + div * 4
     
     Soda.Button{
         parent = textButtons, 
         title = "\u{1f310}", 
-        style = Soda.style.darkIcon,
+       -- style = Soda.style.darkIcon,
+        subStyle = {"listItem"},
         shape = Soda.ellipse,
         x = base - div3, y = 0.4, w = 40, h = 40,
     }
@@ -462,7 +682,8 @@ function overview(t)
         parent = textButtons, 
         title = "\u{1f374}", 
       --  shape = Soda.ellipse,
-        style = Soda.style.darkIcon,
+       -- style = Soda.style.darkIcon,
+        subStyle = {"listItem"},
         x = base + div3, y = 0.4, w = 40, h = 40,
     }
     
@@ -470,7 +691,8 @@ function overview(t)
         parent = buttonPanel,
         title = "Segmented buttons for selecting one option from many",
         x = 0, y = 0, w = 1, h = 0.32,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle,-- style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
@@ -486,7 +708,8 @@ function overview(t)
         parent = switchPanel,
         title = "iOS-style switches",
         x = 0, y = -10, w = 0.49, h = 0.75,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle,-- style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
@@ -514,7 +737,8 @@ function overview(t)
         parent = switchPanel,
         title = "Text and preset-based toggles",
         x = -0.001, y = -10, w = 0.49, h = 0.75,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle,-- style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
@@ -593,8 +817,9 @@ function overview(t)
     local regularAlert = Soda.Frame{
         parent = dialogPanel,
         title = "Press the buttons to trigger alerts in the default style",
-        x = 0, y = 0.85, w = 1, h = 0.3,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        x = 0, y = -0.001, w = 1, h = 0.32,
+        shape = Soda.RoundedRectangle, --style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
@@ -604,7 +829,8 @@ function overview(t)
         x = 10, y = 0.4, w = 0.4, h = 40,
         callback = function() 
             Soda.Alert2{
-                title = "A 2-button\nProceed or cancel dialog",
+                title = "Alert",
+                content = "A 2-button\nProceed or cancel dialog",
             }
         end
     }
@@ -612,12 +838,13 @@ function overview(t)
     Soda.Button{
     parent = regularAlert, 
     title = "Alert", 
-    style = Soda.style.warning, 
+    subStyle = {"warning"}, --style = Soda.style.warning, 
     x = -10, y = 0.4, w = 0.4, h = 40, 
     callback = 
         function()
             Soda.Alert{ --an alert box with a single button
-                title = "A one-button\nalert", 
+                title = "Alert",
+                content = "A one-button\nalert", 
                 y=0.6, h = 0.3,
             }
         end
@@ -626,8 +853,9 @@ function overview(t)
     local blurAlert = Soda.Frame{
         parent = dialogPanel,
         title = "Press the buttons to trigger alerts with dark, blurred panels",
-        x = 0, y = 0.53, w = 1, h = 0.3,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        x = 0, y = 0.5, w = 1, h = 0.32,
+        shape = Soda.RoundedRectangle, --style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
@@ -637,8 +865,10 @@ function overview(t)
         x = 10, y = 0.4, w = 0.4, h = 40,
         callback = function() 
             Soda.Alert2{
-                title = "A 2-button\nProceed or cancel dialog",
-                style = Soda.style.darkBlurred, blurred = true, 
+                title = "Alert",
+                content = "A 2-button\nProceed or cancel dialog",
+              --  style = Soda.style.darkBlurred, 
+                blurred = true, 
             }
         end
     }
@@ -646,18 +876,56 @@ function overview(t)
     Soda.Button{
     parent = blurAlert, 
     title = "Alert (blurred)", 
-    style = Soda.style.warning, 
+    subStyle = {"warning"}, --style = Soda.style.warning, 
     x = -10, y = 0.4, w = 0.4, h = 40, 
     callback = 
         function()
             Soda.Alert{ --an alert box with a single button
-                title = "A one-button\nalert", 
+                title = "Alert",
+                content = "A one-button\nalert", 
                 y=0.6, h = 0.3,
-                style = Soda.style.darkBlurred, blurred = true, 
+             --   style = Soda.style.darkBlurred, 
+                blurred = true, 
             }
         end
     }
     
+    --window panel
+    local windowPresets = Soda.Frame{
+        parent = dialogPanel,
+        title = "Press the buttons to see the window presets",
+        x = 0, y = 0, w = 1, h = 0.32,
+        shape = Soda.RoundedRectangle, --style = Soda.style.translucent,
+        subStyle = {"translucent"},
+        shapeArgs = {radius = 16}
+    }
+    
+    Soda.Button{
+        parent = windowPresets, 
+        title = "Window", 
+        x = 10, y = 0.4, w = 0.4, h = 40,
+        callback = function() 
+            Soda.Window{
+                title = "Window",
+                content = "A regular window with optional ok, cancel, and close buttons and optional drop-shadow",
+                ok = true, cancel = true, close = true, shadow = true
+            }
+        end
+    }
+    
+    Soda.Button{
+        parent = windowPresets, 
+        title = "Blurred Window", 
+        x = -10, y = 0.4, w = 0.4, h = 40,
+        callback = function() 
+            Soda.Window{
+                title = "Blurred Window",
+                content = "A blurred window with ok, cancel, and close buttons",
+                blurred = true,
+                ok = true, cancel = true, close = true
+            }
+        end
+    }
     --text entry panel
     
     Soda.TextEntry{ --text entry box
@@ -749,7 +1017,7 @@ function splashScreen()
         parent = aboutPanel,
         x = -10, y = 10, h = 40,
       --  shapeArgs = {radius = 16},
-          style = Soda.style.warning,
+          subStyle = {"warning"}, --style = Soda.style.warning,
         title = "Begin Tutorial"
     }
     
@@ -818,7 +1086,7 @@ function splashScreen()
         shapeArgs = {radius = 16},--, corners = 1 | 2
         text = {"About", "Buttons", "Switches", "Dialogs", "Text Entry", "Lists", "Text Scrolls"}, 
         panels = {aboutPanel, buttonPanel, switchPanel, dialogPanel, textEntryPanel, listPanel, scrollPanel},
-        defaultNo = 1
+        default = 1
     }
     
     --button panel!
@@ -895,7 +1163,7 @@ function splashScreen()
     Soda.Button{
         parent = textButtons, 
         title = "Warning", 
-        style = Soda.style.warning, 
+        subStyle = {"warning"}, --style = Soda.style.warning, 
         x = div2 + div * 2, y = 0.4, w = w, h = 40, 
     }
     
@@ -1043,7 +1311,7 @@ function splashScreen()
     Soda.Button{
     parent = regularAlert, 
     title = "Alert", 
-    style = Soda.style.warning, 
+    subStyle = {"warning"}, --style = Soda.style.warning, 
     x = -10, y = 0.4, w = 0.4, h = 40, 
     callback = 
         function()
@@ -1077,7 +1345,7 @@ function splashScreen()
     Soda.Button{
     parent = blurAlert, 
     title = "Alert (blurred)", 
-    style = Soda.style.warning, 
+    subStyle = {"warning"}, --style = Soda.style.warning, 
     x = -10, y = 0.4, w = 0.4, h = 40, 
     callback = 
         function()
@@ -1138,12 +1406,13 @@ end
 
 --# Soda
 Soda = {}
-Soda.version = "0.5"
-
+Soda.version = "0.6"
+SodaIsInstalled = true
 function Soda.setup()
     --  parameter.watch("#Soda.items")
     parameter.watch("Soda.UIoffset")
     Soda.Assets()
+    Soda.baseFontSize = 20
     Soda.theme = Soda.themes.default
     textAlign(CENTER)
     rectMode(CENTER)
@@ -1283,6 +1552,7 @@ end
 
 --# Main
 -- Soda
+saveProjectInfo("Description", "Soda v"..Soda.version)
 
 displayMode(OVERLAY)
 displayMode(FULLSCREEN)
@@ -1292,8 +1562,10 @@ function setup()
     profiler.init()
     parameter.watch("#Soda.items")
     Soda.setup()
-   -- demo1() --do your setting up here
+
     overview{}
+    -- demo1() --do your setting up here
+    calculator.init()
 end
 
 function draw()
@@ -1356,123 +1628,127 @@ end
 --# Style
 Soda.themes = {
 default = { 
-fill = color(255, 200)  ,stroke = color(152, 200)  ,stroke2 = color(69, 200)  , text = color(0, 97, 255)  ,
-text2 = color(0)  ,warning = color(220, 0, 0)  ,darkFill = color(40, 40)  ,darkStroke = color(70, 128)  , 
-darkStroke2 = color(20,20)  ,darkText = color(195, 223, 255)  }
+white = color(249, 248, 248, 240)  ,lightGrey = color(217, 200)  ,midGrey = color(69, 200)  , 
+blue = color(56, 155, 252)  , darkBlue = color(34, 94, 153)  ,
+black = color(0)  ,red = color(204, 41, 41)  ,darkGrey = color(40)  , darkTrans = color(40,40),  
+grey = color(128, 128) }
 }
 
 Soda.style = {
-    default = {
-        shape = {fill = "fill",
-            stroke = "stroke",
-            strokeWidth = 2},
-        text = {
-            fill = "text",
-            font = "HelveticaNeue-Light",
-            fontSize = 20},
-        highlight = {
-            text = { fill = "fill"},
-            shape = {fill = "text",},
-        }
+    shadow = {shape = { fill = color(0, 90), stroke = color(0, 90)}  }, --a special style used to produce shadows 20, 100
+    inactive = { shape = {stroke = "lightGrey"}, text = {fill = "lightGrey"} } --greyed out elements
+}
+
+Soda.style.default = {
+    shape = {fill = "white",
+        stroke = "lightGrey",
+        strokeWidth = 2,
+        -- highlight = "blue"
     },
-    thickStroke = {shape = { strokeWidth = 10}, text = {}},
-    borderless = {
-        shape = {strokeWidth = 0},
-        text = {fill = "fill"}},
-        highlight = {shape = {}, text = {}},
-    transparent = {
-        shape = {noFill = true, --color(0,0),
-                stroke = "darkStroke"}, --stroke = "stroke2"
-        text = {fill = "fill"}, --fill = "darkText"
-        highlight = { 
-        shape = {fill = "darkText"},
-        text = {} --fill = "stroke2"
-        }
-    },
-    translucent = {
-        shape = {fill = "darkFill", --color(255, 40),
-                stroke = "stroke2"},
-        text = {fill = "fill"}, -- fill = "darkText"
-        highlight = { 
-        shape = {},--fill = "darkText"
-        text = {}--fill = "stroke2"
-        }
-    },
-    
-    warning = {
-        shape = {fill = "warning",
-            stroke = "stroke2",
+    text = {
+        fill = "darkGrey",
+        font = "HelveticaNeue-Light",
+        fontSize = 1},
+    title = {
+        fill = "blue",
+        font = "HelveticaNeue",},
+
+--substyles
+    button = {
+        text = {fill = "blue",
+            font = "HelveticaNeue-Light"
             },
-        text = {
-            fill = "fill"},
+        shape = {},
         highlight = {
-            shape = {fill = "fill"},
-            text = { fill = "warning"}}
+            text = { fill = "white"},
+            shape = {fill = "blue", noStroke = true},
+        }
+    },
+
+    listItem = {
+        text = {fill = "darkGrey",
+            },
+        shape = {},
+        highlight = {
+            text = { fill = "white"},
+            shape = {fill = "blue", noStroke = true},
+        }
+    },
+
+    icon = {
+        text = { fontSize = 1.25, fill = "white"},
+        shape = {noFill = true, noStroke = true}, --
+        highlight = {
+            text = { fill = "black", fontSize = 1.25},
+            shape = {fill = "blue", noStroke = true},
+        }
+    },
+
+    darkIcon = {
+        text = { fontSize = 1.25, fill = "white"},
+        shape = {noFill = true, strokeWidth = 1, stroke = "white"}, --
+        highlight = {
+            text = { fill = "white", fontSize = 1.25},
+            shape = {fill = "blue", noStroke = true},
+        }
+    },
+
+    warning = {
+        shape = {fill = "red",
+            stroke = "midGrey",
+            strokeWidth = 2
+            },
+        text = {fill = "white"},
+        highlight = {
+            text = {fill = "red"},
+            shape = {fill = "white", stroke = "red"}
+        }
+    },
+        
+    transparent = {
+        shape = {noFill = true},
+        text = {},
+        highlight = {
+            shape = {fill = "lightGrey"},
+            text = {fill = "darkGrey"}
+        }
+    },
+
+    translucent = {
+        shape = {fill = "darkTrans", stroke = "grey"},
+        text = {},
+        title = {fill = "darkBlue"}
+    },
+
+    blurred = { --this is set automatically when the blurred flag is true
+        shape = {fill = (210), stroke = "midGrey"},
+        text = {},
+        title = {fill = "white"}
     },
 
     switch = {
-        shape = {stroke = "stroke"},
-        text = {fill = "fill"},
+        shape = {},
+        text = {},
         highlight = {
-             text = {fill = "fill"},
-             shape = {fill = "text"}
+            shape = {fill = "blue", noStroke = true},
+            text = {}
             }
     },
-    darkBlurred = {
-        shape = { stroke = "darkStroke",
-                fill = color(210), --this darkens the blurred section showing through
-                strokeWidth = 1},
-        text = { fill = "fill"},
-        highlight = {
-            shape = {fill = "darkText"},
-            text = {fill = "stroke2"}
-        }
-    },
-    dark = {
-        shape = { stroke = "darkStroke",
-                fill = "darkFill",
-                strokeWidth = 1},
-        text = { fill = "darkText"},
-        highlight = {
-            shape = {fill = "darkText"},
-            text = {fill = "stroke2"}
-        }
-    },
-    shadow = {shape = { fill = color(0, 90), stroke = color(0, 90)}}, --a special style used to produce shadows 20, 100
-    textEntry = {fill = color(0), font = "Inconsolata", fontSize = 24}, --a special style for user input in text entry fields. Must be a fixed-width (monotype) font
-    textBox = {font = "Inconsolata", fontSize = 16}, --fill = color(29, 61, 31, 255), 
-    darkIcon = {
-        shape = {noFill = true, strokeWidth = 1, stroke = "fill"}, 
-        text = {fontSize = 26, 
-            --font = "HelveticaNeue-Bold", 
-            fill = "fill"},
-        highlight = {
-            shape = {fill = "text", stroke = "text"},
-            text = {fill = "fill", fontSize = 26, 
-                --font = "HelveticaNeue-Bold"
-            }
-        }
-        },
-    icon = {
-        shape = {noFill = true, noStroke = true}, 
-        text = {fontSize = 26, 
-            --font = "HelveticaNeue-Bold", 
-            fill = "text"},
-        highlight = {
-            shape = {fill = "text", noStroke = true},
-            text = {fill = "fill", fontSize = 26, 
-                --font = "HelveticaNeue-Bold"
-            }
-        }
-    },
+--special
+    textEntry = {font = "Inconsolata", fill = "black", fontSize = 1.2},
+    textBox = {font = "Inconsolata", fill = "black", fontSize = 1},
 }
+
+Soda.symbol = {menu = "\u{2630}", back = "\u{ff1c}", forward = "\u{ff1e}", close = "\u{2715}", down = "\u{25bc}", gear = "\u{2699}", add = "\u{FF0B}", delete = "\u{232B}"}
 
 function Soda.setStyle(sty)
     for k,v in pairs(sty) do
         if type(v)=="string" and Soda.theme[v] then
             Soda[k](Soda.theme[v])
         else
-            Soda[k](v)
+         local ok, err = xpcall(function() Soda[k](v) end, function(trace) return debug.traceback(trace) end) 
+            if not ok then print(err) end
+         --   Soda[k](v)
         end
     end
 end
@@ -1490,11 +1766,15 @@ function Soda.font(v)
 end
 
 function Soda.fontSize(v)
-    fontSize(v)
+    fontSize(v*Soda.baseFontSize)
 end
 
-function Soda.textWrap()
-    
+function Soda.textWrapWidth(v)
+    textWrapWidth(v)
+end
+
+function Soda.textAlign(v)
+    textAlign(v)
 end
 
 function Soda.strokeWidth(v)
@@ -1511,7 +1791,7 @@ end
 
 function Soda.rect(t)
   --  rect(0, 0, self.w or self.parent.w, self.h or self.parent.h)
-    rect(t.x, t.y, t.w, t.h)
+    rect(t.x, t.y, t.w+1, t.h+2)
 end
 
 function Soda.line(t)
@@ -1565,8 +1845,8 @@ use standard fill(), stroke(), strokeWidth() to set body fill color, outline str
 function Soda.RoundedRectangle(t) 
     local s = t.radius or 8
     local c = t.corners or 15
-    local w = math.max(t.w+1,2*s)
-    local h = math.max(t.h,2*s)
+    local w = math.max(t.w+1,2*s)+1
+    local h = math.max(t.h,2*s)+2
     local hasTexture = 0
     if t.tex then hasTexture = 1 end
     local label = table.concat({w,h,s,c,hasTexture},",")
@@ -1846,7 +2126,7 @@ function Soda.Shadow:drawImage()
     pushMatrix()
 
     translate((self.ww-self.parent.w)*0.45, (self.hh-self.parent.h)*0.45)
-    self.parent:drawShape(Soda.style.shadow)
+    self.parent:drawShape({Soda.style.shadow})
     popMatrix()
 
     popStyle()
@@ -1958,8 +2238,24 @@ function Soda.Frame:init(t)
     
     --null = function() end. ie no need to test if callback then callback()
     
+    --parenthood, baseStyle inheritance
     self.child = {} --hold any children
-
+    if t.parent then
+        local priority = t.priority or #t.parent.child+1
+        table.insert(t.parent.child, priority, self) --if this has a parent, add it to the parent's list of children
+        self.style = t.style or t.parent.style
+  --      self.inactive = self.inactive or self.parent.inactive
+    else
+        local priority = t.priority or #Soda.items+1
+        table.insert( Soda.items, priority, self) --no parent = top-level, added to Soda.items table
+        self.style = t.style or Soda.style.default
+    end
+    self.styleList = {self.style}
+    self.subStyle = t.subStyle or {}
+    for i,v in ipairs(self.subStyle) do
+        table.insert(self.styleList, self.style[v]) 
+    end
+    
     self:setPosition()
 
     self.mesh = {} --holds additional effects, such as shadow and blur
@@ -1967,18 +2263,14 @@ function Soda.Frame:init(t)
         self.mesh[#self.mesh+1] = Soda.Blur{parent = self}
         self.shapeArgs.tex = self.mesh[#self.mesh].image
         self.shapeArgs.resetTex = self.mesh[#self.mesh].image
+        table.insert(self.styleList, self.style["blurred"]) 
     end
     if t.shadow then
         self.mesh[#self.mesh+1] = Soda.Shadow{parent = self}
     end
     
-    if t.parent then
-        t.parent.child[#t.parent.child+1] = self --if this has a parent, add it to the parent's list of children
-    else
-        table.insert( Soda.items, self) --no parent = top-level, added to Soda.items table
-    end
-    
-    self.inactive = self.hidden --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
+    self.inactive = self.inactive or self.hidden  --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
+   -- if self.inactive then self:deactivate() end
 end
 
 function Soda.Frame:storeParameters(t)
@@ -2026,10 +2318,16 @@ function Soda.Frame:setPosition() --all elements defined relative to their paren
     end
 end
 
+function Soda.Frame:setStyle(list, pref1, pref2)
+    for i,v in ipairs(list) do
+        Soda.setStyle(v[pref1] or v[pref2])
+    end
+end
+
 function Soda.Frame:getTextSize(sty, tex)
     pushStyle()
-    Soda.setStyle(Soda.style.default.text)
-    Soda.setStyle(sty or self.style.text)
+   -- Soda.setStyle(Soda.style.default.text)
+    Soda.setStyle(sty or self.style.text) --sty or 
     local w,h = textSize(tex or self.title)
     popStyle()
     return w,h
@@ -2037,6 +2335,7 @@ end
 
 function Soda.Frame:show(direction)
     self.hidden = false --so that we can see animation
+    self.inactive=false
     if direction then --animation
         self:setPosition()
         local targetX = self.x
@@ -2045,15 +2344,17 @@ function Soda.Frame:show(direction)
         elseif direction==RIGHT then
             self.x = WIDTH + self.w * 0.5
         end
-        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut, function() self.inactive=false end) --user cannot touch buttons until animation completes
+        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut) --, function() self.inactive=false enduser cannot touch buttons until animation completes
+    --[[
     else --no animation
         self.inactive = false
+          ]]
     end
     if self.shapeArgs and self.shapeArgs.tex then self.shapeArgs.resetTex = self.shapeArgs.tex end --force roundedrect to switch texture (because two rects of same dimensions are cached as one mesh)
 end
 
 function Soda.Frame:hide(direction)
-    self.inactive=true --cannot touch element during deactivation animation
+    --self.inactive=true --cannot touch element during deactivation animation
     if direction then
         local targetX
         if direction==LEFT then
@@ -2061,9 +2362,10 @@ function Soda.Frame:hide(direction)
         elseif direction==RIGHT then
             targetX = WIDTH + self.w * 0.5
         end
-        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut, function() self.hidden = true end) --user cannot touch buttons until animation completes
+        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut, function() self.hidden = true self.inactive=true  end) --user cannot touch buttons until animation completes
     else
         self.hidden = true
+        self.inactive = true
     end
 end
 
@@ -2071,6 +2373,24 @@ function Soda.Frame:toggle(direction)
     if self.inactive then self:show(direction)
     else self:hide(direction)
     end
+end
+
+function Soda.Frame:activate()
+    self.inactive = false
+    --[[
+    for i,v in ipairs(self.child) do
+        v:activate()
+    end
+      ]]
+end
+
+function Soda.Frame:deactivate()
+    self.inactive = true
+    --[[
+    for i,v in ipairs(self.child) do
+        v:deactivate()
+    end
+      ]]
 end
 
 function Soda.Frame:draw(breakPoint)
@@ -2085,10 +2405,14 @@ function Soda.Frame:draw(breakPoint)
         self.mesh[i]:draw() --draw shadow
     end
     
-    local sty = self.style
-    if self.highlighted and self.highlightable then
-        sty = self.style.highlight or Soda.style.default.highlight
+    local sty = {unpack(self.styleList)} --shallow copy of the lisr of styles self.style
+    if self.inactive then
+        sty[#sty+1] = Soda.style.inactive
+    elseif self.highlighted and self.highlightable then
+       -- sty[#sty+1] = self.style.highlight --self.style.highlight or Soda.style.default.highlight
+        sty[#sty] = sty[#sty].highlight
     end
+
     pushMatrix()
     pushStyle()
     
@@ -2096,23 +2420,31 @@ function Soda.Frame:draw(breakPoint)
     if self.shape then
         self:drawShape(sty)
     end
-     Soda.setStyle(sty.text)
+    
+        popStyle()
+    pushStyle()
+    self:setStyle(sty, "body", "text")
+    --Soda.setStyle(self.style.body) --(Soda.style.default.body)
+ -- Soda.setStyle(sty.text)
+    
     self:drawContent()
-    --pushStyle()
-    if self.label then
-        
-        --Soda.setStyle(Soda.style.default.text)
-       
-        
-        text(self.title, self.label.x, self.label.y)
-        
-    end
+    local titleText = "text"
     if self.content then
         textWrapWidth(self.w * 0.9)
         text(self.content, self.w * 0.5, self.h * 0.6)
         textWrapWidth()
+        titleText = "title"
     end
-   -- popStyle()
+    if self.label then
+        
+      --  Soda.setStyle(sty.text) --(Soda.style.default.text)
+       self:setStyle(sty, titleText, "text")
+        
+        text(self.title, self.label.x, self.label.y)
+        
+    end
+
+    popStyle()
     
     for i, v in ipairs(self.child) do --nb children are drawn with parent's transformation
         --[[
@@ -2126,15 +2458,16 @@ function Soda.Frame:draw(breakPoint)
         end
     end
     popMatrix()
-    popStyle()
+  --  popStyle()
 end
 
 function Soda.Frame:drawContent() end --overridden by subclasses
 
 function Soda.Frame:drawShape(sty)
   --  pushStyle()
-    --Soda.setStyle(Soda.style.default.shape)
-    Soda.setStyle(sty.shape)
+  --  Soda.setStyle(sty.shape) --(Soda.style.default.shape)
+ --   Soda.setStyle(sty.shape)
+    self:setStyle(sty, "shape")
     self.shape(self.shapeArgs)
    -- popStyle()
 end
@@ -2167,8 +2500,9 @@ function Soda.Frame:touched(t, tpos)
     local trans = tpos - vec2(self:left(), self:bottom()) --translate the touch position
     for i = #self.child, 1, -1 do --children take priority over frame for touch
         local v = self.child[i]
-        if not v.inactive and v:touched(t, trans) then 
-            return true 
+        if not v.inactive then
+            if v:touched(t, trans) then
+            return true end
         end
     end
   --  if self.alert then return true end --or self:pointIn(tpos.x, tpos.y) 
@@ -2183,6 +2517,7 @@ function Soda.Frame:selectFromList(child) --method used by parents of selectors.
         end
     else
         if self.selected then 
+
             self.selected.highlighted = false 
             --[[
             for i,v in ipairs(self.child) do
@@ -2222,7 +2557,9 @@ function Soda.Button:init(t)
     t.shape = t.shape or Soda.RoundedRectangle
     t.label = t.label or { x=0.5, y=0.5}
     t.highlightable = true
+    t.subStyle = t.subStyle or {"button"}
     Soda.Frame.init(self, t)
+    --table.insert(self.styleList, 2, self.style["button"])
 end
 
 function Soda.Button:touched(t, tpos)
@@ -2253,65 +2590,85 @@ end
 ----- Some button factories:
 
 function Soda.MenuButton(t)
-    t.title = "\u{2630}" --the "hamburger" menu icon
-    t.w, t.h = 40, 40
-    t.style = t.style or Soda.style.darkIcon
+    t.title = Soda.symbol.menu --the "hamburger" menu icon
+    t.w = t.w or 40
+    t.h = t.h or 40
+  --  t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     return Soda.Button(t)
 end
 
 function Soda.BackButton(t)
-    t.title = "\u{ff1c}" -- full-width less-than symbol. alt \u{276e}
-    --[[
-    if  t.direction == RIGHT then
-        t.title = "\u{ff1e}" --greater-than, in case you need a right-facing back button. alt \u{276f}
-    end
-      ]]
-    t.w, t.h = 40, 40
-    t.style = t.style or Soda.style.darkIcon
+    t.title = Soda.symbol.back -- full-width less-than symbol. alt \u{276e}
+    t.w = t.w or 40
+    t.h = t.h or 40
+   -- t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     return Soda.Button(t)
 end
 
 function Soda.ForwardButton(t)
-    t.title = "\u{ff1e}" --greater-than, in case you need a right-facing back button. alt \u{276f}
-    t.w, t.h = 40, 40
-    t.style = t.style or Soda.style.darkIcon
+    t.title = Soda.symbol.forward --greater-than, in case you need a right-facing back button. alt \u{276f}
+    t.w = t.w or 40
+    t.h = t.h or 40
+  --  t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     return Soda.Button(t)
 end
 
 function Soda.CloseButton(t)
-    t.title = "\u{2715}" --multiplication X 
-    t.w, t.h = 40, 40
-    t.style = t.style or Soda.style.darkIcon
+    t.title = Soda.symbol.close --multiplication X 
+    t.w = t.w or 40
+    t.h = t.h or 40
+  --  t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     return Soda.Button(t)
 end
 
 function Soda.DropdownButton(t)
-    t.title = "\u{25bc}" --down triangle
-    t.w, t.h = 40, 40
-    t.style = t.style or Soda.style.darkIcon
+    t.title = Soda.symbol.down --down triangle
+    t.w = t.w or 40
+    t.h = t.h or 40
+  --  t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     return Soda.Button(t)
 end
 
 function Soda.SettingsButton(t)
-    t.title = "\u{2699}" -- the "gear" icon
-    t.w, t.h = 40, 40
-    t.style = t.style or Soda.style.darkIcon
+    t.title = Soda.symbol.gear -- the "gear" icon
+    t.w = t.w or 40
+    t.h = t.h or 40
+   -- t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     t.shape = t.shape or Soda.ellipse
     return Soda.Button(t)
 end
 
 function Soda.AddButton(t)
-    t.title = "\u{253c}" -- the "add" icon
-    t.w, t.h = 40, 40
-    t.style = t.style or Soda.style.darkIcon
+    t.title = Soda.symbol.add -- full-width +
+    t.w = t.w or 40
+    t.h = t.h or 40
+   -- t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     t.shape = t.shape or Soda.ellipse
+    return Soda.Button(t)
+end
+
+function Soda.DeleteButton(t)
+    t.title = Soda.symbol.delete --backspace delete
+    t.w = t.w or 40
+    t.h = t.h or 40
+   -- t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     return Soda.Button(t)
 end
 
 function Soda.QueryButton(t)
     t.title = "?" --full-width ? \u{ff1f}
-    t.w, t.h = 40, 40
-    t.style = t.style or Soda.style.darkIcon
+    t.w = t.w or 40
+    t.h = t.h or 40
+   -- t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     t.shape = t.shape or Soda.ellipse
     return Soda.Button(t)
 end
@@ -2383,7 +2740,16 @@ end
 function Soda.MenuToggle(t)
     t.title = "\u{2630}" --the "hamburger" menu icon
     t.w, t.h = 40, 40
-    t.style = t.style or Soda.style.darkIcon
+    t.style = t.style --or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
+    return Soda.Toggle(t)
+end
+
+function Soda.SettingsToggle(t)
+    t.title = "\u{2699}" -- the "gear" icon
+    t.w, t.h = 40, 40
+    t.style = t.style --or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     return Soda.Toggle(t)
 end
 
@@ -2397,9 +2763,19 @@ function Soda.Switch:init(t)
     local tw,_ = textSize(t.title or "")
    -- t.w, t.h = 120+tw,40
 
-    Soda.Frame.init(self, {parent = t.parent, x = t.x, y=t.y, w = 120+tw, h = 40, on = t.on or false, style = t.style or Soda.style.switch, shape = Soda.RoundedRectangle, shapeArgs = {w = 70, h = 36, radius = 18, x = 0, y = 2}, highlightable = true, label = {x=80, y=0.5} , title = t.title})
+    Soda.Frame.init(self, {
+        parent = t.parent, 
+        x = t.x, y=t.y, w = 120+tw, h = 40, 
+        on = t.on or false, 
+       -- style = t.style or Soda.style.switch, 
+        subStyle = {"switch"},
+        shape = Soda.RoundedRectangle, 
+        shapeArgs = {w = 70, h = 36, radius = 18, x = 0, y = 2}, 
+        highlightable = true, 
+        label = {x=80, y=0.5} , title = t.title
+    })
 
-    self.knob = Soda.Knob{parent = self, x = 0, y = 0.5, w=40, h=40, shape = Soda.ellipse, style = Soda.style.switch, shadow = true}
+    self.knob = Soda.Knob{parent = self, x = 0, y = 0.5, w=38, h=38, shape = Soda.ellipse, shadow = true}
     
     self:toggleSettings(t)
 end
@@ -2420,8 +2796,8 @@ Soda.Knob = class(Soda.Frame)
 
 function Soda.Knob:setPosition()
     Soda.Frame.setPosition(self)
-    self.offX = self.x - 2
-    self.onX = self.x+32
+    self.offX = self.x - 1
+    self.onX = self.x+34
     if self.parent.on then self.x = self.onX end
 end
 
@@ -2524,21 +2900,21 @@ function Soda.Slider:drawContent()
     local x, y = self:posFromValue() + 20, 20
 --  Soda.setStyle(Soda.style.switch.shape)
     pushStyle()
-    stroke(Soda.themes.default.text)
+    stroke(Soda.themes.default.blue)
     strokeWidth(2)
     line(20, y, x,y)
     noStroke()
-    fill(Soda.themes.default.text)
+    fill(Soda.themes.default.blue)
     for i,v in ipairs(self.snapPos) do
         if v > x then 
             --Soda.setStyle(Soda.style.switch.shape) 
-            fill(Soda.themes.default.stroke)
+            fill(Soda.themes.default.grey)
         end
      --   line(v,y-10,v,y+10)
         ellipse(v,y,8)
     end
  --   Soda.setStyle(Soda.style.switch.shape)
-    stroke(Soda.themes.default.stroke)
+    stroke(Soda.themes.default.grey)
     strokeWidth(2)
     line(x, y, self.w-20,y)
     popStyle()
@@ -2600,10 +2976,10 @@ function Soda.TextEntry:init(t)
     t.shape = Soda.RoundedRectangle
     t.label = {x=10, y=0.5} 
     Soda.Frame.init(self, t)
-    
+    table.insert(self.styleList, 2, self.style["button"])
     self.offset = vec2(self.label.w + 15, (self.h-self.label.h)*0.5) --bottom corner of text-entry (because left-aligned text needs to be drawn in CORNER mode)
     
-    self.characterW = self:getTextSize(Soda.style.textEntry, "a") --width of a character (nb fixed-width font only, because this massively simplifies creation of touchable text)
+    self.characterW = self:getTextSize(self.style.textEntry, "a") --width of a character (nb fixed-width font only, because this massively simplifies creation of touchable text)
     
     self:inputString(t.default or "")
 end
@@ -2618,7 +2994,7 @@ function Soda.TextEntry:inputString(txt)
     self.cursor = #self.input+1 --cursor = insertion point for self.input
     self.cursorPos = (self.cursor-self.start) * self.characterW --relative x coords of cursor 
     self.text = table.concat(self.input, "", self.start)
-    self.textW = self:getTextSize(Soda.style.textEntry, self.text)
+    self.textW = self:getTextSize(self.style.textEntry, self.text)
 end
 
 function Soda.TextEntry:draw(breakPoint)
@@ -2643,7 +3019,7 @@ function Soda.TextEntry:draw(breakPoint)
         end
     end
         
-    Soda.setStyle(Soda.style.textEntry)
+   Soda.setStyle(self.style.textEntry)
 --  Soda.setStyle(self.style.text)
 
     textAlign(LEFT)
@@ -2686,7 +3062,7 @@ end
 
 function Soda.TextEntry:getCursorPos() --this method works with non-fixed width too
     local beforeCursor = table.concat(self.input, "", self.start, self.cursor-1)
-    self.cursorPos = self:getTextSize(Soda.style.textEntry, beforeCursor)
+    self.cursorPos = self:getTextSize(self.style.textEntry, beforeCursor)
 end
 
 function Soda.TextEntry:keyboard(key)
@@ -2700,8 +3076,15 @@ function Soda.TextEntry:keyboard(key)
             self.start = math.max(1, self.start - 1  )    
         end
     else
-        table.insert(self.input, self.cursor, key)
-        self.cursor = self.cursor + 1
+        if key:len()==1 then
+            table.insert(self.input, self.cursor, key)
+            self.cursor = self.cursor + 1
+        else --user has pasted multiple letters
+            for letter in key:gmatch(".") do
+                table.insert(self.input, self.cursor, letter)
+                self.cursor = self.cursor + 1               
+            end
+        end
     end
    -- self.text = table.concat(self.input, "", self.start)
     
@@ -2710,7 +3093,7 @@ function Soda.TextEntry:keyboard(key)
         
     end
     self.text = table.concat(self.input, "", self.start)
-    self.textW = self:getTextSize(Soda.style.textEntry, self.text)
+    self.textW = self:getTextSize(self.style.textEntry, self.text)
    -- self:getCursorPos()
     self.cursorPos = ((self.cursor - self.start)) * self.characterW
 end
@@ -2749,7 +3132,7 @@ function Soda.Segment:init(t)
     local n = #t.text
     local w = 1/n
   --  local ww = 0.85/n --1/(n+0.5)
-    local defaultNo = t.defaultNo or 1 --default to displaying the left-most panel
+    local default = t.default or 1 --default to displaying the left-most panel
     for i=1,n do
         local shape = Soda.RoundedRectangle
         local corners, panel
@@ -2763,9 +3146,9 @@ function Soda.Segment:init(t)
             panel = t.panels[i]
             panel:hide() --hide the panel by default
         end
-        local this = Soda.Selector{parent = self, idNo = i, title = t.text[i], x = x, y = 0.5, w = w+0.002, h=t.h, shape = shape, shapeArgs={corners=corners}, panel = panel}  --self.h * 0.5, w++0.004
+        local this = Soda.Selector{parent = self, idNo = i, title = t.text[i], x = x, y = 0.5, w = w, h=t.h, shape = shape, shapeArgs={corners=corners}, panel = panel}  --self.h * 0.5, w+++0.002
         
-        if not t.noSelectionPossible and i==defaultNo then 
+        if not t.noSelectionPossible and i==default then 
             self:selectFromList(this)
             --[[
             this.highlighted = true
@@ -2879,7 +3262,7 @@ function Soda.ScrollShape:draw(breakPoint)
     if not breakPoint then
         --  tween.delay(0.001, function() self:drawImage() end)
         setContext(self.image)
-        background(120, 120) --40,40 self.style.shape.stroke
+        background(150, 180) --40,40 self.style.shape.stroke
         
         pushMatrix()
         resetMatrix()
@@ -2892,7 +3275,7 @@ function Soda.ScrollShape:draw(breakPoint)
  
     pushMatrix()
     translate(self:left(), self:bottom())
-    self:drawShape(self.style)
+    self:drawShape(self.styleList)
     popMatrix()
 end
 
@@ -2921,21 +3304,22 @@ Soda.TextScroll = class(Soda.Scroll) --smooth scrolling of large text files (ie 
 
 function Soda.TextScroll:init(t)
    -- t.shape = t.shape or Soda.rect
-    self.characterW, self.characterH = self:getTextSize(Soda.style.textBox, "a")
-    Soda.Scroll.init(self, t)
     
+    Soda.Scroll.init(self, t)
+    self.content = ""
+    self.characterW, self.characterH = self:getTextSize(self.style.textBox, "a") --Soda.style.textBox
     self:clearString()
-    self:inputString(t.textBody)
+    self:inputString(t.textBody or "")
 end
 
 function Soda.TextScroll:clearString()
     self.lines = {}
-  --  self.chunk = {}
+    self.chunk = {}
     self.cursorY = 0
     self.scrollHeight = 0    
 end
 
-function Soda.TextScroll:inputString(txt)
+function Soda.TextScroll:inputString(txt, bottom)
     --split text into lines and wrap them
   --  local lines = {}
     self.chunk = {}
@@ -2943,14 +3327,19 @@ function Soda.TextScroll:inputString(txt)
     for lin in txt:gmatch("[^\n\r]+") do
       --  local prefix = ""
         while lin:len()>boxW do --wrap the lines
-            self.lines[#self.lines+1] = lin:sub(1, boxW)
-            lin = lin:sub(boxW+1) 
+            local truncate = lin:sub(1, boxW)
+            local wrap,_ = truncate:find("(%W)%w-$")
+            self.lines[#self.lines+1] = lin:sub(1, wrap)
+            lin = lin:sub(wrap+1) 
           --  prefix = "  "    
         end
         self.lines[#self.lines+1] = lin
     end
     self.scrollHeight = #self.lines * self.characterH
-    
+    if bottom then 
+        --self.scrollY = self.scrollHeight -self.h 
+        self.scrollVel = ((self.scrollHeight -self.h) - self.scrollY ) * 0.07
+    end
     --put lines back into chunks of text, 10 lines high each
     local n = #self.lines//10
     for i = 0,n do
@@ -2966,7 +3355,8 @@ function Soda.TextScroll:drawContent()
     
     self:updateScroll()
     pushStyle()
-    Soda.setStyle(Soda.style.textBox)
+    Soda.setStyle(self.style.textBox)
+    --self:setStyle(self.styleList, "textBox")
     textMode(CORNER)
     textAlign(LEFT)
     --[[
@@ -2978,7 +3368,7 @@ function Soda.TextScroll:drawContent()
         local mm = modelMatrix()
     translate(10, self.scrollY)
 
-    clip(mm[13]+10, mm[14]+10, self.w-20, self.h-20) --nb translate doesnt apply to clip. (idea: grab transformation from current model matrix?) --self.parent:left()+self:left(),self.parent:bottom()+self:bottom()
+    clip(mm[13]+2, mm[14]+2, self.w-4, self.h-4) --nb translate doesnt apply to clip. (idea: grab transformation from current model matrix?) --self.parent:left()+self:left(),self.parent:bottom()+self:bottom()
     
     --calculate which chunks to draw
     local lineStart = math.max(1, math.ceil(self.scrollY/self.characterH))
@@ -3010,7 +3400,7 @@ function Soda.List:init(t)
     t.h = math.min(t.h or t.scrollHeight, t.scrollHeight)
     Soda.ScrollShape.init(self, t)
     for i,v in ipairs(t.text) do
-        local number = ""
+        local number, panel = ""
         if t.enumerate then number = i..") " end
         
         if t.panels then
@@ -3018,8 +3408,8 @@ function Soda.List:init(t)
             panel:hide() --hide the panel by default
         end
         
-        local item = Soda.Selector{parent = self, idNo = i, title = number..v, label = {x = 10, y = 0.5}, style = t.style, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42, panel = panel} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
-        if t.defaultNo and i==t.defaultNo then
+        local item = Soda.Selector{parent = self, idNo = i, title = number..v, label = {x = 10, y = 0.5}, subStyle = {"listItem"}, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42, panel = panel} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
+        if t.default and i==t.default then
           --  item.highlighted = true
             self:selectFromList(item)
         end
@@ -3027,12 +3417,68 @@ function Soda.List:init(t)
 end
 
 function Soda.List:clearSelection()
-    if self.selected then self.selected.highlighted = false end
+    if self.selected then 
+        self.selected.highlighted = false 
+        if self.selected.panel then self.selected.panel:hide() end
+    end
     self.selected = nil
 end
 
 --- a factory for dropdown lists
 
+Soda.DropdownList = class()
+
+function Soda.DropdownList:init(t)
+    local parent = t.parent or nil
+    self.default = t.default or ""
+    self.button = Soda.Button{
+        parent = parent, x = t.x, y = t.y, w = t.w, h = t.h,
+        title = "\u{25bc} "..t.title..": "..self.default,
+        subStyle = {"listItem"},
+        label = {x = 10, y = 0.5}
+    }
+
+    local callback = t.callback or null
+    
+    self.title = t.title
+    
+    self.list = Soda.List{
+        parent = parent,
+        hidden = true,
+        x = t.x, y = self.button:bottom() - t.parent.h, w = t.w, h = self.button:bottom(),
+        text = t.text,   
+        panels = t.panels, 
+        default = t.default,  
+        enumerate = t.enumerate,
+        callback = function(this, selected, txt) 
+            self.button.title = "\u{25bc} "..t.title..": "..txt
+            self.button:setPosition() --to recalculate left-justified label
+            this:hide() 
+            callback(this, selected, txt)
+        end
+    } 
+
+    --add clear list method (...perhaps this should be a class, not a wrapper?)
+    
+    self.button.callback = function() self.list:toggle() end --callback has to be outside of constructor only when two elements' callbacks both refer to each-other.
+
+end
+
+function Soda.DropdownList:clearSelection() 
+    self.list:clearSelection() 
+    self.button.title = "\u{25bc} "..self.title..": "..self.default
+    self.button:setPosition() --to recalculate left-justified label
+end
+
+function Soda.DropdownList:deactivate()
+    self.button:deactivate()
+end
+
+function Soda.DropdownList:activate()
+    self.button:activate()
+end
+
+--[[
 function Soda.DropdownList(t)
     local this = Soda.Button{
         parent = t.parent, x = t.x, y = t.y, w = t.w, h = t.h,
@@ -3046,8 +3492,9 @@ function Soda.DropdownList(t)
         parent = t.parent,
         hidden = true,
         x = t.x, y = this:bottom() - t.parent.h, w = t.w, h = this:bottom(),
-        text = t.text,    
-        defaultNo = t.defaultNo,  
+        text = t.text,   
+        panels = t.panels, 
+        default = t.default,  
         enumerate = t.enumerate,
         callback = function(self, selected, txt) 
             this.title = "\u{25bc} "..t.title..": "..txt
@@ -3068,11 +3515,64 @@ function Soda.DropdownList(t)
     
     return this
 end
+  ]]
 
 
 --# Windows
 --factories for various window types
 
+--difference between dialog and window
+--dialogs ok/cancel buttons occupy full width of window, like ios alerts. Are disposable (closing them kills them)
+--window has discrete ok/cancel buttons. Has doNotKill option where dismissing window will hide it instead of killing it
+Soda.Window = class(Soda.Frame)
+
+function Soda.Window:init(t)
+    t.shape = t.shape or Soda.RoundedRectangle
+    t.shapeArgs = t.shapeArgs or {}
+    t.shapeArgs.radius = 25
+    t.label = t.label or {x=0.5, y=-15}
+    t.content = t.content or ""
+    local callback = t.callback or null
+    Soda.Frame.init(self, t)
+        
+    if t.ok then
+        local title = "OK"
+        if type(t.ok)=="string" then title = t.ok end
+        Soda.Button{parent = self, title = title, x = -10, y = 10, w = 0.3, h = 40, callback = function() self:closeAction() callback() end} --style = Soda.style.transparent,blurred = t.blurred,
+    end
+    
+    if t.cancel then
+        local title = "Cancel"
+        if type(t.cancel)=="string" then title = t.cancel end
+        Soda.Button{parent = self, title = title, x = 10, y = 10, w = 0.3, h = 40, callback = function() self:closeAction() end,  subStyle = {"warning"}} --style = Soda.style.warning 
+    end
+    
+    local closeStyle = {"icon", "button"}
+    if t.blurred then
+        closeStyle = {"icon"}
+    end
+    if t.close then
+        Soda.CloseButton{
+            parent = self, 
+            x = 5, y = -5, 
+            shape = Soda.ellipse,
+            callback = function() self:closeAction() end, 
+            subStyle = closeStyle --style = Soda.style.icon
+        }
+    end
+   -- t.shadow = true
+
+end
+
+function Soda.Window:closeAction()     --do we want to hide this Window or kill it?
+    if self.doNotKill then
+        self:hide()
+    else
+        self.kill = true 
+    end
+end
+
+--[[
 function Soda.Window(t)
     t.shape = t.shape or Soda.RoundedRectangle
     t.shapeArgs = t.shapeArgs or {}
@@ -3082,20 +3582,33 @@ function Soda.Window(t)
     local callback = t.callback or null
     local this = Soda.Frame(t)
     
+    --do we want to hide this Window or kill it?
+    local closeAction 
+    if t.doNotKill then
+        closeAction = function() this:hide() end
+    else
+        closeAction = function() this.kill = true end
+    end
+    
     if t.ok then
         local title = "OK"
         if type(t.ok)=="string" then title = t.ok end
-        Soda.Button{parent = this, title = title, x = -10, y = 10, w = 0.3, h = 40, callback = function() this.kill = true callback() end} --style = Soda.style.transparent,blurred = t.blurred,
+        Soda.Button{parent = this, title = title, x = -10, y = 10, w = 0.3, h = 40, callback = function() closeAction() callback() end} --style = Soda.style.transparent,blurred = t.blurred,
     end
     
     if t.cancel then
         local title = "Cancel"
         if type(t.cancel)=="string" then title = t.cancel end
-        Soda.Button{parent = this, title = title, x = 10, y = 10, w = 0.3, h = 40, callback = function() this.kill = true end,  style = Soda.style.warning} 
+        Soda.Button{parent = this, title = title, x = 10, y = 10, w = 0.3, h = 40, callback = closeAction,  subStyle = {"warning"}, --style = Soda.style.warning} 
+    end
+    
+    if t.close then
+        Soda.CloseButton{parent = this, x = 5, y = -5, callback = closeAction, style = Soda.style.icon}
     end
    -- t.shadow = true
     return this
 end
+  ]]
 
 function Soda.Window2(t)
     t.shape = t.shape or Soda.RoundedRectangle
@@ -3107,31 +3620,32 @@ function Soda.Window2(t)
     return Soda.Frame(t)
 end
 
-function Soda.TextWindow(t)
+Soda.TextWindow = class(Soda.Window)
+
+function Soda.TextWindow:init(t)
     t.x = t.x or 0.5 
     t.y = t.y or 20
     t.w = t.w or 700
     t.h = t.h or -20
+    t.style = t.style or Soda.style.thickStroke
+    Soda.Window.init(self, t)
     
-    local this = Soda.Window2(t)
-    
-    local scroll = Soda.TextScroll{
+    self.scroll = Soda.TextScroll{
        -- parent = t.parent,
        -- label = {x=0.5, y=-10, text = t.title},
       --    shape = t.shape or Soda.RoundedRectangle,
      --   shapeArgs = t.shapeArgs,
      --   shadow = t.shadow,
      --   style = t.style,
-     parent = this,
-      x = 10, y = 10, w = -10, h = -10,
+     parent = self,
+      x = 10, y = 1, w = -20, h = -2,
      --   x = t.x or 0.5, y = t.y or 20, w = t.w or 700, h = t.h or -20,
         textBody = t.textBody,
+        priority = 1
     }  
+
     
-    this.inputString = function(_, ...) scroll:inputString(...) end
-    this.clearString = function(_, ...) scroll:clearString(...) end
-    --pass the textscroll's method to the enclosing wrapper (make this a subclass, not a wrapper)
-    
+    --[[
     if t.closeButton then
         Soda.CloseButton{
             parent = this,
@@ -3141,9 +3655,59 @@ function Soda.TextWindow(t)
             callback = function() this.kill = true end  
         }
         end
-    return this
+      ]]
+
 end
 
+function Soda.TextWindow:inputString(str)
+    self.scroll:inputString(str)
+end
+
+function Soda.TextWindow:clearString()
+    self.scroll:clearString()
+end
+
+--[[
+function Soda.TextWindow(t)
+    t.x = t.x or 0.5 
+    t.y = t.y or 20
+    t.w = t.w or 700
+    t.h = t.h or -20
+    t.style = t.style or Soda.style.thickStroke
+    local this = Soda.Window(t)
+    
+    local scroll = Soda.TextScroll{
+       -- parent = t.parent,
+       -- label = {x=0.5, y=-10, text = t.title},
+      --    shape = t.shape or Soda.RoundedRectangle,
+     --   shapeArgs = t.shapeArgs,
+     --   shadow = t.shadow,
+     --   style = t.style,
+     parent = this,
+      x = 10, y = 1, w = -20, h = -2,
+     --   x = t.x or 0.5, y = t.y or 20, w = t.w or 700, h = t.h or -20,
+        textBody = t.textBody,
+    }  
+    
+    this.inputString = function(_, ...) scroll:inputString(...) end
+    this.clearString = function() scroll:clearString() end
+    --pass the textscroll's method to the enclosing wrapper (make this a subclass, not a wrapper)
+    
+    --[==[
+    if t.closeButton then
+        Soda.CloseButton{
+            parent = this,
+            x = -5, y = -5,
+            style = Soda.style.icon,
+            shape = Soda.ellipse,
+            callback = function() this.kill = true end  
+        }
+        end
+      ]==]
+    return this
+end
+  ]]
+--[[
 function Soda.Alert2Dark(t)
     local this = Soda.Window{title = t.title, h = 0.2, blurred = true}
     
@@ -3153,7 +3717,6 @@ function Soda.Alert2Dark(t)
     return this
 end
 
---[[
 function Soda.Alert2(t)
     local this = Soda.Frame{h = 0.25} --, edge = ~BOTTOMEDGE
      
@@ -3169,29 +3732,62 @@ end
   ]]
 
 function Soda.Alert2(t)
+        t.shape = t.shape or Soda.RoundedRectangle
+    t.shapeArgs = t.shapeArgs or {}
+    t.shapeArgs.radius = 25
+    t.label = t.label or {x=0.5, y=-15}
+
     t.h = t.h or 0.25
     t.shadow = true
-    t.label = {x=0.5, y=0.6}
+ --   t.label = {x=0.5, y=0.6}
     t.alert = true  --if alert=true, underlying elements are inactive and darkened until alert is dismissed
     local callback = t.callback or null
     
-    local this = Soda.Window(t) 
+    local this = Soda.Frame(t)
     
-    local proceed = Soda.Button{parent = this, title = t.ok or "Proceed", x = 0.749, y = 0, w = 0.5, h = 50, shapeArgs = {corners = 8, radius = 25}, callback = function() this.kill = true callback() end,  style = Soda.style.transparent} --style = Soda.style.transparent,blurred = t.blurred,
+    local proceed = Soda.Button{
+        parent = this, 
+        title = t.ok or "Proceed", 
+        x = 0.749, y = 0, w = 0.5, h = 50, 
+        shapeArgs = {corners = 8, radius = 25}, 
+        callback = function() this.kill = true callback() end,  
+        subStyle = {"transparent"} --style = Soda.style.transparent
+    } --style = Soda.style.transparent,blurred = t.blurred,
     
-    local cancel = Soda.Button{parent = this, title = t.cancel or "Cancel", x = 0.251, y = 0, w = 0.5, h = 50, shapeArgs = {corners = 1, radius = 25}, callback = function() this.kill = true end,  style = Soda.style.transparent} 
+    local cancel = Soda.Button{
+        parent = this, 
+        title = t.cancel or "Cancel", 
+        x = 0.251, y = 0, w = 0.5, h = 50, 
+        shapeArgs = {corners = 1, radius = 25}, 
+        callback = function() this.kill = true end,  
+        subStyle = {"transparent"} --style = Soda.style.transparent
+    } 
     
     return this
 end
 
 function Soda.Alert(t)
+    t.shape = t.shape or Soda.RoundedRectangle
+    t.shapeArgs = t.shapeArgs or {}
+    t.shapeArgs.radius = 25
+    t.label = t.label or {x=0.5, y=-15}
+
     t.h = t.h or 0.25
     t.shadow = true
-    t.label = {x=0.5, y=0.6}
+ --   t.label = {x=0.5, y=0.6}
     t.alert = true  --if alert=true, underlying elements are inactive and darkened until alert is dismissed
-    local this = Soda.Window(t) 
     local callback = t.callback or null
-    local ok = Soda.Button{parent = this, title = t.ok or "OK", x = 0, y = 0, w = 1, h = 50, shapeArgs = {corners = 1 | 8, radius = 25}, callback = function() this.kill = true callback() end,  style = Soda.style.transparent} --style = Soda.style.transparent,blurred = t.blurred,
+    
+    local this = Soda.Frame(t)
+    
+    local ok = Soda.Button{
+        parent = this, 
+        title = t.ok or "OK", 
+        x = 0, y = 0, w = 1, h = 50, 
+        shapeArgs = {corners = 1 | 8, radius = 25}, 
+        callback = function() this.kill = true callback() end,  
+        subStyle = {"transparent"} --style = Soda.style.transparent
+    } --style = Soda.style.transparent,blurred = t.blurred,
     return this
 end
 

@@ -4,10 +4,10 @@ function Soda.TextEntry:init(t)
     t.shape = Soda.RoundedRectangle
     t.label = {x=10, y=0.5} 
     Soda.Frame.init(self, t)
-    
+    table.insert(self.styleList, 2, self.style["button"])
     self.offset = vec2(self.label.w + 15, (self.h-self.label.h)*0.5) --bottom corner of text-entry (because left-aligned text needs to be drawn in CORNER mode)
     
-    self.characterW = self:getTextSize(Soda.style.textEntry, "a") --width of a character (nb fixed-width font only, because this massively simplifies creation of touchable text)
+    self.characterW = self:getTextSize(self.style.textEntry, "a") --width of a character (nb fixed-width font only, because this massively simplifies creation of touchable text)
     
     self:inputString(t.default or "")
 end
@@ -22,7 +22,7 @@ function Soda.TextEntry:inputString(txt)
     self.cursor = #self.input+1 --cursor = insertion point for self.input
     self.cursorPos = (self.cursor-self.start) * self.characterW --relative x coords of cursor 
     self.text = table.concat(self.input, "", self.start)
-    self.textW = self:getTextSize(Soda.style.textEntry, self.text)
+    self.textW = self:getTextSize(self.style.textEntry, self.text)
 end
 
 function Soda.TextEntry:draw(breakPoint)
@@ -47,7 +47,7 @@ function Soda.TextEntry:draw(breakPoint)
         end
     end
         
-    Soda.setStyle(Soda.style.textEntry)
+   Soda.setStyle(self.style.textEntry)
 --  Soda.setStyle(self.style.text)
 
     textAlign(LEFT)
@@ -90,7 +90,7 @@ end
 
 function Soda.TextEntry:getCursorPos() --this method works with non-fixed width too
     local beforeCursor = table.concat(self.input, "", self.start, self.cursor-1)
-    self.cursorPos = self:getTextSize(Soda.style.textEntry, beforeCursor)
+    self.cursorPos = self:getTextSize(self.style.textEntry, beforeCursor)
 end
 
 function Soda.TextEntry:keyboard(key)
@@ -121,7 +121,7 @@ function Soda.TextEntry:keyboard(key)
         
     end
     self.text = table.concat(self.input, "", self.start)
-    self.textW = self:getTextSize(Soda.style.textEntry, self.text)
+    self.textW = self:getTextSize(self.style.textEntry, self.text)
    -- self:getCursorPos()
     self.cursorPos = ((self.cursor - self.start)) * self.characterW
 end

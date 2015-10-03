@@ -1,9 +1,11 @@
 Soda = {}
+Soda.version = "0.6"
 SodaIsInstalled = true
 function Soda.setup()
     --  parameter.watch("#Soda.items")
     parameter.watch("Soda.UIoffset")
     Soda.Assets()
+    Soda.baseFontSize = 20
     Soda.theme = Soda.themes.default
     textAlign(CENTER)
     rectMode(CENTER)

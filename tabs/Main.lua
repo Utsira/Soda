@@ -1,5 +1,4 @@
 -- Soda
-Soda.version = "0.5"
 saveProjectInfo("Description", "Soda v"..Soda.version)
 
 displayMode(OVERLAY)
@@ -10,8 +9,9 @@ function setup()
     profiler.init()
     parameter.watch("#Soda.items")
     Soda.setup()
- demo1() --do your setting up here
- -- overview{}
+
+    overview{}
+    -- demo1() --do your setting up here
     calculator.init()
 end
 

@@ -53,7 +53,7 @@ function Soda.ScrollShape:draw(breakPoint)
  
     pushMatrix()
     translate(self:left(), self:bottom())
-    self:drawShape(self.style)
+    self:drawShape(self.styleList)
     popMatrix()
 end
 

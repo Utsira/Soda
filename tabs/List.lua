@@ -20,7 +20,7 @@ function Soda.List:init(t)
             panel:hide() --hide the panel by default
         end
         
-        local item = Soda.Selector{parent = self, idNo = i, title = number..v, label = {x = 10, y = 0.5}, style = t.style, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42, panel = panel} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
+        local item = Soda.Selector{parent = self, idNo = i, title = number..v, label = {x = 10, y = 0.5}, subStyle = {"listItem"}, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42, panel = panel} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
         if t.default and i==t.default then
           --  item.highlighted = true
             self:selectFromList(item)
@@ -46,6 +46,7 @@ function Soda.DropdownList:init(t)
     self.button = Soda.Button{
         parent = parent, x = t.x, y = t.y, w = t.w, h = t.h,
         title = "\u{25bc} "..t.title..": "..self.default,
+        subStyle = {"listItem"},
         label = {x = 10, y = 0.5}
     }
 

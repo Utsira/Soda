@@ -111,7 +111,7 @@ function Soda.Shadow:drawImage()
     pushMatrix()
 
     translate((self.ww-self.parent.w)*0.45, (self.hh-self.parent.h)*0.45)
-    self.parent:drawShape(Soda.style.shadow)
+    self.parent:drawShape({Soda.style.shadow})
     popMatrix()
 
     popStyle()

@@ -10,7 +10,7 @@ function Soda.Window:init(t)
     t.shapeArgs = t.shapeArgs or {}
     t.shapeArgs.radius = 25
     t.label = t.label or {x=0.5, y=-15}
-    
+    t.content = t.content or ""
     local callback = t.callback or null
     Soda.Frame.init(self, t)
         
@@ -23,11 +23,21 @@ function Soda.Window:init(t)
     if t.cancel then
         local title = "Cancel"
         if type(t.cancel)=="string" then title = t.cancel end
-        Soda.Button{parent = self, title = title, x = 10, y = 10, w = 0.3, h = 40, callback = function() self:closeAction() end,  style = Soda.style.warning} 
+        Soda.Button{parent = self, title = title, x = 10, y = 10, w = 0.3, h = 40, callback = function() self:closeAction() end,  subStyle = {"warning"}} --style = Soda.style.warning 
     end
     
+    local closeStyle = {"icon", "button"}
+    if t.blurred then
+        closeStyle = {"icon"}
+    end
     if t.close then
-        Soda.CloseButton{parent = self, x = 5, y = -5, callback = function() self:closeAction() end, style = Soda.style.icon}
+        Soda.CloseButton{
+            parent = self, 
+            x = 5, y = -5, 
+            shape = Soda.ellipse,
+            callback = function() self:closeAction() end, 
+            subStyle = closeStyle --style = Soda.style.icon
+        }
     end
    -- t.shadow = true
 
@@ -68,7 +78,7 @@ function Soda.Window(t)
     if t.cancel then
         local title = "Cancel"
         if type(t.cancel)=="string" then title = t.cancel end
-        Soda.Button{parent = this, title = title, x = 10, y = 10, w = 0.3, h = 40, callback = closeAction,  style = Soda.style.warning} 
+        Soda.Button{parent = this, title = title, x = 10, y = 10, w = 0.3, h = 40, callback = closeAction,  subStyle = {"warning"}, --style = Soda.style.warning} 
     end
     
     if t.close then
@@ -176,7 +186,7 @@ function Soda.TextWindow(t)
     return this
 end
   ]]
-
+--[[
 function Soda.Alert2Dark(t)
     local this = Soda.Window{title = t.title, h = 0.2, blurred = true}
     
@@ -186,7 +196,6 @@ function Soda.Alert2Dark(t)
     return this
 end
 
---[[
 function Soda.Alert2(t)
     local this = Soda.Frame{h = 0.25} --, edge = ~BOTTOMEDGE
      
@@ -215,9 +224,23 @@ function Soda.Alert2(t)
     
     local this = Soda.Frame(t)
     
-    local proceed = Soda.Button{parent = this, title = t.ok or "Proceed", x = 0.749, y = 0, w = 0.5, h = 50, shapeArgs = {corners = 8, radius = 25}, callback = function() this.kill = true callback() end,  style = Soda.style.transparent} --style = Soda.style.transparent,blurred = t.blurred,
+    local proceed = Soda.Button{
+        parent = this, 
+        title = t.ok or "Proceed", 
+        x = 0.749, y = 0, w = 0.5, h = 50, 
+        shapeArgs = {corners = 8, radius = 25}, 
+        callback = function() this.kill = true callback() end,  
+        subStyle = {"transparent"} --style = Soda.style.transparent
+    } --style = Soda.style.transparent,blurred = t.blurred,
     
-    local cancel = Soda.Button{parent = this, title = t.cancel or "Cancel", x = 0.251, y = 0, w = 0.5, h = 50, shapeArgs = {corners = 1, radius = 25}, callback = function() this.kill = true end,  style = Soda.style.transparent} 
+    local cancel = Soda.Button{
+        parent = this, 
+        title = t.cancel or "Cancel", 
+        x = 0.251, y = 0, w = 0.5, h = 50, 
+        shapeArgs = {corners = 1, radius = 25}, 
+        callback = function() this.kill = true end,  
+        subStyle = {"transparent"} --style = Soda.style.transparent
+    } 
     
     return this
 end
@@ -236,7 +259,14 @@ function Soda.Alert(t)
     
     local this = Soda.Frame(t)
     
-    local ok = Soda.Button{parent = this, title = t.ok or "OK", x = 0, y = 0, w = 1, h = 50, shapeArgs = {corners = 1 | 8, radius = 25}, callback = function() this.kill = true callback() end,  style = Soda.style.transparent} --style = Soda.style.transparent,blurred = t.blurred,
+    local ok = Soda.Button{
+        parent = this, 
+        title = t.ok or "OK", 
+        x = 0, y = 0, w = 1, h = 50, 
+        shapeArgs = {corners = 1 | 8, radius = 25}, 
+        callback = function() this.kill = true callback() end,  
+        subStyle = {"transparent"} --style = Soda.style.transparent
+    } --style = Soda.style.transparent,blurred = t.blurred,
     return this
 end
 

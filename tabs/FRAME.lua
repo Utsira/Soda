@@ -13,8 +13,24 @@ function Soda.Frame:init(t)
     
     --null = function() end. ie no need to test if callback then callback()
     
+    --parenthood, baseStyle inheritance
     self.child = {} --hold any children
-
+    if t.parent then
+        local priority = t.priority or #t.parent.child+1
+        table.insert(t.parent.child, priority, self) --if this has a parent, add it to the parent's list of children
+        self.style = t.style or t.parent.style
+  --      self.inactive = self.inactive or self.parent.inactive
+    else
+        local priority = t.priority or #Soda.items+1
+        table.insert( Soda.items, priority, self) --no parent = top-level, added to Soda.items table
+        self.style = t.style or Soda.style.default
+    end
+    self.styleList = {self.style}
+    self.subStyle = t.subStyle or {}
+    for i,v in ipairs(self.subStyle) do
+        table.insert(self.styleList, self.style[v]) 
+    end
+    
     self:setPosition()
 
     self.mesh = {} --holds additional effects, such as shadow and blur
@@ -22,18 +38,10 @@ function Soda.Frame:init(t)
         self.mesh[#self.mesh+1] = Soda.Blur{parent = self}
         self.shapeArgs.tex = self.mesh[#self.mesh].image
         self.shapeArgs.resetTex = self.mesh[#self.mesh].image
+        table.insert(self.styleList, self.style["blurred"]) 
     end
     if t.shadow then
         self.mesh[#self.mesh+1] = Soda.Shadow{parent = self}
-    end
-    
-    if t.parent then
-        local priority = t.priority or #t.parent.child+1
-        table.insert(t.parent.child, priority, self) --if this has a parent, add it to the parent's list of children
-  --      self.inactive = self.inactive or self.parent.inactive
-    else
-        local priority = t.priority or #Soda.items+1
-        table.insert( Soda.items, priority, self) --no parent = top-level, added to Soda.items table
     end
     
     self.inactive = self.inactive or self.hidden  --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
@@ -85,10 +93,16 @@ function Soda.Frame:setPosition() --all elements defined relative to their paren
     end
 end
 
+function Soda.Frame:setStyle(list, pref1, pref2)
+    for i,v in ipairs(list) do
+        Soda.setStyle(v[pref1] or v[pref2])
+    end
+end
+
 function Soda.Frame:getTextSize(sty, tex)
     pushStyle()
-    Soda.setStyle(Soda.style.default.text)
-    Soda.setStyle(sty or self.style.text)
+   -- Soda.setStyle(Soda.style.default.text)
+    Soda.setStyle(sty or self.style.text) --sty or 
     local w,h = textSize(tex or self.title)
     popStyle()
     return w,h
@@ -166,13 +180,14 @@ function Soda.Frame:draw(breakPoint)
         self.mesh[i]:draw() --draw shadow
     end
     
-    local sty = self.style
-    if self.highlighted and self.highlightable then
-        sty = self.style.highlight or Soda.style.default.highlight
-    end
+    local sty = {unpack(self.styleList)} --shallow copy of the lisr of styles self.style
     if self.inactive then
-        sty = Soda.style.inactive
+        sty[#sty+1] = Soda.style.inactive
+    elseif self.highlighted and self.highlightable then
+       -- sty[#sty+1] = self.style.highlight --self.style.highlight or Soda.style.default.highlight
+        sty[#sty] = sty[#sty].highlight
     end
+
     pushMatrix()
     pushStyle()
     
@@ -183,24 +198,27 @@ function Soda.Frame:draw(breakPoint)
     
         popStyle()
     pushStyle()
-    Soda.setStyle(Soda.style.default.text)
-  Soda.setStyle(sty.text)
+    self:setStyle(sty, "body", "text")
+    --Soda.setStyle(self.style.body) --(Soda.style.default.body)
+ -- Soda.setStyle(sty.text)
     
     self:drawContent()
-
-    if self.label then
-        
-       -- Soda.setStyle(Soda.style.default.text)
-       
-        
-        text(self.title, self.label.x, self.label.y)
-        
-    end
+    local titleText = "text"
     if self.content then
         textWrapWidth(self.w * 0.9)
         text(self.content, self.w * 0.5, self.h * 0.6)
         textWrapWidth()
+        titleText = "title"
     end
+    if self.label then
+        
+      --  Soda.setStyle(sty.text) --(Soda.style.default.text)
+       self:setStyle(sty, titleText, "text")
+        
+        text(self.title, self.label.x, self.label.y)
+        
+    end
+
     popStyle()
     
     for i, v in ipairs(self.child) do --nb children are drawn with parent's transformation
@@ -222,8 +240,9 @@ function Soda.Frame:drawContent() end --overridden by subclasses
 
 function Soda.Frame:drawShape(sty)
   --  pushStyle()
-    Soda.setStyle(Soda.style.default.shape)
-    Soda.setStyle(sty.shape)
+  --  Soda.setStyle(sty.shape) --(Soda.style.default.shape)
+ --   Soda.setStyle(sty.shape)
+    self:setStyle(sty, "shape")
     self.shape(self.shapeArgs)
    -- popStyle()
 end

@@ -2,9 +2,10 @@ Soda.TextScroll = class(Soda.Scroll) --smooth scrolling of large text files (ie 
 
 function Soda.TextScroll:init(t)
    -- t.shape = t.shape or Soda.rect
-    self.characterW, self.characterH = self:getTextSize(Soda.style.textBox, "a")
-    Soda.Scroll.init(self, t)
     
+    Soda.Scroll.init(self, t)
+    self.content = ""
+    self.characterW, self.characterH = self:getTextSize(self.style.textBox, "a") --Soda.style.textBox
     self:clearString()
     self:inputString(t.textBody or "")
 end
@@ -35,7 +36,7 @@ function Soda.TextScroll:inputString(txt, bottom)
     self.scrollHeight = #self.lines * self.characterH
     if bottom then 
         --self.scrollY = self.scrollHeight -self.h 
-        self.scrollVel = ((self.scrollHeight -self.h) - self.scrollY ) * 0.1
+        self.scrollVel = ((self.scrollHeight -self.h) - self.scrollY ) * 0.07
     end
     --put lines back into chunks of text, 10 lines high each
     local n = #self.lines//10
@@ -52,7 +53,8 @@ function Soda.TextScroll:drawContent()
     
     self:updateScroll()
     pushStyle()
-    Soda.setStyle(Soda.style.textBox)
+    Soda.setStyle(self.style.textBox)
+    --self:setStyle(self.styleList, "textBox")
     textMode(CORNER)
     textAlign(LEFT)
     --[[

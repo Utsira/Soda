@@ -63,6 +63,23 @@ Forum Discussion: http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerfu
 
 ## Version Notes
 
+### v0.6
+
+* SubStyles: A new, more powerful way of handling styles. Uses the same palette as iOS9.
+  * if you have used the `style` attribute, you may need to make changes. See notes to `subStyle` below
+  
+* Improvements to text scrolls: now wraps lines at word boundaries, has option to scroll to bottom of text when new text added
+
+* Text Entry boxes now properly interpret text pasted into them (requires iOS9 shortcuts row)
+
+* Fixed a major bug in Lists where one List would inherit the panels of another
+
+* Tutorial rejigged following feedback
+
+* Overview now includes a funky calculator demo.
+
+* Lots of minor fixes
+
 ### v0.5
 
 * NEW `Soda.Sliders` - Sliders can be any length (default to 300 pixels), can be integer or floating point, can have an optional set of "snap points" that the value will snap to, support tapping either side of the handle for fine +/- adjustments, and at slow drag speeds have a cubic relation to touch allowing for up to 1/20,000 accuracy.
@@ -223,7 +240,7 @@ Horizontally segmented buttons that activate different frames/ panels. Define th
 
   + `text` - array of strings. Describes how each segment will be labelled. eg: `text = {"Buttons", "Switches"}`
   + `panels` - array of UI element identifiers. Identifies which panels the segmented button will flick between, corresponds with `text` array. eg: `panels = {buttonPanel, switchPanel}` where `buttonPanel`, `switchPanel` are handles (local variables are fine here) for prior defined Soda elements.
-  + `defaultNo` - integer. if you want one of the segment sections to be selected by default, set this to the number of the item in the `text` array. eg `defaultNo = 2` to default to `"Switches"` from the above list. If omitted defaults to 1 (left-most panel)
+  + ~~`default`~~ v0.6 `default` - integer. if you want one of the segment sections to be selected by default, set this to the number of the item in the `text` array. eg `defaultNo = 2` to default to `"Switches"` from the above list. If omitted defaults to 1 (left-most panel)
 
 #### `Soda.List`
 
@@ -232,7 +249,7 @@ A vertically scrolling list of elements that the user can select from. Has elast
   + `text` - array of strings. One string for each item in the list. eg `text = {"apples", "oranges", "bananas"}`
   + `enumerate` - flag. Set to true and the list items will automatically be numbered, eg `1) apples 2) oranges 3) bananas`
   + `panels` - array of UI element identifiers. Same as in `Soda.Segment`, identifies which panels the list will flick between, corresponds with `text` array. eg: `panels = {applesPanel, orangesPanel}` where `applesPanel`, `orangesPanel` are handles (local variables are fine here) for prior defined Soda elements.
-  + `defaultNo` - integer. Similar to `Soda.Segment`, if you want an item in the list to be selected by default, set this to the number of the item in the `text` array. eg `defaultNo = 2` to default to `"oranges"` from the above list. Omit this for no selection.
+  + ~~`defaultNo`~~ `default` - integer. Similar to `Soda.Segment`, if you want an item in the list to be selected by default, set this to the number of the item in the `text` array. eg `defaultNo = 2` to default to `"oranges"` from the above list. Omit this for no selection.
   + `callback` - list callbacks return 3 variables, eg: `callback = function(self, selected, txt)`
     1. as always, the sender (the list object itself).
     2. the selected item. List items are numbered in order with the variable `idNo`, this can be queried within the callback with eg `selected.idNo`
@@ -246,7 +263,7 @@ Variant:
 
 + `Soda.DropdownList` - A button which, when pressed, toggles a dropdown list. When an item is selected from the list, the button's label changes to reflect the selection, and an optional callback is triggered. `text`, `enumerate`, `callback`, `clearSelection` all same as `Soda.List`. Arguments:
   + `title` - the title of the button, will be prepended to the user's list selection. A downward-facing triangle is automatically prepended to the title to indicate that a dropdown menu is available
-  + `defaultNo` - the list item selected by default, same as `Soda.List`. If you omit this, there will be no selection by default, and the text "Select from list" will be appended to the button's label.
+  + ~~`defaultNo`~~ v0.6: `default` - the list item selected by default, same as `Soda.List`. If you omit this, there will be no selection by default, and the text "Select from list" will be appended to the button's label.
 
 ####  `Soda.Slider`
 
@@ -289,6 +306,7 @@ Additional method:
   - `Soda.Window` - a standard window with a title and rounded corners.
     * `ok` - flag/ string. Set to true to add an OK button that will trigger `callback`. Set to a string (eg "Proceed" etc) to override the title of the button
     * `cancel` - flag/ string. Set to true to add a cancel button that closes the window. Set to a string (eg "No" etc) to override the title of the button.
+    * `close` flag. Set to true to add a close X button to the top-left corner.
     
 ### Attributes
 
@@ -309,7 +327,7 @@ Not all parameters are currently supported by all Soda UI elements.
 
 + `textBody` - string. Used by [`Soda.TextScroll`, `Soda.TextWindow`](#sodatextscroll-sodatextwindow)
 
-+ `defaultNo` - integer. Used by elements made of multiple parts such as [`Soda.Segment`](#sodasegment), [`Soda.List`](#sodalist) to indicate a default selected item in the list.
++ ~~`defaultNo`~~ `default` - integer. Used by elements made of multiple parts such as [`Soda.Segment`](#sodasegment), [`Soda.List`](#sodalist) to indicate a default selected item in the list.
 
 + `default` - string. Used by [`Soda.textEntry`](#sodatextentry) for default text that can be overwritten by the user.
 
@@ -328,8 +346,18 @@ Not all parameters are currently supported by all Soda UI elements.
 
 + `shape` - function pointer. Set (or override) the default shape of the element. Currently, only `Soda.RoundedRectangle` supports blurred panels
 
-+ `style` - table pointer. set (or override) the default style of the element (see Style tab)
++ `style` - table pointer. set (or override) the default style of the element (see Style tab). Currently there is only one style, `Soda.style.default`. If you were previously using styles such as `Soda.style.translucent`, these have now become sub-styles. You can also set a custom style table (documentation coming soon)
 
++ `subStyle` - table of strings. Set additional style features to the element. The strings must correspond to keys in the table of the base style. Current keys are:
+	+ `"warning"` - red warning buttons
+	+ `"icon"` - a larger typeface, for buttons using symbols
+	+ `"darkIcon"` - a white icon with a transparent background, looks good against dark surfaces
+	+ `"button"` - the default iOS blue button style. NB this will be set automatically by the button classes. Use subStyle attribute to override. 
+	+ 	`"translucent"` - a dark translucent area (useful for frames)
+
+> #### Upgrading from 0.5 to 0.6
+> If you were setting the style attribute in 0.5, most of these styles have been folded in to `Soda.style.default`, and are now accessed using the `subStyle` attribute. Remember that `subStyle` is a table allowing multiple attributes to be set. Eg: change `style = Soda.style.translucent` to `subStyle = {"translucent"}`
+  
 + `panels` - table of UI element identifiers. Used by [`Soda.Segment`](#sodasegment) and [`Soda.List`](#sodalist) to identify which panels the segmented button will flick between
 
 + `alert` - flag. Set to true to darken and disable the underlying interface elements until this element has been dismissed. Automatically set by `Soda.Alert` dialog.
@@ -363,6 +391,8 @@ Not all parameters are currently supported by all Soda UI elements.
 
 + ~~ADDED V0.5 Sliders.~~
 
++ Interface designer
+
 + Improvements to TextEntry:
 
   + Be able to select a word with a double-tap, or the entire field with a triple-tap.
@@ -381,7 +411,7 @@ Not all parameters are currently supported by all Soda UI elements.
 
 + ~~Make gesture recognition (refusal of swipe-to-scroll gestures) universal across Soda (currently just applies to List classes)~~
 
-+ Make styles list cascading
++ ~~Make styles list cascading~~
 
 + Add scroll-bar indicator to text windows
 

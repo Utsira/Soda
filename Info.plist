@@ -10,7 +10,6 @@
 		<string>Overview</string>
 		<string>Soda</string>
 		<string>Main</string>
-		<string>Style2</string>
 		<string>Style</string>
 		<string>RoundRect</string>
 		<string>Blur</string>
@@ -31,7 +30,7 @@
 	<key>Created</key>
 	<string>2015-09-20 22:29:05 +0000</string>
 	<key>Description</key>
-	<string>Soda v0.5</string>
+	<string>Soda v0.6</string>
 	<key>Icon</key>
 	<string>Icon.png</string>
 </dict>

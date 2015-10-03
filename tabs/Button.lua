@@ -4,7 +4,9 @@ function Soda.Button:init(t)
     t.shape = t.shape or Soda.RoundedRectangle
     t.label = t.label or { x=0.5, y=0.5}
     t.highlightable = true
+    t.subStyle = t.subStyle or {"button"}
     Soda.Frame.init(self, t)
+    --table.insert(self.styleList, 2, self.style["button"])
 end
 
 function Soda.Button:touched(t, tpos)
@@ -38,7 +40,8 @@ function Soda.MenuButton(t)
     t.title = Soda.symbol.menu --the "hamburger" menu icon
     t.w = t.w or 40
     t.h = t.h or 40
-    t.style = t.style or Soda.style.darkIcon
+  --  t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     return Soda.Button(t)
 end
 
@@ -46,7 +49,8 @@ function Soda.BackButton(t)
     t.title = Soda.symbol.back -- full-width less-than symbol. alt \u{276e}
     t.w = t.w or 40
     t.h = t.h or 40
-    t.style = t.style or Soda.style.darkIcon
+   -- t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     return Soda.Button(t)
 end
 
@@ -54,7 +58,8 @@ function Soda.ForwardButton(t)
     t.title = Soda.symbol.forward --greater-than, in case you need a right-facing back button. alt \u{276f}
     t.w = t.w or 40
     t.h = t.h or 40
-    t.style = t.style or Soda.style.darkIcon
+  --  t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     return Soda.Button(t)
 end
 
@@ -62,7 +67,8 @@ function Soda.CloseButton(t)
     t.title = Soda.symbol.close --multiplication X 
     t.w = t.w or 40
     t.h = t.h or 40
-    t.style = t.style or Soda.style.darkIcon
+  --  t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     return Soda.Button(t)
 end
 
@@ -70,7 +76,8 @@ function Soda.DropdownButton(t)
     t.title = Soda.symbol.down --down triangle
     t.w = t.w or 40
     t.h = t.h or 40
-    t.style = t.style or Soda.style.darkIcon
+  --  t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     return Soda.Button(t)
 end
 
@@ -78,7 +85,8 @@ function Soda.SettingsButton(t)
     t.title = Soda.symbol.gear -- the "gear" icon
     t.w = t.w or 40
     t.h = t.h or 40
-    t.style = t.style or Soda.style.darkIcon
+   -- t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     t.shape = t.shape or Soda.ellipse
     return Soda.Button(t)
 end
@@ -87,7 +95,8 @@ function Soda.AddButton(t)
     t.title = Soda.symbol.add -- full-width +
     t.w = t.w or 40
     t.h = t.h or 40
-    t.style = t.style or Soda.style.darkIcon
+   -- t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     t.shape = t.shape or Soda.ellipse
     return Soda.Button(t)
 end
@@ -96,7 +105,8 @@ function Soda.DeleteButton(t)
     t.title = Soda.symbol.delete --backspace delete
     t.w = t.w or 40
     t.h = t.h or 40
-    t.style = t.style or Soda.style.darkIcon
+   -- t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     return Soda.Button(t)
 end
 
@@ -104,7 +114,8 @@ function Soda.QueryButton(t)
     t.title = "?" --full-width ? \u{ff1f}
     t.w = t.w or 40
     t.h = t.h or 40
-    t.style = t.style or Soda.style.darkIcon
+   -- t.style = t.style or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     t.shape = t.shape or Soda.ellipse
     return Soda.Button(t)
 end

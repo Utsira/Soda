@@ -72,21 +72,21 @@ function Soda.Slider:drawContent()
     local x, y = self:posFromValue() + 20, 20
 --  Soda.setStyle(Soda.style.switch.shape)
     pushStyle()
-    stroke(Soda.themes.default.text)
+    stroke(Soda.themes.default.blue)
     strokeWidth(2)
     line(20, y, x,y)
     noStroke()
-    fill(Soda.themes.default.text)
+    fill(Soda.themes.default.blue)
     for i,v in ipairs(self.snapPos) do
         if v > x then 
             --Soda.setStyle(Soda.style.switch.shape) 
-            fill(Soda.themes.default.stroke)
+            fill(Soda.themes.default.grey)
         end
      --   line(v,y-10,v,y+10)
         ellipse(v,y,8)
     end
  --   Soda.setStyle(Soda.style.switch.shape)
-    stroke(Soda.themes.default.stroke)
+    stroke(Soda.themes.default.grey)
     strokeWidth(2)
     line(x, y, self.w-20,y)
     popStyle()

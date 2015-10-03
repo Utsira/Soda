@@ -1,13 +1,12 @@
 
 --# Welcome
 function setupUI()
-    overview{content = [[This is a tutorial that introduces the basic features of Soda.
-    This tutorial will gradually build an interface like this one, 
-    adding elements one at a time. You will be able to navigate the 
-    tutorial, and browse the extensively commented source code 
-    for each step in the window in the bottom half of the screen.
+    overview{content = [[
     
-    When you're ready, press "Begin Tutorial".]], 
+    This is a tutorial that introduces the basic features of Soda.
+    
+    When you're ready to start the tutorial, press "Begin Tutorial".
+    ]], 
     ok = "Begin Tutorial",
     callback = function() stepSelector.list:selectFromList(stepSelector.list.child[2]) end}
 end
@@ -41,14 +40,13 @@ function setupUI()
         x=0.5, y=-0.001, w=0.7, h=0.51, 
 
         blurred = true, --add a blurred effect
-        --note that because the background is slightly translucent, we can see the underlying area through the blur, creating an interesting glow effect
     
         shadow = true, --add a drop shadow
     
         --the Style tab of the Soda library contains the Soda.style table 
         -- this defines what colours, fonts, line widths etc the buttons are drawn with.
         --if you don't supply a "style" parameter, the buttons are drawn with Soda.style.default
-        style = Soda.style.darkBlurred, --this is a style designed to complement the blurred effect
+     
     }
 end
 --# Parenthood
@@ -61,7 +59,7 @@ function setupUI()
     local panel = Soda.Window{ --give parent a local handle, in this case "panel", to define children
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
-        blurred = true, shadow = true, style = Soda.style.darkBlurred, 
+        blurred = true, shadow = true, 
     }
     
     --lets put a button in it. It's going to be one of the pre-defined buttons, a question mark.
@@ -95,7 +93,7 @@ function setupUI()
     local panel = Soda.Window{ 
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
-        blurred = true, shadow = true, style = Soda.style.darkBlurred, 
+        blurred = true, shadow = true, 
     }
     
     -- now we make the callback attribute point to the openHelp function (nb the openHelp function can be defined anywhere in our code, it doesn't have to be above the button definition, or in the same tab)
@@ -112,7 +110,7 @@ function setupUI()
     local panel = Soda.Window{ 
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
-        blurred = true, shadow = true, style = Soda.style.darkBlurred, 
+        blurred = true, shadow = true, 
     }
     
     Soda.QueryButton{
@@ -126,7 +124,7 @@ function setupUI()
     local accountPanel = Soda.Frame{ --Frame is a basic holder for other elements
         parent = panel,
         x = 10, y = 10, w = -10, h = -60, -- a 10 pixel border, except at the top (to give room for the Window title and query button)
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent, --omit shape to make the frame invisible
+        shape = Soda.RoundedRectangle, subStyle = {"translucent"}, --omit shape to make the frame invisible
         shapeArgs = {radius = 16} --set the radius to be a little smaller than the parent window
     }
     
@@ -137,7 +135,7 @@ function setupUI()
     local panel = Soda.Window{ 
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
-        blurred = true, shadow = true, style = Soda.style.darkBlurred, 
+        blurred = true, shadow = true, 
     }
     
     Soda.QueryButton{
@@ -149,7 +147,7 @@ function setupUI()
     local accountPanel = Soda.Frame{
         parent = panel,
         x = 10, y = 10, w = -10, h = -60, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, subStyle = {"translucent"},
         shapeArgs = {radius = 16} 
     }
     
@@ -168,7 +166,7 @@ function setupUI()
     local panel = Soda.Window{ 
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
-        blurred = true, shadow = true, style = Soda.style.darkBlurred, 
+        blurred = true, shadow = true, 
     }
     
     Soda.QueryButton{
@@ -180,7 +178,7 @@ function setupUI()
     local accountPanel = Soda.Frame{
         parent = panel,
         x = 10, y = 10, w = -10, h = -60, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, subStyle = {"translucent"},
         shapeArgs = {radius = 16} 
     }
     
@@ -202,7 +200,7 @@ function setupUI()
             Soda.Alert{ --brings up an alert dialog, with a single button to dismiss it
                 title = "User name registered as \n"..inkey,
                 ok = "\u{4e86}\u{89e3}", --by default, the ok button says "ok". We can override this with the ok parameter. Here I've set it to the Japanese for "ok"
-                style = Soda.style.darkBlurred, blurred = true --add some lovely blurriness
+                blurred = true --add some lovely blurriness
             }
         end
     }
@@ -214,7 +212,7 @@ function setupUI()
     local panel = Soda.Window{ 
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
-        blurred = true, shadow = true, style = Soda.style.darkBlurred, 
+        blurred = true, shadow = true, 
     }
     
     Soda.QueryButton{
@@ -228,7 +226,7 @@ function setupUI()
     local accountPanel = Soda.Frame{
         parent = panel,
         x = 10, y = 10, w = -10, h = -60, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, subStyle = {"translucent"},
         shapeArgs = {radius = 16} 
     }
     
@@ -242,7 +240,7 @@ function setupUI()
             Soda.Alert{ 
                 title = "User name registered as \n"..inkey,
                 ok = "Got it", 
-                style = Soda.style.darkBlurred, blurred = true 
+                blurred = true 
             }
         end
     }
@@ -274,7 +272,7 @@ function setupUI()
     local panel = Soda.Window{ 
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
-        blurred = true, shadow = true, style = Soda.style.darkBlurred, 
+        blurred = true, shadow = true, 
     }
     
     Soda.QueryButton{
@@ -288,7 +286,7 @@ function setupUI()
     local accountPanel = Soda.Frame{
         parent = panel,
         x = 10, y = 10, w = -10, h = -60, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, subStyle = {"translucent"},
         shapeArgs = {radius = 16} 
     }
     
@@ -302,7 +300,7 @@ function setupUI()
             Soda.Alert{ 
                 title = "User name registered as \n"..inkey,
                 ok = "Got it", 
-                style = Soda.style.darkBlurred, blurred = true 
+                blurred = true 
             }
         end
     }
@@ -327,7 +325,7 @@ function setupUI()
         title = "Reset",
     
         --as this could be wiping some data, let's make this button RED:
-        style = Soda.style.warning,
+       subStyle = {"warning"},
     
         --and give the user a chance to cancel the operation, using an proceed/cancel 2 button alert:
         callback = function()
@@ -358,7 +356,7 @@ function setupUI()
     local panel = Soda.Window{ 
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
-        blurred = true, shadow = true, style = Soda.style.darkBlurred, 
+        blurred = true, shadow = true, 
     }
     
     Soda.MenuToggle{ --menu toggle is a preset displaying the "hamburger" menu icon
@@ -391,7 +389,7 @@ function setupUI()
     local accountPanel = Soda.Frame{
         parent = panel,
         x = 10, y = 10, w = -10, h = -60, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, subStyle = {"translucent"},
         shapeArgs = {radius = 16} 
     }
     
@@ -405,7 +403,7 @@ function setupUI()
             Soda.Alert{ 
                 title = "User name registered as \n"..inkey,
                 ok = "Got it", 
-                style = Soda.style.darkBlurred, blurred = true 
+                blurred = true 
             }
         end
     }
@@ -428,7 +426,7 @@ function setupUI()
         parent = accountPanel,
         x = -10, y = 10, h = 40, 
         title = "Reset",
-        style = Soda.style.warning,
+       subStyle = {"warning"},
     
         callback = function()      
             Soda.Alert2{
@@ -449,7 +447,7 @@ function setupUI()
     local panel = Soda.Window{ 
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
-        blurred = true, shadow = true, style = Soda.style.darkBlurred, 
+        blurred = true, shadow = true, 
     }
     
     Soda.QueryButton{
@@ -461,7 +459,7 @@ function setupUI()
     local accountPanel = Soda.Frame{
         parent = panel,
         x = 10, y = 10, w = -10, h = -60, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, subStyle = {"translucent"},
         shapeArgs = {radius = 16} 
     }
     
@@ -469,7 +467,7 @@ function setupUI()
     local settingsPanel = Soda.Frame{
         parent = panel,
         x = 10, y = 10, w = -10, h = -60, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, subStyle = {"translucent"},
         shapeArgs = {radius = 16} 
     }
     
@@ -493,7 +491,7 @@ function setupUI()
             Soda.Alert{ 
                 title = "User name registered as \n"..inkey,
                 ok = "Got it", 
-                style = Soda.style.darkBlurred, blurred = true 
+                blurred = true 
             }
         end
     }
@@ -516,7 +514,7 @@ function setupUI()
         parent = accountPanel,
         x = -10, y = 10, h = 40, 
         title = "Reset",
-        style = Soda.style.warning,
+       subStyle = {"warning"},
     
         callback = function()      
             Soda.Alert2{
@@ -537,7 +535,7 @@ function setupUI()
     local panel = Soda.Window{ 
         title = "Tutorial", 
         x=0.5, y=-0.001, w=0.7, h=0.51, 
-        blurred = true, shadow = true, style = Soda.style.darkBlurred, 
+        blurred = true, shadow = true, 
     }
     
     Soda.MenuToggle{ 
@@ -558,7 +556,7 @@ function setupUI()
     local accountPanel = Soda.Frame{
         parent = panel,
         x = 10, y = 10, w = -10, h = -60, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, subStyle = {"translucent"},
         shapeArgs = {radius = 16} 
     }
     
@@ -566,7 +564,7 @@ function setupUI()
     local backStory = Soda.TextScroll{
         parent = panel,
         x = 10, y = 10, w = -10, h = -60, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, subStyle = {"translucent"},
         shapeArgs = {radius = 16},
         textBody = 
 [[
@@ -614,7 +612,7 @@ function setupUI()
             Soda.Alert{ 
                 title = "User name registered as \n"..inkey,
                 ok = "Got it", 
-                style = Soda.style.darkBlurred, blurred = true 
+                blurred = true 
             }
         end
     }
@@ -633,7 +631,7 @@ function setupUI()
         parent = accountPanel,
         x = -10, y = 10, h = 40, 
         title = "Truffle Shuffle",
-        style = Soda.style.warning,
+       subStyle = {"warning"},
     
         callback = function()      
             Soda.Alert2{
@@ -656,7 +654,7 @@ function setupUI()
         blurred = true, 
         shadow = true, 
 
-        style = Soda.style.darkBlurred, 
+        
         --you can pass a table of arguments to the shape function, such as choosing which corners will be rounded
         --Corners are numbered 1,2,4,8 starting in bottom-left and proceeding clockwise. Defaults to 15 (all corners). Use bitwise operators to set. eg to only round the bottom corners set this to `1 | 8` (1 or 8). To round all but the top-right corner, use `~4` (not 4)
         shapeArgs = { corners = 1 | 8} --only round bottom corners
@@ -680,7 +678,7 @@ function setupUI()
     local accountPanel = Soda.Frame{
         parent = panel,
         x = 10, y = 10, w = -10, h = -60, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, subStyle = {"translucent"},
         shapeArgs = {radius = 16} 
     }
     
@@ -688,7 +686,7 @@ function setupUI()
     local backStory = Soda.TextScroll{
         parent = panel,
         x = 10, y = 10, w = -10, h = -60, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, subStyle = {"translucent"},
         shapeArgs = {radius = 16},
         textBody = 
 [[
@@ -736,7 +734,7 @@ function setupUI()
             Soda.Alert{ 
                 title = "User name registered as \n"..inkey,
                 ok = "Got it", 
-                style = Soda.style.darkBlurred, blurred = true 
+                blurred = true 
             }
         end
     }
@@ -755,7 +753,7 @@ function setupUI()
         parent = accountPanel,
         x = -10, y = 10, h = 40, 
         title = "Truffle Shuffle",
-        style = Soda.style.warning,
+       subStyle = {"warning"},
     
         callback = function()      
             Soda.Alert2{
@@ -785,7 +783,9 @@ projects
 end
 
 --# Main
--- Soda Tutorial
+-- Template for projects using Soda
+
+assert(SodaIsInstalled, "Set Soda as a dependency of this project") --produces an error if Soda not a dependency
 
 displayMode(OVERLAY)
 displayMode(FULLSCREEN)
@@ -839,11 +839,10 @@ end
 --template ends
 function setupUI()
     Soda.Window{
-    y = 0.75,
-    title = 
-[[Main
-    
-This can be used as a template
+    y = 0.75, w = 0.4, h = 0.4,
+    title = "Main",
+    content = 
+[[This can be used as a template
 for the Main tab in your own
 projects running Soda. It contains
 all the hooks that you need to
@@ -868,7 +867,8 @@ function tutorial()
     
     local codeWindow = Soda.TextWindow{ 
         shapeArgs = {corners = 2 | 4, radius = 25}, --just round the top corners
-        style = Soda.style.default,
+      --  subStyle = {"translucent"},
+        blurred = true,
         x = 0, y = 0, w = 1, h = 0.5,
         title = "",
         textBody = "",
@@ -880,7 +880,7 @@ function tutorial()
         x = 0.5, y = -5, w = 400, h = 40,
         title = "Tutorial Step",
         text = stepNames, 
-        defaultNo = bookmark, --default to the last item looked at
+        default = bookmark, --default to the last item looked at
         enumerate = true, --automatically numbers the steps (requires Soda 0.4)
         callback = function(self, obj)  
             saveLocalData("bookmark", obj.idNo) --save user's place in tutorial

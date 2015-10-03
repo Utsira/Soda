@@ -2,29 +2,34 @@ function overview(t)
     local win =Soda.Window{
         title = "Soda v"..Soda.version.." Overview",
         w = 0.97, h = 0.7,
-        blurred = true, 
+         blurred = true, 
         shadow = true, 
-        style = Soda.style.darkBlurred, 
+      --  style = Soda.style.darkBlurred, 
     }
     
     local aboutPanel = Soda.Frame{
         parent = win,
         x = 10, y = 10, w = -10, h = -110, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+    }
+    
+    local about = Soda.Frame{
+        parent = aboutPanel,
+        x = 0, y = -0.001, w = 1, h = 0.7,
+        shape = Soda.RoundedRectangle, --style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16},
-        label = { x = 0.5, y = 0.5},
+        title = "About Soda",
+         label = { x = 0.5, y = 0.5},
         title = 
     [[Soda is a library for producing graphic user interfaces like 
     the one you are looking at now.
     
-    Press the segment buttons to see some of the things Soda is 
-    capable of.
-    
+    Press the segment buttons above to see the interface elements Soda produces.   
     ]]..(t.content or "")
     }
     
     Soda.Button{
-        parent = aboutPanel, 
+        parent = about, 
         x = 10, y = 10, h = 40,
         title = "Online Documentation",
         callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
@@ -32,14 +37,30 @@ function overview(t)
    
     if t.ok then 
     Soda.Button{
-        parent = aboutPanel,
+        parent = about,
         x = -10, y = 10, h = 40,
       --  shapeArgs = {radius = 16},
-          style = Soda.style.warning,
+          subStyle = {"warning"}, --style = Soda.style.warning,
         title = t.ok,
         callback = t.callback
     }
     end
+    
+    local demo = Soda.Frame{
+        parent = aboutPanel,
+        x = 0, y = 0, w = 1, h = 0.29,
+        shape = Soda.RoundedRectangle, --style = Soda.style.translucent,
+        subStyle = {"translucent"},
+        shapeArgs = {radius = 16},
+        title = "Demos",        
+    }
+    
+    Soda.Button{
+        parent = demo,
+        x = 0.3, y = 0.4, w = 250, h = 40,
+        title = "Calculator",
+        callback = function() calculator.window:show(RIGHT) end
+    }
     
     local buttonPanel = Soda.Frame{
         parent = win,
@@ -59,7 +80,8 @@ function overview(t)
         parent = win,
         title = "Sliders. At slow slide speeds movement becomes more fine-grained",
         x = 10, y = 10, w = -10, h = -110,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, -- style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
@@ -74,7 +96,8 @@ function overview(t)
         parent = win,
         title = "Text Entry fields with a draggable cursor",
         x = 10, y = -110, w = -10, h = 0.6,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, -- style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
@@ -82,7 +105,8 @@ function overview(t)
         parent = win,
         title = "Vertically scrolling lists are another way of selecting one choice from many",
         x = 10, y = 10, w = -10, h = -110,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, -- style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
@@ -97,7 +121,8 @@ function overview(t)
     Sed vitae metus quis mauris congue tincidunt vel sit amet lorem. Mauris lectus lorem, facilisis in dapibus et, congue quis nunc. Fusce convallis mi urna, vitae mattis felis sodales et. Aliquam et fringilla purus, eu vehicula diam. Sed facilisis mauris vitae augue sodales aliquam. In ultrices metus ut eleifend condimentum. Praesent venenatis rhoncus felis, eget vehicula orci ornare non. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Vivamus eget vulputate mauris. Pellentesque id tempus sapien.
     ]], 100),
         x = 10, y = 10, w = -10, h = -110,
-        shape = Soda.RoundedRectangle, style = Soda.style.default,
+        shape = Soda.RoundedRectangle, --style = Soda.style.default,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}    
     }
     
@@ -114,7 +139,8 @@ function overview(t)
         parent = buttonPanel,
         title = "Presets for frequently-used buttons",
         x = 0, y = 0.5, w = 1, h = 0.32,
-          shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+          shape = Soda.RoundedRectangle, --style = Soda.style.translucent,
+        subStyle = {"translucent"},
           shapeArgs = {radius = 16}
     }
     
@@ -123,26 +149,32 @@ function overview(t)
     
     Soda.BackButton{
     parent = buttonPresets,
+    subStyle = {"darkIcon"},
     x = div2, y = 0.4}
     
     Soda.ForwardButton{
     parent = buttonPresets,
+    subStyle = {"darkIcon"},
     x = div2 + div, y = 0.4}
     
     Soda.SettingsButton{
     parent = buttonPresets,
+    subStyle = {"darkIcon"},
     x = div2 + div * 2, y = 0.4}
     
     Soda.AddButton{
     parent = buttonPresets,
+    subStyle = {"icon"},
     x = div2 + div * 3, y = 0.4}
     
     Soda.QueryButton{
     parent = buttonPresets,
+    subStyle = {"icon"},
     x = div2 + div * 4, y = 0.4}
     
     Soda.MenuButton{
     parent = buttonPresets,
+    subStyle = {"icon"},
     x = div2 + div * 5, y = 0.4}
     
     Soda.DropdownButton{
@@ -163,11 +195,12 @@ function overview(t)
         parent = buttonPanel,
         title = "Text and symbol based buttons in various shapes and styles",
         x = 0, y = -0.001, w = 1, h = 0.32,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle, --style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
-    div = 1/6
+    div = 1/5
     div2 = div/2
     local w = div -0.01
     
@@ -177,41 +210,45 @@ function overview(t)
         x = div2, y = 0.4, w = w, h = 40,
     }
     
+    --[[
     Soda.Button{
         parent = textButtons, 
         title = "Dark", 
-        style = Soda.style.dark,
+        --style = Soda.style.dark,
+        subStyle = {"listItem"},
         x = div2 + div, y = 0.4, w = w, h = 40,
     }
+      ]]
     
     Soda.Button{
         parent = textButtons, 
         title = "Warning", 
-        style = Soda.style.warning, 
-        x = div2 + div * 2, y = 0.4, w = w, h = 40, 
+        subStyle = {"warning"}, --style = Soda.style.warning, 
+        x = div2 + div , y = 0.4, w = w, h = 40, 
     }
     
     Soda.Button{
         parent = textButtons, 
         title = "Square", 
         shape = Soda.rect,
-        x = div2 + div * 3, y = 0.4, w = w, h = 40,
+        x = div2 + div * 2, y = 0.4, w = w, h = 40,
     }
     
     Soda.Button{
         parent = textButtons, 
         title = "Lozenge", 
         shapeArgs = {radius = 20},
-        x = div2 + div * 4, y = 0.4, w = w, h = 40,
+        x = div2 + div * 3, y = 0.4, w = w, h = 40,
     }
     
     local div3 = div/5
-    local base = div2 + div * 5
+    local base = div2 + div * 4
     
     Soda.Button{
         parent = textButtons, 
         title = "\u{1f310}", 
-        style = Soda.style.darkIcon,
+       -- style = Soda.style.darkIcon,
+        subStyle = {"listItem"},
         shape = Soda.ellipse,
         x = base - div3, y = 0.4, w = 40, h = 40,
     }
@@ -230,7 +267,8 @@ function overview(t)
         parent = textButtons, 
         title = "\u{1f374}", 
       --  shape = Soda.ellipse,
-        style = Soda.style.darkIcon,
+       -- style = Soda.style.darkIcon,
+        subStyle = {"listItem"},
         x = base + div3, y = 0.4, w = 40, h = 40,
     }
     
@@ -238,7 +276,8 @@ function overview(t)
         parent = buttonPanel,
         title = "Segmented buttons for selecting one option from many",
         x = 0, y = 0, w = 1, h = 0.32,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle,-- style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
@@ -254,7 +293,8 @@ function overview(t)
         parent = switchPanel,
         title = "iOS-style switches",
         x = 0, y = -10, w = 0.49, h = 0.75,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle,-- style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
@@ -282,7 +322,8 @@ function overview(t)
         parent = switchPanel,
         title = "Text and preset-based toggles",
         x = -0.001, y = -10, w = 0.49, h = 0.75,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        shape = Soda.RoundedRectangle,-- style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
@@ -361,8 +402,9 @@ function overview(t)
     local regularAlert = Soda.Frame{
         parent = dialogPanel,
         title = "Press the buttons to trigger alerts in the default style",
-        x = 0, y = 0.85, w = 1, h = 0.3,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        x = 0, y = -0.001, w = 1, h = 0.32,
+        shape = Soda.RoundedRectangle, --style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
@@ -372,7 +414,8 @@ function overview(t)
         x = 10, y = 0.4, w = 0.4, h = 40,
         callback = function() 
             Soda.Alert2{
-                title = "A 2-button\nProceed or cancel dialog",
+                title = "Alert",
+                content = "A 2-button\nProceed or cancel dialog",
             }
         end
     }
@@ -380,12 +423,13 @@ function overview(t)
     Soda.Button{
     parent = regularAlert, 
     title = "Alert", 
-    style = Soda.style.warning, 
+    subStyle = {"warning"}, --style = Soda.style.warning, 
     x = -10, y = 0.4, w = 0.4, h = 40, 
     callback = 
         function()
             Soda.Alert{ --an alert box with a single button
-                title = "A one-button\nalert", 
+                title = "Alert",
+                content = "A one-button\nalert", 
                 y=0.6, h = 0.3,
             }
         end
@@ -394,8 +438,9 @@ function overview(t)
     local blurAlert = Soda.Frame{
         parent = dialogPanel,
         title = "Press the buttons to trigger alerts with dark, blurred panels",
-        x = 0, y = 0.53, w = 1, h = 0.3,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
+        x = 0, y = 0.5, w = 1, h = 0.32,
+        shape = Soda.RoundedRectangle, --style = Soda.style.translucent,
+        subStyle = {"translucent"},
         shapeArgs = {radius = 16}
     }
     
@@ -405,8 +450,10 @@ function overview(t)
         x = 10, y = 0.4, w = 0.4, h = 40,
         callback = function() 
             Soda.Alert2{
-                title = "A 2-button\nProceed or cancel dialog",
-                style = Soda.style.darkBlurred, blurred = true, 
+                title = "Alert",
+                content = "A 2-button\nProceed or cancel dialog",
+              --  style = Soda.style.darkBlurred, 
+                blurred = true, 
             }
         end
     }
@@ -414,18 +461,56 @@ function overview(t)
     Soda.Button{
     parent = blurAlert, 
     title = "Alert (blurred)", 
-    style = Soda.style.warning, 
+    subStyle = {"warning"}, --style = Soda.style.warning, 
     x = -10, y = 0.4, w = 0.4, h = 40, 
     callback = 
         function()
             Soda.Alert{ --an alert box with a single button
-                title = "A one-button\nalert", 
+                title = "Alert",
+                content = "A one-button\nalert", 
                 y=0.6, h = 0.3,
-                style = Soda.style.darkBlurred, blurred = true, 
+             --   style = Soda.style.darkBlurred, 
+                blurred = true, 
             }
         end
     }
     
+    --window panel
+    local windowPresets = Soda.Frame{
+        parent = dialogPanel,
+        title = "Press the buttons to see the window presets",
+        x = 0, y = 0, w = 1, h = 0.32,
+        shape = Soda.RoundedRectangle, --style = Soda.style.translucent,
+        subStyle = {"translucent"},
+        shapeArgs = {radius = 16}
+    }
+    
+    Soda.Button{
+        parent = windowPresets, 
+        title = "Window", 
+        x = 10, y = 0.4, w = 0.4, h = 40,
+        callback = function() 
+            Soda.Window{
+                title = "Window",
+                content = "A regular window with optional ok, cancel, and close buttons and optional drop-shadow",
+                ok = true, cancel = true, close = true, shadow = true
+            }
+        end
+    }
+    
+    Soda.Button{
+        parent = windowPresets, 
+        title = "Blurred Window", 
+        x = -10, y = 0.4, w = 0.4, h = 40,
+        callback = function() 
+            Soda.Window{
+                title = "Blurred Window",
+                content = "A blurred window with ok, cancel, and close buttons",
+                blurred = true,
+                ok = true, cancel = true, close = true
+            }
+        end
+    }
     --text entry panel
     
     Soda.TextEntry{ --text entry box
@@ -517,7 +602,7 @@ function splashScreen()
         parent = aboutPanel,
         x = -10, y = 10, h = 40,
       --  shapeArgs = {radius = 16},
-          style = Soda.style.warning,
+          subStyle = {"warning"}, --style = Soda.style.warning,
         title = "Begin Tutorial"
     }
     
@@ -663,7 +748,7 @@ function splashScreen()
     Soda.Button{
         parent = textButtons, 
         title = "Warning", 
-        style = Soda.style.warning, 
+        subStyle = {"warning"}, --style = Soda.style.warning, 
         x = div2 + div * 2, y = 0.4, w = w, h = 40, 
     }
     
@@ -811,7 +896,7 @@ function splashScreen()
     Soda.Button{
     parent = regularAlert, 
     title = "Alert", 
-    style = Soda.style.warning, 
+    subStyle = {"warning"}, --style = Soda.style.warning, 
     x = -10, y = 0.4, w = 0.4, h = 40, 
     callback = 
         function()
@@ -845,7 +930,7 @@ function splashScreen()
     Soda.Button{
     parent = blurAlert, 
     title = "Alert (blurred)", 
-    style = Soda.style.warning, 
+    subStyle = {"warning"}, --style = Soda.style.warning, 
     x = -10, y = 0.4, w = 0.4, h = 40, 
     callback = 
         function()
