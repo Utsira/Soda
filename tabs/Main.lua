@@ -10,8 +10,9 @@ function setup()
     profiler.init()
     parameter.watch("#Soda.items")
     Soda.setup()
-  --  demo1() --do your setting up here
-    overview{}
+ demo1() --do your setting up here
+ -- overview{}
+    calculator.init()
 end
 
 function draw()

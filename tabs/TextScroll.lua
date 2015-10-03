@@ -6,7 +6,7 @@ function Soda.TextScroll:init(t)
     Soda.Scroll.init(self, t)
     
     self:clearString()
-    self:inputString(t.textBody)
+    self:inputString(t.textBody or "")
 end
 
 function Soda.TextScroll:clearString()

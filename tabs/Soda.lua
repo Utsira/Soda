@@ -1,5 +1,5 @@
 Soda = {}
-
+SodaIsInstalled = true
 function Soda.setup()
     --  parameter.watch("#Soda.items")
     parameter.watch("Soda.UIoffset")

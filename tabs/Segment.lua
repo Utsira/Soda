@@ -7,7 +7,7 @@ function Soda.Segment:init(t)
     local n = #t.text
     local w = 1/n
   --  local ww = 0.85/n --1/(n+0.5)
-    local defaultNo = t.defaultNo or 1 --default to displaying the left-most panel
+    local default = t.default or 1 --default to displaying the left-most panel
     for i=1,n do
         local shape = Soda.RoundedRectangle
         local corners, panel
@@ -21,9 +21,9 @@ function Soda.Segment:init(t)
             panel = t.panels[i]
             panel:hide() --hide the panel by default
         end
-        local this = Soda.Selector{parent = self, idNo = i, title = t.text[i], x = x, y = 0.5, w = w+0.002, h=t.h, shape = shape, shapeArgs={corners=corners}, panel = panel}  --self.h * 0.5, w++0.004
+        local this = Soda.Selector{parent = self, idNo = i, title = t.text[i], x = x, y = 0.5, w = w, h=t.h, shape = shape, shapeArgs={corners=corners}, panel = panel}  --self.h * 0.5, w+++0.002
         
-        if not t.noSelectionPossible and i==defaultNo then 
+        if not t.noSelectionPossible and i==default then 
             self:selectFromList(this)
             --[[
             this.highlighted = true

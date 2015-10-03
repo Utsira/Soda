@@ -118,7 +118,7 @@ function overview(t)
           shapeArgs = {radius = 16}
     }
     
-    local div = 1/8
+    local div = 1/9
     local div2 = div/2
     
     Soda.BackButton{
@@ -152,6 +152,11 @@ function overview(t)
     Soda.CloseButton{
     parent = buttonPresets,
     x = div2 + div * 7, y = 0.4
+    }
+    
+    Soda.DeleteButton{
+    parent = buttonPresets,
+    x = div2 + div * 8, y = 0.4
     }
     
     local textButtons = Soda.Frame{
@@ -581,7 +586,7 @@ function splashScreen()
         shapeArgs = {radius = 16},--, corners = 1 | 2
         text = {"About", "Buttons", "Switches", "Dialogs", "Text Entry", "Lists", "Text Scrolls"}, 
         panels = {aboutPanel, buttonPanel, switchPanel, dialogPanel, textEntryPanel, listPanel, scrollPanel},
-        defaultNo = 1
+        default = 1
     }
     
     --button panel!
