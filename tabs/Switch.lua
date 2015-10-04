@@ -5,9 +5,23 @@ function Soda.Switch:init(t)
     local tw,_ = textSize(t.title or "")
    -- t.w, t.h = 120+tw,40
 
+<<<<<<< tabs/Switch.lua
     Soda.Frame.init(self, {parent = t.parent, x = t.x, y=t.y, w = 120+tw, h = 40, on = t.on or false, style = t.style or Soda.style.switch, shape = Soda.RoundedRectangle, shapeArgs = {w = 70, h = 36, radius = 18, x = 0, y = 2}, highlightable = true, label = {x=80, y=0.5} , title = t.title})
+=======
+    Soda.Frame.init(self, {
+        parent = t.parent, 
+        x = t.x, y=t.y, w = 120+tw, h = 40, 
+        on = t.on or false, 
+       -- style = t.style or Soda.style.switch, 
+        subStyle = {"switch"},
+        shape = Soda.RoundedRectangle, 
+        shapeArgs = {w = 70, h = 36, radius = 18, x = 0, y = 2}, 
+        highlightable = true, 
+        label = {x=80, y=0.5} , title = t.title
+    })
+>>>>>>> tabs/Switch.lua
 
-    self.knob = Soda.Knob{parent = self, x = 0, y = 0.5, w=40, h=40, shape = Soda.ellipse, style = Soda.style.switch, shadow = true}
+    self.knob = Soda.Knob{parent = self, x = 0, y = 0.5, w=38, h=38, shape = Soda.ellipse, shadow = true}
     
     self:toggleSettings(t)
     
@@ -33,8 +47,8 @@ Soda.Knob = class(Soda.Frame)
 
 function Soda.Knob:setPosition()
     Soda.Frame.setPosition(self)
-    self.offX = self.x - 2
-    self.onX = self.x+32
+    self.offX = self.x - 1
+    self.onX = self.x+34
     if self.parent.on then self.x = self.onX end
 end
 
@@ -61,7 +75,10 @@ function Soda.Knob:unHighlight()
     self.tween2 = tween.sequence(t1, t2)
 
 end
+<<<<<<< tabs/Switch.lua
 
 
 
 
+=======
+>>>>>>> tabs/Switch.lua

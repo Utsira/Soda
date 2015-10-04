@@ -16,8 +16,8 @@ use standard fill(), stroke(), strokeWidth() to set body fill color, outline str
 function Soda.RoundedRectangle(t) 
     local s = t.radius or 8
     local c = t.corners or 15
-    local w = math.max(t.w+1,2*s)
-    local h = math.max(t.h,2*s)
+    local w = math.max(t.w+1,2*s)+1
+    local h = math.max(t.h,2*s)+2
     local hasTexture = 0
     if t.tex then hasTexture = 1 end
     local label = table.concat({w,h,s,c,hasTexture},",")
@@ -182,7 +182,10 @@ void main()
 }
 ]]
 }
+<<<<<<< tabs/RoundRect.lua
 
 
 
 
+=======
+>>>>>>> tabs/RoundRect.lua

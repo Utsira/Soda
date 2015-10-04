@@ -87,9 +87,12 @@ function Soda.Scroll:touched(t, tpos)
     return self.alert
 end
 
+<<<<<<< tabs/Scroll.lua
 --]]
 
 
 
 
 
+=======
+>>>>>>> tabs/Scroll.lua

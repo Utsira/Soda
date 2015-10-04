@@ -32,8 +32,11 @@ function Soda.Selector:touched(t, tpos)
         end
     end
 end
+<<<<<<< tabs/Selector.lua
   ]]
 
 
 
 
+=======
+>>>>>>> tabs/Selector.lua

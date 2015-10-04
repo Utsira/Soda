@@ -1,9 +1,11 @@
 Soda = {}
-
+Soda.version = "0.6"
+SodaIsInstalled = true
 function Soda.setup()
     --  parameter.watch("#Soda.items")
     parameter.watch("Soda.UIoffset")
     Soda.Assets()
+    Soda.baseFontSize = 20
     Soda.theme = Soda.themes.default
     textAlign(CENTER)
     rectMode(CENTER)
@@ -144,7 +146,10 @@ function round(number, places) --use -ve places to round to tens, hundreds etc
     local mult = 10^(places or 0)
     return math.floor(number * mult + 0.5) / mult
 end
+<<<<<<< tabs/Soda.lua
 
 
 
 
+=======
+>>>>>>> tabs/Soda.lua

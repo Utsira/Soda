@@ -13,8 +13,24 @@ function Soda.Frame:init(t)
     
     --null = function() end. ie no need to test if callback then callback()
     
+    --parenthood, baseStyle inheritance
     self.child = {} --hold any children
-
+    if t.parent then
+        local priority = t.priority or #t.parent.child+1
+        table.insert(t.parent.child, priority, self) --if this has a parent, add it to the parent's list of children
+        self.style = t.style or t.parent.style
+  --      self.inactive = self.inactive or self.parent.inactive
+    else
+        local priority = t.priority or #Soda.items+1
+        table.insert( Soda.items, priority, self) --no parent = top-level, added to Soda.items table
+        self.style = t.style or Soda.style.default
+    end
+    self.styleList = {self.style}
+    self.subStyle = t.subStyle or {}
+    for i,v in ipairs(self.subStyle) do
+        table.insert(self.styleList, self.style[v]) 
+    end
+    
     self:setPosition()
 
     self.mesh = {} --holds additional effects, such as shadow and blur
@@ -22,11 +38,13 @@ function Soda.Frame:init(t)
         self.mesh[#self.mesh+1] = Soda.Blur{parent = self}
         self.shapeArgs.tex = self.mesh[#self.mesh].image
         self.shapeArgs.resetTex = self.mesh[#self.mesh].image
+        table.insert(self.styleList, self.style["blurred"]) 
     end
     if t.shadow then
         self.mesh[#self.mesh+1] = Soda.Shadow{parent = self}
     end
     
+<<<<<<< tabs/FRAME.lua
     if t.parent then
         t.parent.child[#t.parent.child+1] = self --if this has a parent, add it to the parent's list of children
   --      self.inactive = self.inactive or self.parent.inactive
@@ -48,6 +66,10 @@ function Soda.Frame:childrenTouched(t,tpos)
         local v = self.child[i]
         if v:touched(t, off) then return true end
     end
+=======
+    self.inactive = self.inactive or self.hidden  --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
+   -- if self.inactive then self:deactivate() end
+>>>>>>> tabs/FRAME.lua
 end
 
 function Soda.Frame:touched(t, tpos)
@@ -101,10 +123,21 @@ function Soda.Frame:setPosition() --all elements defined relative to their paren
     end
 end
 
+function Soda.Frame:setStyle(list, pref1, pref2)
+    for i,v in ipairs(list) do
+        Soda.setStyle(v[pref1] or v[pref2])
+    end
+end
+
 function Soda.Frame:getTextSize(sty, tex)
     pushStyle()
+<<<<<<< tabs/FRAME.lua
     Soda.setStyle(Soda.style.default.text)
     Soda.setStyle(sty or self.style.text)
+=======
+   -- Soda.setStyle(Soda.style.default.text)
+    Soda.setStyle(sty or self.style.text) --sty or 
+>>>>>>> tabs/FRAME.lua
     local w,h = textSize(tex or self.title)
     popStyle()
     return w,h
@@ -112,6 +145,7 @@ end
 
 function Soda.Frame:show(direction)
     self.hidden = false --so that we can see animation
+    self.inactive=false
     if direction then --animation
         self:setPosition()
         local targetX = self.x
@@ -120,15 +154,17 @@ function Soda.Frame:show(direction)
         elseif direction==RIGHT then
             self.x = WIDTH + self.w * 0.5
         end
-        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut, function() self.inactive=false end) --user cannot touch buttons until animation completes
+        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut) --, function() self.inactive=false enduser cannot touch buttons until animation completes
+    --[[
     else --no animation
         self.inactive = false
+          ]]
     end
     if self.shapeArgs and self.shapeArgs.tex then self.shapeArgs.resetTex = self.shapeArgs.tex end --force roundedrect to switch texture (because two rects of same dimensions are cached as one mesh)
 end
 
 function Soda.Frame:hide(direction)
-    self.inactive=true --cannot touch element during deactivation animation
+    --self.inactive=true --cannot touch element during deactivation animation
     if direction then
         local targetX
         if direction==LEFT then
@@ -136,9 +172,10 @@ function Soda.Frame:hide(direction)
         elseif direction==RIGHT then
             targetX = WIDTH + self.w * 0.5
         end
-        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut, function() self.hidden = true end) --user cannot touch buttons until animation completes
+        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut, function() self.hidden = true self.inactive=true  end) --user cannot touch buttons until animation completes
     else
         self.hidden = true
+        self.inactive = true
     end
 end
 
@@ -150,16 +187,32 @@ end
 
 function Soda.Frame:activate()
     self.inactive = false
+<<<<<<< tabs/FRAME.lua
     for i,v in ipairs(self.child) do
         v:activate()
     end
+=======
+    --[[
+    for i,v in ipairs(self.child) do
+        v:activate()
+    end
+      ]]
+>>>>>>> tabs/FRAME.lua
 end
 
 function Soda.Frame:deactivate()
     self.inactive = true
+<<<<<<< tabs/FRAME.lua
     for i,v in ipairs(self.child) do
         v:deactivate()
     end
+=======
+    --[[
+    for i,v in ipairs(self.child) do
+        v:deactivate()
+    end
+      ]]
+>>>>>>> tabs/FRAME.lua
 end
 
 function Soda.Frame:draw(breakPoint)
@@ -174,13 +227,20 @@ function Soda.Frame:draw(breakPoint)
         self.mesh[i]:draw() --draw shadow
     end
     
-    local sty = self.style
-    if self.highlighted and self.highlightable then
-        sty = self.style.highlight or Soda.style.default.highlight
+    local sty = {unpack(self.styleList)} --shallow copy of the lisr of styles self.style
+    if self.inactive then
+        sty[#sty+1] = Soda.style.inactive
+    elseif self.highlighted and self.highlightable then
+       -- sty[#sty+1] = self.style.highlight --self.style.highlight or Soda.style.default.highlight
+        sty[#sty] = sty[#sty].highlight
     end
+<<<<<<< tabs/FRAME.lua
     if self.inactive then
         sty = Soda.style.inactive
     end
+=======
+
+>>>>>>> tabs/FRAME.lua
     pushMatrix()
     pushStyle()
     
@@ -188,6 +248,7 @@ function Soda.Frame:draw(breakPoint)
     if self.shape then
         self:drawShape(sty)
     end
+<<<<<<< tabs/FRAME.lua
      Soda.setStyle(sty.text)
     self:drawContent()
     --pushStyle()
@@ -195,16 +256,42 @@ function Soda.Frame:draw(breakPoint)
         
         --Soda.setStyle(Soda.style.default.text)
        
+=======
+    
+        popStyle()
+    pushStyle()
+    self:setStyle(sty, "body", "text")
+    --Soda.setStyle(self.style.body) --(Soda.style.default.body)
+ -- Soda.setStyle(sty.text)
+    
+    self:drawContent()
+    local titleText = "text"
+    if self.content then
+        textWrapWidth(self.w * 0.9)
+        text(self.content, self.w * 0.5, self.h * 0.6)
+        textWrapWidth()
+        titleText = "title"
+    end
+    if self.label then
+        
+      --  Soda.setStyle(sty.text) --(Soda.style.default.text)
+       self:setStyle(sty, titleText, "text")
+>>>>>>> tabs/FRAME.lua
         
         text(self.title, self.label.x, self.label.y)
         
     end
+<<<<<<< tabs/FRAME.lua
     if self.content then
         textWrapWidth(self.w * 0.9)
         text(self.content, self.w * 0.5, self.h * 0.6)
         textWrapWidth()
     end
    -- popStyle()
+=======
+
+    popStyle()
+>>>>>>> tabs/FRAME.lua
     
     for i, v in ipairs(self.child) do --nb children are drawn with parent's transformation
         --[[
@@ -218,15 +305,25 @@ function Soda.Frame:draw(breakPoint)
         end
     end
     popMatrix()
+<<<<<<< tabs/FRAME.lua
     popStyle()
+=======
+  --  popStyle()
+>>>>>>> tabs/FRAME.lua
 end
 
 function Soda.Frame:drawContent() end --overridden by subclasses
 
 function Soda.Frame:drawShape(sty)
   --  pushStyle()
+<<<<<<< tabs/FRAME.lua
     --Soda.setStyle(Soda.style.default.shape)
     Soda.setStyle(sty.shape)
+=======
+  --  Soda.setStyle(sty.shape) --(Soda.style.default.shape)
+ --   Soda.setStyle(sty.shape)
+    self:setStyle(sty, "shape")
+>>>>>>> tabs/FRAME.lua
     self.shape(self.shapeArgs)
    -- popStyle()
 end
@@ -261,8 +358,14 @@ function Soda.Frame:touched(t, tpos)
     local trans = tpos - vec2(self:left(), self:bottom()) --translate the touch position
     for i = #self.child, 1, -1 do --children take priority over frame for touch
         local v = self.child[i]
+<<<<<<< tabs/FRAME.lua
         if not v.inactive and v:touched(t, trans) then 
             return true 
+=======
+        if not v.inactive then
+            if v:touched(t, trans) then
+            return true end
+>>>>>>> tabs/FRAME.lua
         end
     end
   --  if self.alert then return true end --or self:pointIn(tpos.x, tpos.y) 
@@ -278,6 +381,7 @@ function Soda.Frame:selectFromList(child) --method used by parents of selectors.
         end
     else
         if self.selected then 
+
             self.selected.highlighted = false 
             --[[
             for i,v in ipairs(self.child) do
@@ -309,6 +413,9 @@ function Soda.Frame:orientationChanged()
     end
 end
 
+<<<<<<< tabs/FRAME.lua
 
 
 
+=======
+>>>>>>> tabs/FRAME.lua

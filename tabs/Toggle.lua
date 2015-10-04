@@ -91,11 +91,22 @@ end
 function Soda.SettingsToggle(t)
     t.title = "\u{2699}" -- the "gear" icon
     t.w, t.h = 40, 40
-    t.style = t.style or Soda.style.darkIcon
+    t.style = t.style --or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
     return Soda.Toggle(t)
 end
 
+<<<<<<< tabs/Toggle.lua
 
 
+=======
+function Soda.SettingsToggle(t)
+    t.title = "\u{2699}" -- the "gear" icon
+    t.w, t.h = 40, 40
+    t.style = t.style --or Soda.style.darkIcon
+    t.subStyle = t.subStyle or {"icon", "button"}
+    return Soda.Toggle(t)
+end
+>>>>>>> tabs/Toggle.lua
 
 

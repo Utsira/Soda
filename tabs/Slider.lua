@@ -41,6 +41,7 @@ function Soda.Slider:init(t)
         label = {x = -0.001, y = -0.001}
     }
     
+<<<<<<< HEAD
     -- #################################### <JMV38 changes>
 --    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
     self.sensor:onQuickTap(function(event) self:smallChange(event.tpos) end)
@@ -59,6 +60,9 @@ function Soda.Slider:smallChange(tpos)
     self:callback(self.value)
 end
     -- #################################### </JMV38 changes>
+=======
+end
+>>>>>>> 1b48b3bb96b56d577c66676daf0bc2dcdcfa3955
 
 function Soda.Slider:posFromValue(val)
     local val = val or self.value
@@ -89,6 +93,7 @@ function Soda.Slider:drawContent()
     local x, y = self:posFromValue() + 20, 20
 --  Soda.setStyle(Soda.style.switch.shape)
     pushStyle()
+<<<<<<< HEAD
     stroke(Soda.themes.default.text)
     strokeWidth(2)
     line(20, y, x,y)
@@ -98,12 +103,27 @@ function Soda.Slider:drawContent()
         if v > x then 
             --Soda.setStyle(Soda.style.switch.shape) 
             fill(Soda.themes.default.stroke)
+=======
+    stroke(Soda.themes.default.blue)
+    strokeWidth(2)
+    line(20, y, x,y)
+    noStroke()
+    fill(Soda.themes.default.blue)
+    for i,v in ipairs(self.snapPos) do
+        if v > x then 
+            --Soda.setStyle(Soda.style.switch.shape) 
+            fill(Soda.themes.default.grey)
+>>>>>>> 1b48b3bb96b56d577c66676daf0bc2dcdcfa3955
         end
      --   line(v,y-10,v,y+10)
         ellipse(v,y,8)
     end
  --   Soda.setStyle(Soda.style.switch.shape)
+<<<<<<< HEAD
     stroke(Soda.themes.default.stroke)
+=======
+    stroke(Soda.themes.default.grey)
+>>>>>>> 1b48b3bb96b56d577c66676daf0bc2dcdcfa3955
     strokeWidth(2)
     line(x, y, self.w-20,y)
     popStyle()
@@ -117,8 +137,11 @@ function Soda.Slider:draw()
     -- Codea does not automatically call this method
 end
 ]]
+<<<<<<< HEAD
     -- #################################### <JMV38 changes>
 --[[
+=======
+>>>>>>> 1b48b3bb96b56d577c66676daf0bc2dcdcfa3955
 function Soda.Slider:touched(t, tpos)
    if Soda.Frame.touched(self, t, tpos) then return true end
   --  Soda.Frame.touched(self, t, tpos)
@@ -135,6 +158,7 @@ function Soda.Slider:touched(t, tpos)
     end
     
 end
+<<<<<<< HEAD
 --]]
     -- #################################### </JMV38 changes>
 
@@ -163,6 +187,11 @@ function Soda.SliderKnob:move(t)
     end
 end   
 --[[
+=======
+
+Soda.SliderKnob = class(Soda.Frame)
+
+>>>>>>> 1b48b3bb96b56d577c66676daf0bc2dcdcfa3955
 function Soda.SliderKnob:touched(t, tpos)
     if t.state == BEGAN then
         if self:pointIn(tpos.x, tpos.y) then
@@ -182,7 +211,12 @@ function Soda.SliderKnob:touched(t, tpos)
         end
         return true
     end
+<<<<<<< HEAD
 end
 
 --]]
 
+=======
+
+end
+>>>>>>> 1b48b3bb96b56d577c66676daf0bc2dcdcfa3955
