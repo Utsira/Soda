@@ -44,14 +44,6 @@ function Soda.Frame:init(t)
         self.mesh[#self.mesh+1] = Soda.Shadow{parent = self}
     end
     
-<<<<<<< tabs/FRAME.lua
-    if t.parent then
-        t.parent.child[#t.parent.child+1] = self --if this has a parent, add it to the parent's list of children
-  --      self.inactive = self.inactive or self.parent.inactive
-    else
-        table.insert( Soda.items, self) --no parent = top-level, added to Soda.items table
-    end
-    
     self.inactive = self.inactive or self.hidden  --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
    -- if self.inactive then self:deactivate() end
     
@@ -66,10 +58,6 @@ function Soda.Frame:childrenTouched(t,tpos)
         local v = self.child[i]
         if v:touched(t, off) then return true end
     end
-=======
-    self.inactive = self.inactive or self.hidden  --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
-   -- if self.inactive then self:deactivate() end
->>>>>>> tabs/FRAME.lua
 end
 
 function Soda.Frame:touched(t, tpos)
@@ -131,13 +119,10 @@ end
 
 function Soda.Frame:getTextSize(sty, tex)
     pushStyle()
-<<<<<<< tabs/FRAME.lua
-    Soda.setStyle(Soda.style.default.text)
-    Soda.setStyle(sty or self.style.text)
-=======
+
    -- Soda.setStyle(Soda.style.default.text)
     Soda.setStyle(sty or self.style.text) --sty or 
->>>>>>> tabs/FRAME.lua
+
     local w,h = textSize(tex or self.title)
     popStyle()
     return w,h
@@ -187,32 +172,20 @@ end
 
 function Soda.Frame:activate()
     self.inactive = false
-<<<<<<< tabs/FRAME.lua
-    for i,v in ipairs(self.child) do
-        v:activate()
-    end
-=======
     --[[
     for i,v in ipairs(self.child) do
         v:activate()
     end
       ]]
->>>>>>> tabs/FRAME.lua
 end
 
 function Soda.Frame:deactivate()
     self.inactive = true
-<<<<<<< tabs/FRAME.lua
-    for i,v in ipairs(self.child) do
-        v:deactivate()
-    end
-=======
     --[[
     for i,v in ipairs(self.child) do
         v:deactivate()
     end
       ]]
->>>>>>> tabs/FRAME.lua
 end
 
 function Soda.Frame:draw(breakPoint)
@@ -234,13 +207,7 @@ function Soda.Frame:draw(breakPoint)
        -- sty[#sty+1] = self.style.highlight --self.style.highlight or Soda.style.default.highlight
         sty[#sty] = sty[#sty].highlight
     end
-<<<<<<< tabs/FRAME.lua
-    if self.inactive then
-        sty = Soda.style.inactive
-    end
-=======
 
->>>>>>> tabs/FRAME.lua
     pushMatrix()
     pushStyle()
     
@@ -248,16 +215,6 @@ function Soda.Frame:draw(breakPoint)
     if self.shape then
         self:drawShape(sty)
     end
-<<<<<<< tabs/FRAME.lua
-     Soda.setStyle(sty.text)
-    self:drawContent()
-    --pushStyle()
-    if self.label then
-        
-        --Soda.setStyle(Soda.style.default.text)
-       
-=======
-    
         popStyle()
     pushStyle()
     self:setStyle(sty, "body", "text")
@@ -276,22 +233,12 @@ function Soda.Frame:draw(breakPoint)
         
       --  Soda.setStyle(sty.text) --(Soda.style.default.text)
        self:setStyle(sty, titleText, "text")
->>>>>>> tabs/FRAME.lua
         
         text(self.title, self.label.x, self.label.y)
         
     end
-<<<<<<< tabs/FRAME.lua
-    if self.content then
-        textWrapWidth(self.w * 0.9)
-        text(self.content, self.w * 0.5, self.h * 0.6)
-        textWrapWidth()
-    end
-   -- popStyle()
-=======
 
     popStyle()
->>>>>>> tabs/FRAME.lua
     
     for i, v in ipairs(self.child) do --nb children are drawn with parent's transformation
         --[[
@@ -305,25 +252,16 @@ function Soda.Frame:draw(breakPoint)
         end
     end
     popMatrix()
-<<<<<<< tabs/FRAME.lua
-    popStyle()
-=======
-  --  popStyle()
->>>>>>> tabs/FRAME.lua
+
 end
 
 function Soda.Frame:drawContent() end --overridden by subclasses
 
 function Soda.Frame:drawShape(sty)
   --  pushStyle()
-<<<<<<< tabs/FRAME.lua
-    --Soda.setStyle(Soda.style.default.shape)
-    Soda.setStyle(sty.shape)
-=======
   --  Soda.setStyle(sty.shape) --(Soda.style.default.shape)
  --   Soda.setStyle(sty.shape)
     self:setStyle(sty, "shape")
->>>>>>> tabs/FRAME.lua
     self.shape(self.shapeArgs)
    -- popStyle()
 end
@@ -413,9 +351,3 @@ function Soda.Frame:orientationChanged()
     end
 end
 
-<<<<<<< tabs/FRAME.lua
-
-
-
-=======
->>>>>>> tabs/FRAME.lua

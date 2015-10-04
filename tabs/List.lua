@@ -19,16 +19,10 @@ function Soda.List:init(t)
             panel = t.panels[i]
             panel:hide() --hide the panel by default
         end
-        
-<<<<<<< tabs/List.lua
-        local item = Soda.Selector{parent = self, idNo = i, title = number..v, label = {x = 10, y = 0.5}, style = t.style, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42, panel = panel} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
- --           item.callback = function(this) print(this.title) end
-        item.sensor:onTap()
-        if t.defaultNo and i==t.defaultNo then
-=======
+
         local item = Soda.Selector{parent = self, idNo = i, title = number..v, label = {x = 10, y = 0.5}, subStyle = {"listItem"}, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42, panel = panel} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
+        item.sensor:onTap()
         if t.default and i==t.default then
->>>>>>> tabs/List.lua
           --  item.highlighted = true
             self:selectFromList(item)
         end
@@ -77,7 +71,6 @@ function Soda.DropdownList:init(t)
         end
     } 
 
-    --add clear list method (...perhaps this should be a class, not a wrapper?)
     
     self.button.callback = function() self.list:toggle() end --callback has to be outside of constructor only when two elements' callbacks both refer to each-other.
 
@@ -134,11 +127,6 @@ function Soda.DropdownList(t)
     
     return this
 end
-<<<<<<< tabs/List.lua
 
-
-
-=======
   ]]
->>>>>>> tabs/List.lua
 

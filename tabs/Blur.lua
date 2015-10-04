@@ -205,10 +205,3 @@ void main()
 }]]
 }
 
-
-<<<<<<< tabs/Blur.lua
-
-
-
-=======
->>>>>>> tabs/Blur.lua

@@ -1,8 +1,5 @@
 -- Soda
-<<<<<<< tabs/Main.lua
-Soda.version = "0.5"
-=======
->>>>>>> tabs/Main.lua
+
 saveProjectInfo("Description", "Soda v"..Soda.version)
 
 displayMode(OVERLAY)
@@ -13,15 +10,10 @@ function setup()
     profiler.init()
     parameter.watch("#Soda.items")
     Soda.setup()
-<<<<<<< tabs/Main.lua
-  --  demo1() --do your setting up here
-    overview{}
-=======
 
     overview{}
     -- demo1() --do your setting up here
-    calculator.init()
->>>>>>> tabs/Main.lua
+
 end
 
 function draw()
@@ -80,9 +72,3 @@ function profiler.draw()
     end
 end
 
-<<<<<<< tabs/Main.lua
-
-
-
-=======
->>>>>>> tabs/Main.lua

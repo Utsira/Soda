@@ -6,12 +6,7 @@ function Soda.Button:init(t)
     t.highlightable = true
     t.subStyle = t.subStyle or {"button"}
     Soda.Frame.init(self, t)
-<<<<<<< tabs/Button.lua
-=======
     --table.insert(self.styleList, 2, self.style["button"])
-end
->>>>>>> tabs/Button.lua
-
 --
     -- #################################### <JMV38 changes>
     self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
@@ -60,37 +55,20 @@ function Soda.MenuButton(t)
 end
 
 function Soda.BackButton(t)
-<<<<<<< tabs/Button.lua
-    t.title = "\u{ff1c}" -- full-width less-than symbol. alt \u{276e}
-    --[[
-    if  t.direction == RIGHT then
-        t.title = "\u{ff1e}" --greater-than, in case you need a right-facing back button. alt \u{276f}
-    end
-      ]]
-    t.w, t.h = 40, 40
-    t.style = t.style or Soda.style.darkIcon
-=======
     t.title = Soda.symbol.back -- full-width less-than symbol. alt \u{276e}
     t.w = t.w or 40
     t.h = t.h or 40
    -- t.style = t.style or Soda.style.darkIcon
     t.subStyle = t.subStyle or {"icon", "button"}
->>>>>>> tabs/Button.lua
     return Soda.Button(t)
 end
 
 function Soda.ForwardButton(t)
-<<<<<<< tabs/Button.lua
-    t.title = "\u{ff1e}" --greater-than, in case you need a right-facing back button. alt \u{276f}
-    t.w, t.h = 40, 40
-    t.style = t.style or Soda.style.darkIcon
-=======
     t.title = Soda.symbol.forward --greater-than, in case you need a right-facing back button. alt \u{276f}
     t.w = t.w or 40
     t.h = t.h or 40
   --  t.style = t.style or Soda.style.darkIcon
     t.subStyle = t.subStyle or {"icon", "button"}
->>>>>>> tabs/Button.lua
     return Soda.Button(t)
 end
 
@@ -150,10 +128,4 @@ function Soda.QueryButton(t)
     t.shape = t.shape or Soda.ellipse
     return Soda.Button(t)
 end
-<<<<<<< tabs/Button.lua
 
-
-
-
-=======
->>>>>>> tabs/Button.lua

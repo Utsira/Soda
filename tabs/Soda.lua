@@ -63,10 +63,6 @@ function Soda.touched(t)
     end
 end
 
-
-
-
-
 function Soda.keyboard(key)
     if Soda.keyboardEntity then
         Soda.keyboardEntity:keyboard(key)
@@ -146,10 +142,4 @@ function round(number, places) --use -ve places to round to tens, hundreds etc
     local mult = 10^(places or 0)
     return math.floor(number * mult + 0.5) / mult
 end
-<<<<<<< tabs/Soda.lua
 
-
-
-
-=======
->>>>>>> tabs/Soda.lua

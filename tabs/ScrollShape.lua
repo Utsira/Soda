@@ -73,10 +73,3 @@ else
 
 end
 
-
-
-
-<<<<<<< tabs/ScrollShape.lua
-
-=======
->>>>>>> tabs/ScrollShape.lua

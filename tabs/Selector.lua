@@ -4,6 +4,7 @@ function Soda.Selector:init(t)
     t.shape = t.shape or Soda.RoundedRectangle
     t.label = t.label or { x=0.5, y=0.5}
     t.highlightable = true
+    t.subStyle = t.subStyle or {"button"}
    Soda.Frame.init(self, t)
 --    Soda.Button.init(self, t)
 --
@@ -35,8 +36,3 @@ end
 <<<<<<< tabs/Selector.lua
   ]]
 
-
-
-
-=======
->>>>>>> tabs/Selector.lua

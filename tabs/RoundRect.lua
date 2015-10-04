@@ -182,10 +182,4 @@ void main()
 }
 ]]
 }
-<<<<<<< tabs/RoundRect.lua
 
-
-
-
-=======
->>>>>>> tabs/RoundRect.lua
