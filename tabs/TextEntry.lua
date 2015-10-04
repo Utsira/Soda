@@ -10,8 +10,39 @@ function Soda.TextEntry:init(t)
     self.characterW = self:getTextSize(Soda.style.textEntry, "a") --width of a character (nb fixed-width font only, because this massively simplifies creation of touchable text)
     
     self:inputString(t.default or "")
+    
+    -- #################################### <JMV38 changes>
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self.sensor:onTouched(function(event) 
+        self:moveCursor(event.tpos) 
+--        self:childrenTouched( event.touch, event.tpos ) 
+    end)
+    self.sensor:onQuickTap(function(event) 
+        local t = event.touch
+        if t.tapCount == 2 then
+            self:selectWord(event.tpos)
+        end
+     end)
 end
 
+function Soda.TextEntry:selectWord(tpos)
+    Soda.Alert{ --an alert box with a single button
+    title = "Double Tap, callback still to be impleméted",
+    y=0.6, h = 0.3,
+    }
+end
+function Soda.TextEntry:moveCursor(tpos)
+    if Soda.keyboardEntity and Soda.keyboardEntity == self then
+        --select text, move cursor
+        local tp = tpos.x - (self:left() + self.offset.x)
+        self.cursor = math.tointeger(self.start + ((math.min(tp, self.textW) + self.characterW * 0.5)//self.characterW) )
+        self:getCursorPos()
+    else
+        if not isKeyboardShowing() then showKeyboard() end
+        Soda.keyboardEntity = self
+    end
+end
+    -- #################################### </JMV38 changes>
 function Soda.TextEntry:inputString(txt)
     self.input = {} --table containing each character
     local capacity = (self.w - self.offset.x - 10)//self.characterW --how many characters can fit in the text box
@@ -59,7 +90,7 @@ end
 function Soda.TextEntry:output()
     return table.concat(self.input)
 end
-
+--[[
 function Soda.TextEntry:touched(t, tpos)
     if self:pointIn(tpos.x, tpos.y) then
         if Soda.keyboardEntity and Soda.keyboardEntity == self then
@@ -76,18 +107,13 @@ function Soda.TextEntry:touched(t, tpos)
         else
             if not isKeyboardShowing() then showKeyboard() end
             Soda.keyboardEntity = self
-            --[[
-            local off = (HEIGHT * 0.4 ) - self.label.y
-            if off> 0 then
-            tween(0.5, Soda, {UIoffset = off} )
-        end
-            ]]
+
         end
         return true
 
     end
 end
-
+--]]
 function Soda.TextEntry:getCursorPos() --this method works with non-fixed width too
     local beforeCursor = table.concat(self.input, "", self.start, self.cursor-1)
     self.cursorPos = self:getTextSize(Soda.style.textEntry, beforeCursor)
@@ -125,5 +151,7 @@ function Soda.TextEntry:keyboard(key)
    -- self:getCursorPos()
     self.cursorPos = ((self.cursor - self.start)) * self.characterW
 end
+
+
 
 

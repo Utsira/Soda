@@ -36,8 +36,26 @@ function Soda.Frame:init(t)
     
     self.inactive = self.inactive or self.hidden  --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
    -- if self.inactive then self:deactivate() end
+    
+    -- #################################### <JMV38 changes>
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self.sensor:onTouched(function(e) self:childrenTouched( e.touch, e.tpos ) end)
 end
 
+function Soda.Frame:childrenTouched(t,tpos)
+    local off = tpos - vec2(self:left(), self:bottom())
+    for i = #self.child, 1, -1 do --children take priority over frame for touch
+        local v = self.child[i]
+        if v:touched(t, off) then return true end
+    end
+end
+
+function Soda.Frame:touched(t, tpos)
+    if self.inactive then return end
+    if self.sensor:touched(t, tpos) then return true end
+    return self.alert
+end
+    -- #################################### </JMV38 changes>
 function Soda.Frame:storeParameters(t)
     self.parameters = {}
     for k,v in pairs(t) do
@@ -235,7 +253,9 @@ function Soda.Frame:keyboardHideCheck() --put this in touch began branches of en
         Soda.keyboardEntity = nil
     end
 end
+    -- #################################### <JMV38 changes>
 
+--[[
 function Soda.Frame:touched(t, tpos)
     if self.inactive then return end
     local trans = tpos - vec2(self:left(), self:bottom()) --translate the touch position
@@ -248,7 +268,8 @@ function Soda.Frame:touched(t, tpos)
   --  if self.alert then return true end --or self:pointIn(tpos.x, tpos.y) 
     return self.alert
 end
-
+--]]
+    -- #################################### </JMV38 changes>
 function Soda.Frame:selectFromList(child) --method used by parents of selectors. 
     if child==self.selected then --pressed the one already selected
         if self.noSelectionPossible then
@@ -287,5 +308,7 @@ function Soda.Frame:orientationChanged()
         v:orientationChanged()
     end
 end
+
+
 
 

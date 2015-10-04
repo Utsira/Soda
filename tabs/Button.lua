@@ -12,7 +12,7 @@ function Soda.Button:init(t)
     self.sensor:onTap(function(event) self:callback() end)
 end
 function Soda.Button:touched(t, tpos)
-    if self.sensor:touched(t, tpos) then sound(SOUND_PICKUP, 14386) return true end
+    if self.sensor:touched(t, tpos) then return true end
 end
 --[[
 function Soda.Button:touched(t, tpos)
@@ -107,5 +107,7 @@ function Soda.QueryButton(t)
     t.shape = t.shape or Soda.ellipse
     return Soda.Button(t)
 end
+
+
 
 

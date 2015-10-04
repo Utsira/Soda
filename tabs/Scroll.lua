@@ -8,21 +8,21 @@ function Soda.Scroll:init(t)
     Soda.Frame.init(self,t)
     -- #################################### <JMV38 changes>
     self.freeScroll = false
+--    self.doNotInterceptTouches = true
     self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
-    self.sensor:onDrag(function(event) self:verticalScroll(event.touch) end)
-    self.sensor:onQuickTap(function(event) self:childrenTouched(event.touch, event.tpos) end)
+    self.sensor:onDrag(function(event) self:verticalScroll(event.touch, event.tpos) end)
+    self.sensor:onTouched(function(event) self:childrenTouched(event.touch, event.tpos) end)
 end
 
 function Soda.Scroll:childrenTouched(t,tpos)
-  --  sound(SOUND_PICKUP, 14386)
     local off = tpos - vec2(self:left(), self:bottom() + self.scrollY)
     for _, v in ipairs(self.child) do --children take priority over frame for touch
-        if v:touched(t, off) then return true end
+       if v:touched(t, off) then return true end
     end
 end
 
-function Soda.Scroll:verticalScroll(t)
-    if t.state == BEGAN or t.state == MOVING then
+function Soda.Scroll:verticalScroll(t,tpos)
+    if (t.state == BEGAN or t.state == MOVING) and self.sensor:inbox(tpos) then
         self.scrollVel = t.deltaY
         self.scrollY = self.scrollY + t.deltaY
         self.freeScroll = false
@@ -88,6 +88,8 @@ function Soda.Scroll:touched(t, tpos)
 end
 
 --]]
+
+
 
 
 

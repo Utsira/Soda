@@ -74,7 +74,14 @@ function Sensor:register(eventName, update, callback)
         end
     end
 end
-
+-- get an event (for debugging only)
+function Sensor:getEvent(eventName)
+        for i,event in ipairs(self.events) do
+            if event.name == eventName then 
+                return event
+            end
+        end
+end
 -- gestures defined below. Note the that, because gestures are managed individually, the
 -- code is much more clear than when everything is mixed up. And only the needed computations are done.
 
@@ -293,7 +300,7 @@ function Sensor:touched(t,tpos)
     if not self.enabled then return end
     if t.state == BEGAN and self:inbox(tpos) then
         self.touches[t.id] = true
-        self.parent:keyboardHideCheck()
+  --      self.parent:keyboardHideCheck()
     end
     for i,event in ipairs(self.events) do 
         event:update(self,t,tpos) -- only registered events are computed
@@ -332,5 +339,7 @@ function Sensor:inbox(t)
     local x,y,w,h = self:xywh()
     return abs(t.x-x)<(w+self.extra) and abs(t.y-y)<(h+self.extra)
 end
+
+
 
 

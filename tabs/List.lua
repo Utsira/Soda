@@ -21,6 +21,8 @@ function Soda.List:init(t)
         end
         
         local item = Soda.Selector{parent = self, idNo = i, title = number..v, label = {x = 10, y = 0.5}, style = t.style, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42, panel = panel} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
+ --           item.callback = function(this) print(this.title) end
+        item.sensor:onTap()
         if t.defaultNo and i==t.defaultNo then
           --  item.highlighted = true
             self:selectFromList(item)
@@ -70,5 +72,7 @@ function Soda.DropdownList(t)
     
     return this
 end
+
+
 
 

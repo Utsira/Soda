@@ -41,7 +41,24 @@ function Soda.Slider:init(t)
         label = {x = -0.001, y = -0.001}
     }
     
+    -- #################################### <JMV38 changes>
+--    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self.sensor:onQuickTap(function(event) self:smallChange(event.tpos) end)
+    
 end
+
+function Soda.Slider:smallChange(tpos)
+    if tpos.x < self:left() + self.knob.x then
+        self.value = math.max(self.min, self.value - 1 )
+    else
+        self.value = math.min(self.max, self.value + 1)
+    end
+    --  self.label.text = tostring(self.value)
+    self.knob.x = 20 + self:posFromValue()
+    self.valueLabel.title = tostring(self.value)
+    self:callback(self.value)
+end
+    -- #################################### </JMV38 changes>
 
 function Soda.Slider:posFromValue(val)
     local val = val or self.value
@@ -100,6 +117,8 @@ function Soda.Slider:draw()
     -- Codea does not automatically call this method
 end
 ]]
+    -- #################################### <JMV38 changes>
+--[[
 function Soda.Slider:touched(t, tpos)
    if Soda.Frame.touched(self, t, tpos) then return true end
   --  Soda.Frame.touched(self, t, tpos)
@@ -116,9 +135,34 @@ function Soda.Slider:touched(t, tpos)
     end
     
 end
+--]]
+    -- #################################### </JMV38 changes>
 
 Soda.SliderKnob = class(Soda.Frame)
 
+    -- #################################### <JMV38 changes>
+function Soda.SliderKnob:init(t)
+    Soda.Frame.init(self,t)
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self.sensor:onDrag(function(event) self:move(event.touch) end)
+end
+function Soda.SliderKnob:touched(t, tpos)
+    if self.sensor:touched(t, tpos) then return true end
+end
+function Soda.SliderKnob:move(t)
+    if t.state == BEGAN then
+        self.touchId = t.id
+        self.highlighted = true
+        self:keyboardHideCheck()
+    end
+    self.x = clamp(self.x + t.deltaX * math.min(1, (t.deltaX * 0.5)^ 2),20,20 + self.parent.sliderLen)
+    self.parent:valueFromPos(self.x)
+    if t.state == ENDED then
+        self.highlighted = false
+        self.parent:callback(self.parent.value)
+    end
+end   
+--[[
 function Soda.SliderKnob:touched(t, tpos)
     if t.state == BEGAN then
         if self:pointIn(tpos.x, tpos.y) then
@@ -138,6 +182,7 @@ function Soda.SliderKnob:touched(t, tpos)
         end
         return true
     end
-
 end
+
+--]]
 
