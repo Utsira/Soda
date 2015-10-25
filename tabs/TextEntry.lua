@@ -152,3 +152,5 @@ function Soda.TextEntry:keyboard(key)
     self.cursorPos = ((self.cursor - self.start)) * self.characterW
 end
 
+
+

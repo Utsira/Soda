@@ -44,12 +44,16 @@ function Soda.Frame:init(t)
         self.mesh[#self.mesh+1] = Soda.Shadow{parent = self}
     end
     
-    self.inactive = self.inactive or self.hidden  --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
-   -- if self.inactive then self:deactivate() end
-    
     -- #################################### <JMV38 changes>
     self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
-    self.sensor:onTouched(function(e) self:childrenTouched( e.touch, e.tpos ) end)
+    self:setInactive(self.inactive or self.hidden)
+    --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation    
+
+end
+
+function Soda.Frame:setInactive(b)
+    self.inactive = b
+    self.sensor.enabled = not self.inactive
 end
 
 function Soda.Frame:childrenTouched(t,tpos)
@@ -130,7 +134,10 @@ end
 
 function Soda.Frame:show(direction)
     self.hidden = false --so that we can see animation
-    self.inactive=false
+    -- #################################### <JMV38 changes>
+        self:setInactive(false)
+     --   self.inactive = false
+    -- #################################### </JMV38 changes>
     if direction then --animation
         self:setPosition()
         local targetX = self.x
@@ -160,7 +167,10 @@ function Soda.Frame:hide(direction)
         tween(0.4, self, {x=targetX}, tween.easing.cubicInOut, function() self.hidden = true self.inactive=true  end) --user cannot touch buttons until animation completes
     else
         self.hidden = true
-        self.inactive = true
+    -- #################################### <JMV38 changes>
+        self:setInactive(true)
+     --   self.inactive = true
+    -- #################################### </JMV38 changes>
     end
 end
 
@@ -171,7 +181,10 @@ function Soda.Frame:toggle(direction)
 end
 
 function Soda.Frame:activate()
-    self.inactive = false
+    -- #################################### <JMV38 changes>
+        self:setInactive(false)
+     --   self.inactive = false
+    -- #################################### </JMV38 changes>
     --[[
     for i,v in ipairs(self.child) do
         v:activate()
@@ -180,7 +193,10 @@ function Soda.Frame:activate()
 end
 
 function Soda.Frame:deactivate()
-    self.inactive = true
+    -- #################################### <JMV38 changes>
+        self:setInactive(true)
+     --   self.inactive = true
+    -- #################################### </JMV38 changes>
     --[[
     for i,v in ipairs(self.child) do
         v:deactivate()
@@ -350,4 +366,6 @@ function Soda.Frame:orientationChanged()
         v:orientationChanged()
     end
 end
+
+
 

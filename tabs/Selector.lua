@@ -11,8 +11,12 @@ function Soda.Selector:init(t)
     -- #################################### yojimbo changes <JMV38 changes>
     self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
     self.sensor:onQuickTap(function(event) 
-        self:callback() self.parent:selectFromList(self) end)
+        self:callback() 
+        self.parent:selectFromList(self) 
+    end)
+
 end
+
 --[[
 function Soda.Selector:touched(t, tpos)
     if t.state == BEGAN then
@@ -35,4 +39,6 @@ function Soda.Selector:touched(t, tpos)
 end
 <<<<<<< tabs/Selector.lua
   ]]
+
+
 

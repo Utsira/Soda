@@ -22,8 +22,8 @@ function Soda.Segment:init(t)
             panel:hide() --hide the panel by default
         end
 
-        local this = Soda.Selector{parent = self, idNo = i, title = t.text[i], x = x, y = 0.5, w = w, h=t.h, shape = shape, shapeArgs={corners=corners}, panel = panel}  --self.h * 0.5, w+++0.002
-        
+        local this = Soda.Selector{parent = self, idNo = i, title = t.text[i], x = x, y = 0.5, w = w, h=t.h, shape = shape, shapeArgs={corners=corners}, panel = panel, subStyle = t.subStyle}  --self.h * 0.5, w+++0.002
+
         if not t.noSelectionPossible and i==default then 
 
             self:selectFromList(this)
@@ -36,4 +36,6 @@ function Soda.Segment:init(t)
         
     end
 end
+
+
 

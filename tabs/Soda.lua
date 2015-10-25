@@ -1,6 +1,8 @@
 Soda = {}
 Soda.version = "0.6"
 SodaIsInstalled = true
+Soda.items = {} --holds all top-level ui elements (i.e. anything without a parent)
+
 function Soda.setup()
     --  parameter.watch("#Soda.items")
     parameter.watch("Soda.UIoffset")
@@ -13,11 +15,11 @@ function Soda.setup()
 end
 
 function Soda.Assets()
-    Soda.items = {} --holds all top-level ui elements (i.e. anything without a parent)
     
     Soda.darken.assets() --used to darken underlying interface elements when alert flag is set.
     
     Soda.UIoffset = 0 --used to scroll up screen when keyboard appears
+    
 end
 
 Soda.darken = {}
@@ -142,4 +144,6 @@ function round(number, places) --use -ve places to round to tens, hundreds etc
     local mult = 10^(places or 0)
     return math.floor(number * mult + 0.5) / mult
 end
+
+
 

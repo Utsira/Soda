@@ -98,6 +98,15 @@ Soda.style.default = {
         title = {fill = "white"}
     },
 
+    popUp = {
+        shape = {fill = "black", noStroke = true},
+        text = {fill = "white"},
+        highlight = {
+            shape = {fill = "white"},
+            text = {fill = "black"}
+        }
+    },
+
     switch = {
         shape = {},
         text = {},
@@ -196,4 +205,6 @@ function Soda:outline(t) --edge 1=left, 2 = top, 4 = right, 8 = bottom
     end
 end
   ]]
+
+
 
