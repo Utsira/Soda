@@ -7,7 +7,8 @@ function calculator.init()
         blurred = true,
         shadow = true,
         hidden = true,
-        doNotKill = true
+        doNotKill = true,
+        draggable = true
       --  style = {shape = {fill = color(255), stroke = color(50, 128)}, text = {fontSize = 1.25, fill = color(255), font = "HelveticaNeue-Light" }}-- Soda.style.darkBlurred
     }
     local s = 70

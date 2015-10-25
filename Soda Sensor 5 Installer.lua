@@ -8,7 +8,8 @@ function calculator.init()
         blurred = true,
         shadow = true,
         hidden = true,
-        doNotKill = true
+        doNotKill = true,
+        draggable = true
       --  style = {shape = {fill = color(255), stroke = color(50, 128)}, text = {fontSize = 1.25, fill = color(255), font = "HelveticaNeue-Light" }}-- Soda.style.darkBlurred
     }
     local s = 70
@@ -4469,11 +4470,13 @@ function Soda.Window:init(t)
         }
     end
    -- t.shadow = true
-    self.sensor:onDrag(function(event) 
-        if isKeyboardShowing() then return end -- no winsow drag when keyboard is showing
-        self.x = self.x + event.touch.deltaX 
-        self.y = self.y + event.touch.deltaY
-    end)
+    if t.draggable then
+        self.sensor:onDrag(function(event) 
+            if isKeyboardShowing() then return end -- no winsow drag when keyboard is showing
+            self.x = self.x + event.touch.deltaX 
+            self.y = self.y + event.touch.deltaY
+        end)
+    end
 end
 
 function Soda.Window:closeAction()     --do we want to hide this Window or kill it?

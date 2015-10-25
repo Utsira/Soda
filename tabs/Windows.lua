@@ -40,11 +40,13 @@ function Soda.Window:init(t)
         }
     end
    -- t.shadow = true
-    self.sensor:onDrag(function(event) 
-        if isKeyboardShowing() then return end -- no winsow drag when keyboard is showing
-        self.x = self.x + event.touch.deltaX 
-        self.y = self.y + event.touch.deltaY
-    end)
+    if t.draggable then
+        self.sensor:onDrag(function(event) 
+            if isKeyboardShowing() then return end -- no winsow drag when keyboard is showing
+            self.x = self.x + event.touch.deltaX 
+            self.y = self.y + event.touch.deltaY
+        end)
+    end
 end
 
 function Soda.Window:closeAction()     --do we want to hide this Window or kill it?
