@@ -33,8 +33,6 @@ function Soda.Slider:init(t)
         label = {x = -0.001, y = -0.001}
     }
     
-    -- #################################### <JMV38 changes>
---    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
     self.sensor:onQuickTap(function(event) self:smallChange(event.tpos) end)
     
 end
@@ -56,12 +54,11 @@ function Soda.Slider:smallChange(tpos)
     else
         self.value = math.min(self.max, self.value + 1)
     end
-    --  self.label.text = tostring(self.value)
+
     self.knob.x = 20 + self:posFromValue()
     self.valueLabel.title = tostring(self.value)
     self:callback(self.value)
 end
-    -- #################################### </JMV38 changes>
 
 function Soda.Slider:posFromValue(val)
     local val = val or self.value
@@ -74,10 +71,7 @@ function Soda.Slider:valueFromPos(x)
    for _,v in ipairs(self.snapPoints) do
       if math.abs(self.value - v) < self.snapStep then
         self.value = v 
-    --[[
-    for i,v in ipairs(self.snapPos) do 
-        if math.abs(x - v) < 5 then 
-            self.value = self.snapPoints[i] ]]
+
             self.knob.x = 20 + self:posFromValue()
         end
     end
@@ -115,43 +109,9 @@ function Soda.Slider:drawContent()
     line(x, y, self.w-20,y)
     popStyle()
 end
---[[
-function Soda.Slider:draw()
-    
-end
-
-function Soda.Slider:draw()
-    -- Codea does not automatically call this method
-end
-]]
---<<<<<<< HEAD
-    -- #################################### <JMV38 changes>
---[[
-=======
->>>>>>> 1b48b3bb96b56d577c66676daf0bc2dcdcfa3955
-function Soda.Slider:touched(t, tpos)
-   if Soda.Frame.touched(self, t, tpos) then return true end
-  --  Soda.Frame.touched(self, t, tpos)
-    if t.state == ENDED and self:pointIn(tpos.x, tpos.y) then
-        if tpos.x < self:left() + self.knob.x then
-            self.value = math.max(self.min, self.value - 1 )
-        else
-            self.value = math.min(self.max, self.value + 1)
-        end
-        --  self.label.text = tostring(self.value)
-        self.knob.x = 20 + self:posFromValue()
-        self.valueLabel.title = tostring(self.value)
-        self:callback(self.value)
-    end
-    
-end
-<<<<<<< HEAD
---]]
-    -- #################################### </JMV38 changes>
 
 Soda.SliderKnob = class(Soda.Frame)
 
-    -- #################################### <JMV38 changes>
 function Soda.SliderKnob:init(t)
     Soda.Frame.init(self,t)
     self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
@@ -179,37 +139,3 @@ function Soda.SliderKnob:move(t)
         self.parent:callback(self.parent.value)
     end
 end   
---[[
-=======
-
-Soda.SliderKnob = class(Soda.Frame)
-
->>>>>>> 1b48b3bb96b56d577c66676daf0bc2dcdcfa3955
-function Soda.SliderKnob:touched(t, tpos)
-    if t.state == BEGAN then
-        if self:pointIn(tpos.x, tpos.y) then
-            self.touchId = t.id
-            self.highlighted = true
-            self:keyboardHideCheck()
-            return true
-        end
-    elseif self.touchId and self.touchId == t.id then
-        
-        self.x = clamp(self.x + t.deltaX * math.min(1, (t.deltaX * 0.5)^ 2),20,20 + self.parent.sliderLen)
-        self.parent:valueFromPos(self.x)
-        if t.state == ENDED then    
-            self.touchId = nil
-            self.highlighted = false   
-            self.parent:callback(self.parent.value)   
-        end
-        return true
-    end
-<<<<<<< HEAD
-end
-
---]]
-
-
-
-
-

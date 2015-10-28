@@ -486,14 +486,3 @@ function Sensor.swipeUpdate(event,self,t,tpos)
     end
 end
 
-
-
-
-
-
-
-
-
-
-
-

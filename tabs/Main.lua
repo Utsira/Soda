@@ -13,7 +13,6 @@ function setup()
 
     overview{}
     -- demo1() --do your setting up here
-
 end
 
 function draw()
@@ -71,8 +70,4 @@ function profiler.draw()
         profiler.mem=collectgarbage("count", 2)
     end
 end
-
-
-
-
 

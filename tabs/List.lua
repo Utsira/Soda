@@ -21,12 +21,9 @@ function Soda.List:init(t)
         end
 
         local item = Soda.Selector{parent = self, idNo = i, title = number..v, label = {x = 10, y = 0.5}, subStyle = {"listItem"}, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42, panel = panel} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
-    -- #################################### <JMV38 changes>
-        -- note: the list has a onDrag() too, but it will not fire because of children item masking it
-        -- so we must add a drag sensor to the items
-   --     item.sensor:onDrag(function(event) self:verticalScroll(event.touch, event.tpos) end)
+
         item.sensor.doNotInterceptTouches = true
-    -- #################################### <JMV38 changes>
+ 
         if t.default and i==t.default then
           --  item.highlighted = true
             self:selectFromList(item)
@@ -95,10 +92,3 @@ end
 function Soda.DropdownList:activate()
     self.button:activate()
 end
-
-
-
-
-
-
-

@@ -66,11 +66,11 @@ function Soda.TextScroll:drawContent()
     translate(self:left(),self:bottom())--+self.scrollY
     self:drawShape(Soda.style.default)
       ]]
-        pushMatrix()
-        local mm = modelMatrix()
+    pushMatrix()
+    local mm = modelMatrix()
     translate(10, self.scrollY)
 
-    clip(mm[13]+2, mm[14]+2, self.w-4, self.h-4) --nb translate doesnt apply to clip. (idea: grab transformation from current model matrix?) --self.parent:left()+self:left(),self.parent:bottom()+self:bottom()
+    clip(mm[13]+2, mm[14]+2, self.w-4, self.h-4) --nb translate doesnt apply to clip. 
     
     --calculate which chunks to draw
     local lineStart = math.max(1, math.ceil(self.scrollY/self.characterH))

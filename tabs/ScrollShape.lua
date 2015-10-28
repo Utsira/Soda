@@ -62,14 +62,6 @@ function Soda.ScrollShape:drawImage()
     for _, v in ipairs(self.child) do
         v:draw()
     end
-    
-    --[[
-    if breakPoint then
-    -- setContext(breakPoint.mesh[1].image)
-    -- setContext(breakPoint.image)
-    breakPoint.image()
-else
-    ]]
 
 end
 

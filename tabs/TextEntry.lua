@@ -413,7 +413,7 @@ function TextEditor:selectionMenuInit()
         parent = self.parent, 
         x = 0.5, y = 50, w = 0.5, h = 40,
         subStyle = {"popUp"},
-        text = {"undo","del","cut", "copy", "paste", "\u{2194}\u{fe0e}", "close"},
+        text = {"undo","del","cut", "copy", "paste", Soda.symbol.widen, "close"},
         default = 0, 
     }
     for i, child in ipairs(self.selectionMenu.child) do
@@ -442,7 +442,7 @@ function TextEditor:selectionAction(action)
         self:delete(start,stop)
     elseif action=="copy" then 
         self:selectionCopy()
-    elseif action=="\u{2194}\u{fe0e}" then --"<-->"
+    elseif action==Soda.symbol.widen then --"<-->"
         self.selector:selectAll()
     elseif action=="paste" then 
         self:delete(start,stop)
@@ -658,12 +658,3 @@ function Selector:draw()
     clip()
     popStyle()
 end
-
--- ###############################################################################
-
-
-
--- ###############################################################################
-
-
-

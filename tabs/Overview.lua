@@ -559,7 +559,3 @@ function overview(t)
     calculator.init()
 end
 
-
-
-
-
