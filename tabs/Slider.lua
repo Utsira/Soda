@@ -5,24 +5,17 @@ function Soda.Slider:init(t)
     t.w = t.w or 300
     t.h = 60
     t.style = Soda.style.switch
+    self.range = t.max - t.min
     self.value = t.start or t.min
     self.value = clamp(self.value, t.min, t.max)
     self.decimalPlaces = t.decimalPlaces or 0
 
     t.label = {x = 0, y = -0.001}
   --  t.shapeArgs = {x = 0, y = 20, h = 0}
-
-    Soda.Frame.init(self, t)
-    self.sliderLen = self.w - 40
-    self.shapeArgs.w = self.sliderLen
     self.snapPoints = t.snapPoints or {}
-    --calculate snap positions
     self.snapPos = {}
-    for i,v in ipairs(self.snapPoints) do
-        self.snapPos[i] = 20 + self:posFromValue(v)
-    end
-    self.range = self.max - self.min
-  self.snapStep = lerp(5 / self.sliderLen, 0, self.range)
+    Soda.Frame.init(self, t)
+
     self.knob = Soda.SliderKnob{
         parent = self, 
         x = 0, y = 0, w=35, h=35, 
@@ -31,7 +24,6 @@ function Soda.Slider:init(t)
        -- highlightable = true,
         shadow = true
     }
-    self.knob.x = 20 + self:posFromValue()
     
     self.valueLabel = Soda.Frame{
         parent = self,
@@ -45,6 +37,17 @@ function Soda.Slider:init(t)
 --    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
     self.sensor:onQuickTap(function(event) self:smallChange(event.tpos) end)
     
+end
+
+function Soda.Slider:setPosition()
+    Soda.Frame.setPosition(self)
+    self.sliderLen = self.w - 40
+    self.shapeArgs.w = self.sliderLen    
+    --calculate snap positions
+    for i,v in ipairs(self.snapPoints) do
+        self.snapPos[i] = 20 + self:posFromValue(v)
+    end
+    self.snapStep = lerp(5 / self.sliderLen, 0, self.range)
 end
 
 function Soda.Slider:smallChange(tpos)
@@ -154,6 +157,12 @@ function Soda.SliderKnob:init(t)
     self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
     self.sensor:onDrag(function(event) self:move(event.touch) end)
 end
+
+function Soda.SliderKnob:setPosition()
+    Soda.Frame.setPosition(self)
+    self.x = 20 + self.parent:posFromValue()
+end
+
 function Soda.SliderKnob:touched(t, tpos)
     if self.sensor:touched(t, tpos) then return true end
 end
@@ -199,6 +208,8 @@ function Soda.SliderKnob:touched(t, tpos)
 end
 
 --]]
+
+
 
 
 

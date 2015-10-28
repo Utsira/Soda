@@ -99,7 +99,7 @@ Soda.style.default = {
     },
 
     popUp = {
-        shape = {fill = "black", noStroke = true},
+        shape = {fill = "black", stroke = "grey"},
         text = {fill = "white"},
         highlight = {
             shape = {fill = "white"},
@@ -120,7 +120,7 @@ Soda.style.default = {
     textBox = {font = "Inconsolata", fill = "black", fontSize = 1},
 }
 
-Soda.symbol = {menu = "\u{2630}", back = "\u{ff1c}", forward = "\u{ff1e}", close = "\u{2715}", down = "\u{25bc}", gear = "\u{2699}", add = "\u{FF0B}", delete = "\u{232B}"}
+Soda.symbol = {menu = "\u{2630}", back = "\u{ff1c}", forward = "\u{ff1e}", close = "\u{2715}", down = "\u{25bc}", gear = "\u{2699}\u{0000FE0E}", add = "\u{FF0B}", delete = "\u{232B}"}
 
 function Soda.setStyle(sty)
     for k,v in pairs(sty) do
@@ -205,6 +205,8 @@ function Soda:outline(t) --edge 1=left, 2 = top, 4 = right, 8 = bottom
     end
 end
   ]]
+
+
 
 
 

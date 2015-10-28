@@ -517,21 +517,21 @@ function overview(t)
         parent = textEntryPanel,
         x = 10, y = -50, w = -10, h = 40,
         title = "Text Entry:",
-       -- default = "Some place-holder text the user overwrites",
+        default = "Tap here to start editing this text",
     }    
     
     Soda.TextEntry{
         parent = textEntryPanel,
         x = 10, y = 0.45, w = -10, h = 40,
         title = "Text Entry:",
-        default = "Some place-holder text the user overwrites"
+        default = "Double-tap a word to select it and open the selection menu"
     }
     
     Soda.TextEntry{
         parent = textEntryPanel,
         x = 10, y = 10, w = -10, h = 40,
         title = "Text Entry:",
-        default = "Interface scrolls up if text entry is below the height of the keyboard"
+        default = "Scroll the text left and right by pulling the cursor over to either end of the box and holding your finger there. Also, note that the interface scrolls up if the text entry box is below the height of the keyboard."
     }
     
     --list panel
@@ -558,6 +558,8 @@ function overview(t)
     }
     calculator.init()
 end
+
+
 
 
 

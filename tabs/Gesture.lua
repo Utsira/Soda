@@ -235,6 +235,7 @@ function Sensor.dragUpdate(event,self,t,tpos)
         -- integrate finger movement (can be used as a threshold)
         if t.state == BEGAN then
             event.totalMove = 0
+            event.startTime = ElapsedTime
         elseif t.state == MOVING then
             event.totalMove = event.totalMove + abs(t.deltaX) + abs(t.deltaY)
         end
@@ -289,6 +290,9 @@ function Sensor.touchUpdate(event,self,t,tpos)
     self.touching = self.touching or {} -- track touches, not only BEGAN
     -- current touch
     if self:inbox(tpos) then 
+        if t.state == BEGAN then 
+            event.t0 = ElapsedTime
+        end
         if t.state == BEGAN or t.state == MOVING then 
             self.touching[t.id] = true -- this is touching
         else
@@ -304,6 +308,7 @@ function Sensor.touchUpdate(event,self,t,tpos)
     if state1 ~= event.state then
         event.state = state1
         event.touch = t
+        event.tpos = tpos
         event:callback()
     end
 end
@@ -480,6 +485,8 @@ function Sensor.swipeUpdate(event,self,t,tpos)
         end
     end
 end
+
+
 
 
 

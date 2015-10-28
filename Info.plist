@@ -19,7 +19,6 @@
 		<string>Toggle</string>
 		<string>Switch</string>
 		<string>TextEntry</string>
-		<string>TextEntry2</string>
 		<string>Slider</string>
 		<string>Selector</string>
 		<string>Segment</string>
@@ -30,7 +29,7 @@
 		<string>Windows</string>
 	</array>
 	<key>Created</key>
-	<string>2015-10-19 22:23:52 +0000</string>
+	<string>2015-10-28 08:31:01 +0000</string>
 	<key>Description</key>
 	<string>Soda v0.6</string>
 </dict>

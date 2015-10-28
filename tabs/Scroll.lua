@@ -8,10 +8,7 @@ function Soda.Scroll:init(t)
     Soda.Frame.init(self,t)
     -- #################################### <JMV38 changes>
     self.freeScroll = false
---    self.doNotInterceptTouches = true
---    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
-      self.sensor:onDrag(function(event) self:verticalScroll(event.touch, event.tpos) end)
---    self.sensor:onTouched(function(event) self:childrenTouched(event.touch, event.tpos) end)
+    self.sensor:onDrag(function(event) self:verticalScroll(event.touch, event.tpos) end)
 end
 
 function Soda.Scroll:childrenTouched(t,tpos)
@@ -23,7 +20,7 @@ end
 
 function Soda.Scroll:verticalScroll(t,tpos)
   --  if (t.state == BEGAN or t.state == MOVING) and self.sensor:inbox(tpos) then
-    if (t.state == BEGAN or t.state == MOVING) then
+    if (t.state == BEGAN or t.state == MOVING) and self.sensor:inbox(tpos) then
         self.scrollVel = t.deltaY
         self.scrollY = self.scrollY + t.deltaY
         self.freeScroll = false
@@ -89,6 +86,8 @@ function Soda.Scroll:touched(t, tpos)
 end
 
 --]]
+
+
 
 
 

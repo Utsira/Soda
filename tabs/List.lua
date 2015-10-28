@@ -24,13 +24,15 @@ function Soda.List:init(t)
     -- #################################### <JMV38 changes>
         -- note: the list has a onDrag() too, but it will not fire because of children item masking it
         -- so we must add a drag sensor to the items
-        item.sensor:onDrag(function(event) self:verticalScroll(event.touch, event.tpos) end)
+   --     item.sensor:onDrag(function(event) self:verticalScroll(event.touch, event.tpos) end)
+        item.sensor.doNotInterceptTouches = true
     -- #################################### <JMV38 changes>
         if t.default and i==t.default then
           --  item.highlighted = true
             self:selectFromList(item)
         end
     end
+    self.sensor:onDrag(function(event) self:verticalScroll(event.touch, event.tpos) end)
 end
 
 function Soda.List:clearSelection()
@@ -93,6 +95,8 @@ end
 function Soda.DropdownList:activate()
     self.button:activate()
 end
+
+
 
 
 
