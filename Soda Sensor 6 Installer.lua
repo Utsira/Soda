@@ -1017,7 +1017,9 @@ end
 function Soda.camera()
     if not isKeyboardShowing() then
         Soda.UIoffset = Soda.UIoffset * 0.9
-
+    elseif not Soda.focus.usesKeyboard then --check whether a keyboard-using element has lost focus
+        --so that touching another element will end textentry
+        hideKeyboard()
     end
     translate(0, Soda.UIoffset)
 end
@@ -1132,9 +1134,8 @@ displayMode(FULLSCREEN)
 
 function setup()
     profiler.init()
-    parameter.watch("#Soda.items")
     Soda.setup()
-
+    parameter.watch("Soda.focus.title")
     overview{}
     -- demo1() --do your setting up here
 end
@@ -1295,6 +1296,7 @@ function Sensor:touched(t,tpos)
     -- touches, but you dont block them.
     if self.doNotInterceptTouches then intercepted = false end
     -- return true when touched (or if i have the focus)
+    if intercepted then Soda.focus = self.parent end
     return intercepted 
 end
 
@@ -2577,13 +2579,6 @@ function Soda.Frame:right()
     return self.x + self.w * 0.5
 end
 
-function Soda.Frame:keyboardHideCheck() --put this in touch began branches of end nodes (buttons, switches, things unlikely to have children)
-    if Soda.keyboardEntity and Soda.keyboardEntity~=self then
-        hideKeyboard()
-        Soda.keyboardEntity = nil
-    end
-end
-
 function Soda.Frame:selectFromList(child) --method used by parents of selectors. 
     if child==self.selected then --pressed the one already selected
         if self.noSelectionPossible then
@@ -2934,6 +2929,7 @@ local Selector -- a class for a text selection object
 -- ###############################################################################
 
 TextEntry = class(Soda.Frame)
+TextEntry.usesKeyboard = true
 Soda.TextEntry = TextEntry
 
 -- TextEntry itself is doing nothing but displaying the text, text edition is inside TextEditor
@@ -2948,14 +2944,14 @@ function TextEntry:init(t)
     self.Xscroll = 0 -- when text is bigger than window, it can be scrolled
     
     self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
-    self.sensor:onDrag(function(event) 
+    --[[self.sensor:onDrag(function(event) 
         -- move the interface to access other text box while keyboard is there
-        --[[
+        
         if event.totalMove > 20 and isKeyboardShowing() then 
            Soda.UIoffset = Soda.UIoffset + event.touch.deltaY
         end 
-          ]]
-    end)
+          
+    end)]]
     self.sensor:onTouch(function(event) self:autoScrollUpdate(event) end)
     -- this object is to isolate the edition functions and objects from TextEntry
     self.editor = TextEditor( self )
@@ -2992,6 +2988,7 @@ function TextEntry:horizontalScroll(t)
         end
     end
 end
+
 function TextEntry:autoScrollUpdate(event)
     local state = event.touch.state
     local tpos = event.tpos
@@ -3275,6 +3272,7 @@ function TextEditor:inputMenuInit()
         text = {"undo","paste", "sel", "close"},
         default = 0, 
     }
+    
     for i, child in ipairs(self.inputMenu.child) do
         child.callback = function() 
             self:inputMenuAction(child.title) 
@@ -3283,6 +3281,7 @@ function TextEditor:inputMenuInit()
                 self.inputMenu.selected = nil
             end)
         end
+        child.usesKeyboard = true
     end
     self.inputMenu:hide()
 end
@@ -3324,6 +3323,7 @@ function TextEditor:selectionMenuInit()
                 self.selectionMenu.selected = nil
             end)
         end
+        child.usesKeyboard = true
     end
     self.selectionMenu:hide()
 end
@@ -3692,7 +3692,7 @@ function Soda.SliderKnob:move(t)
     if t.state == BEGAN then
         self.touchId = t.id
         self.highlighted = true
-        self:keyboardHideCheck()
+        --self:keyboardHideCheck()
     end
     self.x = clamp(self.x + t.deltaX * math.min(1, (t.deltaX * 0.5)^ 2),20,20 + self.parent.sliderLen)
     self.parent:valueFromPos(self.x)
