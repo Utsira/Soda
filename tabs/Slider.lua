@@ -130,7 +130,7 @@ function Soda.SliderKnob:move(t)
     if t.state == BEGAN then
         self.touchId = t.id
         self.highlighted = true
-        self:keyboardHideCheck()
+        --self:keyboardHideCheck()
     end
     self.x = clamp(self.x + t.deltaX * math.min(1, (t.deltaX * 0.5)^ 2),20,20 + self.parent.sliderLen)
     self.parent:valueFromPos(self.x)

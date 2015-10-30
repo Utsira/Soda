@@ -34,6 +34,7 @@ local Selector -- a class for a text selection object
 -- ###############################################################################
 
 TextEntry = class(Soda.Frame)
+TextEntry.usesKeyboard = true
 Soda.TextEntry = TextEntry
 
 -- TextEntry itself is doing nothing but displaying the text, text edition is inside TextEditor
@@ -48,14 +49,14 @@ function TextEntry:init(t)
     self.Xscroll = 0 -- when text is bigger than window, it can be scrolled
     
     self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
-    self.sensor:onDrag(function(event) 
+    --[[self.sensor:onDrag(function(event) 
         -- move the interface to access other text box while keyboard is there
-        --[[
+        
         if event.totalMove > 20 and isKeyboardShowing() then 
            Soda.UIoffset = Soda.UIoffset + event.touch.deltaY
         end 
-          ]]
-    end)
+          
+    end)]]
     self.sensor:onTouch(function(event) self:autoScrollUpdate(event) end)
     -- this object is to isolate the edition functions and objects from TextEntry
     self.editor = TextEditor( self )
@@ -92,6 +93,7 @@ function TextEntry:horizontalScroll(t)
         end
     end
 end
+
 function TextEntry:autoScrollUpdate(event)
     local state = event.touch.state
     local tpos = event.tpos
@@ -375,6 +377,7 @@ function TextEditor:inputMenuInit()
         text = {"undo","paste", "sel", "close"},
         default = 0, 
     }
+    
     for i, child in ipairs(self.inputMenu.child) do
         child.callback = function() 
             self:inputMenuAction(child.title) 
@@ -383,6 +386,7 @@ function TextEditor:inputMenuInit()
                 self.inputMenu.selected = nil
             end)
         end
+        child.usesKeyboard = true
     end
     self.inputMenu:hide()
 end
@@ -424,6 +428,7 @@ function TextEditor:selectionMenuInit()
                 self.selectionMenu.selected = nil
             end)
         end
+        child.usesKeyboard = true
     end
     self.selectionMenu:hide()
 end

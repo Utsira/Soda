@@ -8,9 +8,8 @@ displayMode(FULLSCREEN)
 
 function setup()
     profiler.init()
-    parameter.watch("#Soda.items")
     Soda.setup()
-
+    parameter.watch("Soda.focus.title")
     overview{}
     -- demo1() --do your setting up here
 end

@@ -96,6 +96,7 @@ function Sensor:touched(t,tpos)
     -- touches, but you dont block them.
     if self.doNotInterceptTouches then intercepted = false end
     -- return true when touched (or if i have the focus)
+    if intercepted then Soda.focus = self.parent end
     return intercepted 
 end
 

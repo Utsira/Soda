@@ -266,13 +266,6 @@ function Soda.Frame:right()
     return self.x + self.w * 0.5
 end
 
-function Soda.Frame:keyboardHideCheck() --put this in touch began branches of end nodes (buttons, switches, things unlikely to have children)
-    if Soda.keyboardEntity and Soda.keyboardEntity~=self then
-        hideKeyboard()
-        Soda.keyboardEntity = nil
-    end
-end
-
 function Soda.Frame:selectFromList(child) --method used by parents of selectors. 
     if child==self.selected then --pressed the one already selected
         if self.noSelectionPossible then

@@ -35,7 +35,9 @@ end
 function Soda.camera()
     if not isKeyboardShowing() then
         Soda.UIoffset = Soda.UIoffset * 0.9
-
+    elseif not Soda.focus.usesKeyboard then --check whether a keyboard-using element has lost focus
+        --so that touching another element will end textentry
+        hideKeyboard()
     end
     translate(0, Soda.UIoffset)
 end
