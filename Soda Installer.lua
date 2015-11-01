@@ -8,12 +8,13 @@ function calculator.init()
         blurred = true,
         shadow = true,
         hidden = true,
-        doNotKill = true
+        doNotKill = true,
+        draggable = true
       --  style = {shape = {fill = color(255), stroke = color(50, 128)}, text = {fontSize = 1.25, fill = color(255), font = "HelveticaNeue-Light" }}-- Soda.style.darkBlurred
     }
     local s = 70
     local result = true
-    
+
     local display = Soda.Frame{
         parent = calculator.window,
         x = 0, y = -50, w = 1, h = 120,
@@ -69,7 +70,6 @@ function calculator.init()
     local buttonStyle3 = {shape = {fill = color(255), stroke = color(128)}, text = {fontSize = 1.25, 
     fill = color(0, 49, 255, 255), font = "HelveticaNeue-Light"}}
 
-    
     Soda.Button{
         parent = calculator.window,
         w = s*2, h = s,
@@ -203,7 +203,7 @@ function demo1()
         shadow = true,
         shapeArgs = { corners = 1 | 2} --only round left-hand corners
     }
-    
+
     --A menu button to show & hide the main panel
     
     local menu = Soda.MenuToggle{x = -20, y = -20, subStyle = {"darkIcon"}, --a button to activate the above panel
@@ -410,6 +410,10 @@ function demo2()
     
     local inkey = Soda.TextEntry{parent = box, title = "Nick-name:", x=20, y=80, w=0.7, h=40} 
 end
+
+
+
+
 
 
 --# Overview
@@ -932,21 +936,21 @@ function overview(t)
         parent = textEntryPanel,
         x = 10, y = -50, w = -10, h = 40,
         title = "Text Entry:",
-       -- default = "Some place-holder text the user overwrites",
+        default = "Tap here to start editing this text",
     }    
     
     Soda.TextEntry{
         parent = textEntryPanel,
         x = 10, y = 0.45, w = -10, h = 40,
         title = "Text Entry:",
-        default = "Some place-holder text the user overwrites"
+        default = "Double-tap a word to select it and open the selection menu"
     }
     
     Soda.TextEntry{
         parent = textEntryPanel,
         x = 10, y = 10, w = -10, h = 40,
         title = "Text Entry:",
-        default = "Interface scrolls up if text entry is below the height of the keyboard"
+        default = "Scroll the text left and right by pulling the cursor over to either end of the box and holding your finger there. Also, note that the interface scrolls up if the text entry box is below the height of the keyboard."
     }
     
     --list panel
@@ -971,459 +975,26 @@ function overview(t)
         title = "A dropdown list",
         text = {"Dropdown", "lists", "are", "lists", "that", "dropdown", "from", "a", "button.", "Note", "that", "the", "button", "reports", "the", "selection", "made"}
     }
+    calculator.init()
 end
 
---[==[
-function splashScreen()
-    local win =Soda.Window{
-        title = "Soda Overview",
-        w = 0.98, h = 0.7,
-        blurred = true, 
-        shadow = true, 
-        style = Soda.style.darkBlurred, 
-    }
-    
-    local aboutPanel = Soda.Frame{
-        parent = win,
-        x = 150, y = 10, w = -10, h = -50, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16},
-        label = { x = 0.5, y = 0.5, text = 
-    [[Soda is a library for producing graphic user interfaces like 
-    the one you are looking at now.
-    
-    Press the segment buttons to see some of the things Soda is 
-    capable of.
-    
-    This is a tutorial that introduces the basic features of Soda.
-    
-    This tutorial will gradually build an interface like this one, 
-    adding elements one at a time. You will be able to navigate the 
-    tutorial, and browse the extensively commented source code 
-    for each step in the window in the bottom half of the screen.
-    
-    When you're ready, press "Begin Tutorial".
-    ]]}
-    }
-    
-    Soda.Button{
-        parent = aboutPanel, 
-        x = 10, y = 10, h = 40,
-        title = "Online Documentation",
-        callback = function() openURL("https://github.com/Utsira/Soda/blob/master/README.md", true) end
-    }
-    
-    Soda.Button{
-        parent = aboutPanel,
-        x = -10, y = 10, h = 40,
-      --  shapeArgs = {radius = 16},
-          subStyle = {"warning"}, --style = Soda.style.warning,
-        title = "Begin Tutorial"
-    }
-    
-    local buttonPanel = Soda.Frame{
-        parent = win,
-        x = 150, y = 10, w = -10, h = -50, 
-       -- shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        --shapeArgs = {radius = 16}
-    }
-           
-    local switchPanel = Soda.Frame{
-        parent = win,
-        x = 150, y = 10, w = -10, h = -50, 
-      --  shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-      --  shapeArgs = {radius = 16}
-    }
-    
-    local dialogPanel = Soda.Frame{
-        parent = win,
-        x = 150, y = 10, w = -10, h = -50, 
-       -- shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-      --  shapeArgs = {radius = 16}
-    }
-    
-    local textEntryPanel = Soda.Frame{
-        parent = win,
-        title = "Text Entry fields with a draggable cursor",
-        x = 150, y = 10, w = -10, h = -50, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    local listPanel = Soda.Frame{
-        parent = win,
-        title = "Vertically scrolling lists are another way of selecting one choice from many",
-        x = 150, y = 10, w = -10, h = -50, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    local scrollPanel = Soda.TextScroll{
-        parent = win,
-        title = "Text Scrolls for scrolling through large bodies of text",
-        textBody = string.rep([[
-    
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae massa in sem mattis ullamcorper a eget metus. Nam ac maximus nulla, vel faucibus sapien. Aenean faucibus volutpat tristique. Curabitur condimentum volutpat velit, sit amet commodo tellus placerat a. 
-    
-    Sed vitae metus quis mauris congue tincidunt vel sit amet lorem. Mauris lectus lorem, facilisis in dapibus et, congue quis nunc. Fusce convallis mi urna, vitae mattis felis sodales et. Aliquam et fringilla purus, eu vehicula diam. Sed facilisis mauris vitae augue sodales aliquam. In ultrices metus ut eleifend condimentum. Praesent venenatis rhoncus felis, eget vehicula orci ornare non. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Vivamus eget vulputate mauris. Pellentesque id tempus sapien.
-    ]], 100),
-        x = 150, y = 10, w = -10, h = -50, 
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}    
-    }
-    
-    --[[
-    Soda.Segment{
-        parent = win,
-        x = 12, y = -60, w = -12, h = 40,
-        text = {"About", "Buttons", "Switches", "Dialogs", "Text Entry", "Lists", "Text Scrolls"}, 
-        panels = {aboutPanel, buttonPanel, switchPanel, dialogPanel, textEntryPanel, listPanel, scrollPanel}, 
-    }
-      ]]
-    Soda.List{
-        parent = win,
-        x = 10, y = 10, w = 130, h = -50,
-        shapeArgs = {radius = 16},--, corners = 1 | 2
-        text = {"About", "Buttons", "Switches", "Dialogs", "Text Entry", "Lists", "Text Scrolls"}, 
-        panels = {aboutPanel, buttonPanel, switchPanel, dialogPanel, textEntryPanel, listPanel, scrollPanel},
-        default = 1
-    }
-    
-    --button panel!
-    
-    local buttonPresets = Soda.Frame{
-        parent = buttonPanel,
-        title = "Presets for frequently-used buttons",
-        x = 0, y = 0.5, w = 1, h = 0.32,
-          shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-          shapeArgs = {radius = 16}
-    }
-    
-    local div = 1/8
-    local div2 = div/2
-    
-    Soda.BackButton{
-    parent = buttonPresets,
-    x = div2, y = 0.4}
-    
-    Soda.ForwardButton{
-    parent = buttonPresets,
-    x = div2 + div, y = 0.4}
-    
-    Soda.SettingsButton{
-    parent = buttonPresets,
-    x = div2 + div * 2, y = 0.4}
-    
-    Soda.AddButton{
-    parent = buttonPresets,
-    x = div2 + div * 3, y = 0.4}
-    
-    Soda.QueryButton{
-    parent = buttonPresets,
-    x = div2 + div * 4, y = 0.4}
-    
-    Soda.MenuButton{
-    parent = buttonPresets,
-    x = div2 + div * 5, y = 0.4}
-    
-    Soda.DropdownButton{
-    parent = buttonPresets,
-    x = div2 + div * 6, y = 0.4}
-    
-    Soda.CloseButton{
-    parent = buttonPresets,
-    x = div2 + div * 7, y = 0.4
-    }
-    
-    local textButtons = Soda.Frame{
-        parent = buttonPanel,
-        title = "Text based buttons",
-        x = 0, y = -0.001, w = 1, h = 0.32,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    div = 1/6
-    div2 = div/2
-    local w = div -0.01
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "Standard", 
-        x = div2, y = 0.4, w = w, h = 40,
-    }
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "Dark", 
-        style = Soda.style.dark,
-        x = div2 + div, y = 0.4, w = w, h = 40,
-    }
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "Warning", 
-        subStyle = {"warning"}, --style = Soda.style.warning, 
-        x = div2 + div * 2, y = 0.4, w = w, h = 40, 
-    }
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "Square", 
-        shape = Soda.rect,
-        x = div2 + div * 3, y = 0.4, w = w, h = 40,
-    }
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "Lozenge", 
-        shapeArgs = {radius = 20},
-        x = div2 + div * 4, y = 0.4, w = w, h = 40,
-    }
-    
-    local div3 = div/5
-    local base = div2 + div * 5
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "\u{1f310}", 
-        style = Soda.style.darkIcon,
-        shape = Soda.ellipse,
-        x = base - div3, y = 0.4, w = 40, h = 40,
-    }
-    
-    --[[
-    Soda.Button{
-        parent = textButtons, 
-        title = "\u{267b}", 
-     --   shape = Soda.ellipse,
-     --   style = Soda.style.icon,
-        x = base, y = 0.4, w = 40, h = 40,
-    }
-      ]]
-    
-    Soda.Button{
-        parent = textButtons, 
-        title = "\u{1f374}", 
-      --  shape = Soda.ellipse,
-        style = Soda.style.darkIcon,
-        x = base + div3, y = 0.4, w = 40, h = 40,
-    }
-    
-    local segmentPanel = Soda.Frame{
-        parent = buttonPanel,
-        title = "Segmented buttons for selecting one option from many",
-        x = 0, y = 0, w = 1, h = 0.32,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    Soda.Segment{
-        parent = segmentPanel, 
-        x = 20, y = 0.4, w = -20, h = 40,
-        text = {"Only one", "segmented", "button can", "be selected", "at a time"}
-    }
-    
-    --switch panel
-    
-    local switches = Soda.Frame{
-        parent = switchPanel,
-        title = "iOS-style switches",
-        x = 0, y = -10, w = 0.49, h = 0.7,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    Soda.Switch{ --a switch to toggle the profiler stats panel
-        parent = switches,
-        x = 20, y = 0.75,
-        title = "Use switches to toggle",
-
-    }
-    
-    Soda.Switch{
-        parent = switches,
-        x = 20, y = 0.5,
-        title = "...between two states",
-        on = true
-    }
-    
-    Soda.Switch{
-        parent = switches,
-        x = 20, y = 0.25,
-        title = "...on and off",
-    }
-    
-    local toggles = Soda.Frame{
-        parent = switchPanel,
-        title = "Text and preset-based toggles",
-        x = -0.001, y = -10, w = 0.49, h = 0.7,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    Soda.Toggle{
-        parent = toggles,
-        x = 20, y = 0.8, w = -20, h = 40,
-        title = "Standard" 
-    }
-    
-    Soda.Toggle{
-        parent = toggles,
-        x = 20, y = 0.6, w = -20, h = 40,
-        shape = Soda.rect,
-        title = "Square" 
-    }
-    
-    Soda.Toggle{
-        parent = toggles,
-        x = 20, y = 0.4, w = -20, h = 40,
-        shapeArgs = {radius = 20},
-        title = "Over-rounded" 
-    }
-    
-    Soda.MenuToggle{
-        parent = toggles,
-        x = 20, y = 0.2,
-        on = true,
-    }
-    
-    --dialog panel!
-    local regularAlert = Soda.Frame{
-        parent = dialogPanel,
-        title = "Press the buttons to trigger alerts in the default style",
-        x = 0, y = 0.85, w = 1, h = 0.3,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    Soda.Button{
-        parent = regularAlert, 
-        title = "Proceed dialog", 
-        x = 10, y = 0.4, w = 0.4, h = 40,
-        callback = function() 
-            Soda.Alert2{
-                title = "A 2-button\nProceed or cancel dialog",
-            }
-        end
-    }
-    
-    Soda.Button{
-    parent = regularAlert, 
-    title = "Alert", 
-    subStyle = {"warning"}, --style = Soda.style.warning, 
-    x = -10, y = 0.4, w = 0.4, h = 40, 
-    callback = 
-        function()
-            Soda.Alert{ --an alert box with a single button
-                title = "A one-button\nalert", 
-                y=0.6, h = 0.3,
-            }
-        end
-    }
-    
-    local blurAlert = Soda.Frame{
-        parent = dialogPanel,
-        title = "Press the buttons to trigger alerts with dark, blurred panels",
-        x = 0, y = 0.53, w = 1, h = 0.3,
-        shape = Soda.RoundedRectangle, style = Soda.style.translucent,
-        shapeArgs = {radius = 16}
-    }
-    
-    Soda.Button{
-        parent = blurAlert, 
-        title = "Proceed dialog (blurred)", 
-        x = 10, y = 0.4, w = 0.4, h = 40,
-        callback = function() 
-            Soda.Alert2{
-                title = "A 2-button\nProceed or cancel dialog",
-                style = Soda.style.darkBlurred, blurred = true, 
-            }
-        end
-    }
-    
-    Soda.Button{
-    parent = blurAlert, 
-    title = "Alert (blurred)", 
-    subStyle = {"warning"}, --style = Soda.style.warning, 
-    x = -10, y = 0.4, w = 0.4, h = 40, 
-    callback = 
-        function()
-            Soda.Alert{ --an alert box with a single button
-                title = "A one-button\nalert", 
-                y=0.6, h = 0.3,
-                style = Soda.style.darkBlurred, blurred = true, 
-            }
-        end
-    }
-    
-    --text entry panel
-    Soda.TextEntry{ --text entry box
-        parent = textEntryPanel,
-        x = 10, y = -50, w = -10, h = 40,
-        title = "Text Entry:",
-       -- default = "Some place-holder text the user overwrites",
-    }    
-    
-    Soda.TextEntry{
-        parent = textEntryPanel,
-        x = 10, y = 0.45, w = -10, h = 40,
-        title = "Text Entry:",
-        default = "Some place-holder text the user overwrites"
-    }
-    
-    Soda.TextEntry{
-        parent = textEntryPanel,
-        x = 10, y = 10, w = -10, h = 40,
-        title = "Text Entry:",
-        default = "Interface scrolls up if text entry is below the height of the keyboard"
-    }
-    
-    --list panel
-    
-    Soda.List{
-        parent = listPanel,
-        x = 10, y = 10, h = -50, w = 0.45,
-        text = {"Lists", "allow", "the", "user", "to", "select", "one", "option", "from", "a", "vertically", "scrolling", "list."}
-    }
-    
-    Soda.DropdownList{
-        parent = listPanel,
-        x = -10, y = -110, w = 0.45, h = 40,
-        title = "A numbered list",
-        enumerate = true,
-        text = {"Lists", "and", "dropdown lists", "can", "be", "automatically", "enumerated", "if", "you", "wish"}
-    }
-      
-    Soda.DropdownList{
-        parent = listPanel,
-        x = -10, y = -50, w = 0.45, h = 40,
-        title = "A dropdown list",
-        text = {"Dropdown", "lists", "are", "lists", "that", "dropdown", "from", "a", "button.", "Note", "that", "the", "button", "reports", "the", "selection", "made"}
-    }
-end
-  ]==]
 
 --# Soda
 Soda = {}
 Soda.version = "0.6"
 SodaIsInstalled = true
+Soda.items = {} --holds all top-level ui elements (i.e. anything without a parent)
+
 function Soda.setup()
-    --  parameter.watch("#Soda.items")
-    parameter.watch("Soda.UIoffset")
     Soda.Assets()
     Soda.baseFontSize = 20
     Soda.theme = Soda.themes.default
     textAlign(CENTER)
     rectMode(CENTER)
-
 end
 
 function Soda.Assets()
-    Soda.items = {} --holds all top-level ui elements (i.e. anything without a parent)
-    
     Soda.darken.assets() --used to darken underlying interface elements when alert flag is set.
-    
     Soda.UIoffset = 0 --used to scroll up screen when keyboard appears
 end
 
@@ -1446,7 +1017,9 @@ end
 function Soda.camera()
     if not isKeyboardShowing() then
         Soda.UIoffset = Soda.UIoffset * 0.9
-
+    elseif not Soda.focus.usesKeyboard then --check whether a keyboard-using element has lost focus
+        --so that touching another element will end textentry
+        hideKeyboard()
     end
     translate(0, Soda.UIoffset)
 end
@@ -1552,6 +1125,7 @@ end
 
 --# Main
 -- Soda
+
 saveProjectInfo("Description", "Soda v"..Soda.version)
 
 displayMode(OVERLAY)
@@ -1560,12 +1134,10 @@ displayMode(FULLSCREEN)
 
 function setup()
     profiler.init()
-    parameter.watch("#Soda.items")
     Soda.setup()
-
+    parameter.watch("Soda.focus.title")
     overview{}
     -- demo1() --do your setting up here
-    calculator.init()
 end
 
 function draw()
@@ -1621,6 +1193,497 @@ function profiler.draw()
         profiler.del=0
         profiler.c=0
         profiler.mem=collectgarbage("count", 2)
+    end
+end
+
+
+--# Gesture
+-- Sensor v02
+-- a class to interpret touch events
+-- author: jmv38
+-- usage:
+--[[
+    -- in setup():
+    screen = {x=0,y=0,w=WIDTH,h=HEIGHT} 
+    sensor = Sensor {parent=screen} -- tell the object you want to be listening to touches, here the screen
+    sensor:onTap( function(event) print("tap") end )
+    -- in touched(t):
+    if sensor:touched(t) then return true end
+
+    -- available:
+    sensor:onDrag(callback)
+    sensor:onDrop(callback)
+    sensor:onTap(callback)
+    sensor:onQuickTap(callback)
+    sensor:onLongPress(callback)
+    sensor:onSwipe(callback)
+    sensor:onTouch(callback)
+    sensor:onTouched(callback)
+    sensor:onZoom(callback)
+--]]
+
+local Sensor = class()
+-- this is a senor object, that senses and interprets touched events
+-- usage is: add a sensor to your objects, pass the touches to the sensor,
+-- and define the gestures that will trigger a callback. Exemple:
+-- myObject.sensor = Sensor{ parent = myObject }   
+-- myObject.sensor:onTap( function(event) myObject:doSomething(event) end )  
+-- in you touched(t) code, check the touch by:
+--      if myObject:touched(t, off) then return true end
+-- this way, if your object is touched, it will fire the callback and avoid others to be touched
+-- some more details about the parent:
+--      parent must have x,y,w,h fields
+--      they are interpreted as CORNER coordinates by default
+--      but they can be CENTER or RADIUS coordinates too
+--      you can specify this with the field xywhMode at creation of the sensor
+--      Sensor{parent=self, xywhMode = CENTER}
+-- some more details about the callback:
+--      callback are closures with only one parameter, event
+--      event is a table where you get whatever you need, depending on the event type
+--      ex: onZoom event will contain  event.dw and event.dh so you can use it to zoom your object
+--      ex: onDrag has event.touch and event.tpos cause you need to know the touch state and pos
+--      see each event code to see what it contains and add information if you need to
+--      event contains other fields, used for internal process:
+--      at creation event = {name=eventName, callback=callback, update=update}
+--      name is a string: "onTap", "onDrag"
+--      callback is the closure to be fired when the event happens
+--      update is the internal function that manages the touch and detect the event
+--      each event type has its own dedicated update function, autonomous and independent of other types
+
+Soda.Gesture = Sensor
+
+function Sensor:init(t)
+    self.enabled = true     -- by default, listen to touches
+    self.extra = t.extra or self.extra or 0   -- enlarge sensitive zone for small dots or fat fingers
+    self.touches = {}       -- keeps track of touches that began on me
+    self:setParent(t)       -- parents is needed for x,y,w,h fields
+    self.events = {}        -- this table stores all the events of this sensor
+    -- normally touches should not pass through the sensor; this flag is to allow touches to go through
+    self.doNotInterceptTouches = false -- by default, intercept the touches
+end
+
+function Sensor:touched(t,tpos)
+    if not self.enabled then return end  -- skip all this is the sensor is disabled
+    -- if an object has children, check if they are touched...
+    if self.parent.childrenTouched and self.parent:childrenTouched( t, tpos ) then
+        return true -- ... and let them intercept the touch if they want to
+    end
+    if t.state == BEGAN and self:inbox(tpos) then
+        self.touches[t.id] = true -- remember if this touch started on me (needed for some gestures)
+    end
+    for i,event in ipairs(self.events) do 
+        event:update(self,t,tpos) -- check all registered events you want to sense, fire them if needed
+        -- note: touch is checked even if it didnt start on me: onTouch, onTouched need this
+        -- events are checkd in the order they were registered, 
+        -- they are all checked, because several events may fire on the same touch
+    end
+    local intercepted = self.touches[t.id] -- by default intercept the touch
+    -- note: it is written to intercept the touch even if your finger is no longer in the object:
+    -- this is a feature you in general expect (an object gets the focus for touches, until finger up)
+    if self.doNotInterceptOnce then -- a flag raised by some gestures at key moments:
+        -- in some cases you want an object to temporarily not intercept the touch, ex: for drag and drop,
+        -- the dragged object has focus, but on ENDED it should stop intercepting, so the object
+        -- below can sense it is receiving something.
+        intercepted = false
+        self.doNotInterceptOnce = false -- reset the flag
+    end
+    if t.state == ENDED or t.state == CANCELLED then
+        self.touches[t.id] = nil    -- forget about this touch
+    end
+    -- sometimes you dont want to intercept touches at all. ex: for a demo you need the touches to show
+    -- on top of the screen, so make a screenTouches object for that on top of all objects, but this one
+    -- should let all the touches go through. Setting this flag to true will do the trick: you listen to 
+    -- touches, but you dont block them.
+    if self.doNotInterceptTouches then intercepted = false end
+    -- return true when touched (or if i have the focus)
+    if intercepted then Soda.focus = self.parent end
+    return intercepted 
+end
+
+function Sensor:setParent(t)
+    -- a parent must have x,y,w,h coordinates (CORNER) to use the sensor
+    local p = t.parent or self.parent
+    if p.x and p.y and p.w and p.h then
+        self.parent = p
+    else
+        error("Sensor parent must have x,y,w,h coordinates")
+    end
+    -- the coordinates may be in different modes, use the appropriate function
+    -- self:xywh() returns x,y,w,h in RADIUS mode, appropriate to check if the object is touched
+    self.xywhMode = t.xywhMode or self.xywhMode or CORNER
+    if self.xywhMode == CENTER then self.xywh = self.xywhCENTER
+    elseif self.xywhMode == CORNER then self.xywh = self.xywhCORNER
+    elseif self.xywhMode == RADIUS then self.xywh = self.xywhRADIUS
+    end
+end
+
+-- functions to get x, y, w, h from different coordinates systems, return in RADIUS
+function Sensor:xywhCORNER()
+    local p = self.parent
+    local wr, hr = p.w/2.0, p.h/2.0
+    local xr, yr = p.x + wr, p.y + hr
+    return xr,yr,wr,hr
+end
+function Sensor:xywhCENTER()
+    local p = self.parent
+    return p.x, p.y, p.w/2, p.h/2
+end
+function Sensor:xywhRADIUS()
+    local p = self.parent
+    return p.x, p.y, p.w, p.h
+end
+
+-- check if the box is touched (a rectangle)
+-- if you want a more complex shape, or rotations, adapt this fonction to your needs
+local abs = math.abs
+function Sensor:inbox(t)
+    local x,y,w,h = self:xywh()
+    return abs(t.x-x)<(w+self.extra) and abs(t.y-y)<(h+self.extra)
+end
+
+-- all gestures register themselves with this function (can also unregister an event)
+function Sensor:register(eventName, update, callback)
+    if callback then
+        local event = {name=eventName, callback=callback, update=update}
+        for i,event in ipairs(self.events) do
+            -- if event already exists, modify it
+            if event.name == eventName then 
+                self.events[i] = event
+                return
+            end
+        end
+        -- if event does not exists, create it
+        table.insert(self.events, event)
+    else
+        -- if callback is nil or false, then remove the event
+        for i,event in ipairs(self.events) do
+            if event.name == eventName then 
+                table.remove(self.events,i)
+                return
+            end
+        end
+    end
+end
+-- get an event (i needed this for debugging only)
+function Sensor:getEvent(eventName)
+        for i,event in ipairs(self.events) do
+            if event.name == eventName then 
+                return event
+            end
+        end
+end
+
+-- ##################  From here, each supported gesture is defined   #################
+
+-- Note the that, because gestures are managed individually, the
+-- code is much more clear than when everything is mixed up. 
+-- And only the needed computations are done.
+
+-- zoom gesture
+function Sensor:onZoom(callback)
+    self:register("onZoom", self.zoomUpdate, callback)
+end
+-- zoom is complex because we need to manage 2 touches that begin inside the object, and no more
+function Sensor.zoomUpdate(event,self,t,tpos)
+    event.touches = event.touches or {} -- init table
+    local touches = event.touches
+    local t1 = touches[1]
+    local t2 = touches[2]
+    if t.state == BEGAN then -- a new finger has come, remember it
+        if #touches >= 2 then
+            -- this is a 3rd finger, dont use it
+        else
+            -- register this touch and reset
+            table.insert(touches,t)
+        end
+    elseif t.state == MOVING then 
+        -- this is a zoom, if we have exactly 2 touches and t is one of them
+        if t1 and t2 and ( t1.id == t.id or t2.id == t.id ) then 
+            local tm,ts -- m moving, s static
+            if t1.id == t.id 
+            then touches[1]=t ; tm = t ; ts = t2
+            else touches[2]=t ; tm = t ; ts = t1
+            end
+            -- convert deltaX and deltaY into a variation in width and height (dw and dh)
+            local dw,dh
+            if tm.x>ts.x 
+            then dw = tm.deltaX
+            else dw = - tm.deltaX
+            end
+            if tm.y>ts.y
+            then dh = tm.deltaY
+            else dh = - tm.deltaY
+            end
+            -- store the information in event, then fire callback
+            event.dw = dw
+            event.dh = dh
+            event:callback()
+        end
+    else
+        -- when a finger is gone, remove it from the table of touches
+        if t1 and t1.id == t.id then table.remove(touches,1) end
+        if t2 and t2.id == t.id then table.remove(touches,2) end
+    end
+end
+
+-- drag gesture
+function Sensor:onDrag(callback)
+    self:register("onDrag", self.dragUpdate, callback)
+end
+-- just echo the touch data and position via the callback
+function Sensor.dragUpdate(event,self,t,tpos)
+    if self.touches[t.id] then
+        -- integrate finger movement (can be used as a threshold)
+        if t.state == BEGAN then
+            event.totalMove = 0
+            event.startTime = ElapsedTime
+        elseif t.state == MOVING then
+            event.totalMove = event.totalMove + abs(t.deltaX) + abs(t.deltaY)
+        end
+        event.touch = t
+        event.tpos = tpos
+        event:callback()
+    end
+end
+
+-- drop gesture
+function Sensor:onDrop(callback)
+    self:register("onDrop", self.dropUpdate, callback)
+end
+-- drop occurs when the finger is lifted from the screen (ENDED)
+-- but it is complex because you want to detect 2 objects: 
+--      the object that is dropped
+--      the object that receive the drop
+-- register both objects with onDrop, and appropriate callbacks
+local droppedObject, droppedTime
+function Sensor.dropUpdate(event,self,t,tpos)
+    if self:inbox(tpos) and t.state == ENDED then
+        -- this is a 2 branches mechanism, so 2 objects can have the onDrop, but we need to
+        -- differenciate the 1rst one (dropped) from the second one (receiving the drop)
+        if droppedTime ~= ElapsedTime then
+            droppedTime = ElapsedTime   -- so next object will go to the other branch
+            droppedObject = self.parent
+            self.doNotInterceptOnce = true
+        else
+            event.object = droppedObject
+            event:callback()
+        end
+    end
+end
+
+-- touched gesture (this is like CODEA touched function)
+function Sensor:onTouched(callback)
+    self:register("onTouched", self.touchedUpdate, callback)
+end
+function Sensor.touchedUpdate(event,self,t,tpos)
+    if self.touches[t.id] or self:inbox(tpos) then 
+        event.touch = t
+        event.tpos = tpos
+        event:callback()
+    end
+end
+
+-- touch gesture
+function Sensor:onTouch(callback)
+    self:register("onTouch", self.touchUpdate, callback)
+end
+function Sensor.touchUpdate(event,self,t,tpos)
+    self.touching = self.touching or {} -- track touches, not only BEGAN
+    -- current touch
+    if self:inbox(tpos) then 
+        if t.state == BEGAN then 
+            event.t0 = ElapsedTime
+        end
+        if t.state == BEGAN or t.state == MOVING then 
+            self.touching[t.id] = true -- this is touching
+        else
+            self.touching[t.id] = nil -- this is not
+        end
+    else
+        self.touching[t.id] = nil 
+    end
+    -- final state
+    local state1 = false -- one touch is enough to be touched
+    for i,t in pairs(self.touching) do state1= true ; break end
+    --if state has changed, send callback
+    if state1 ~= event.state then
+        event.state = state1
+        event.touch = t
+        event.tpos = tpos
+        event:callback()
+    end
+end
+
+-- fired when the finger leaves the object
+function Sensor:onLeave(callback)
+    self:register("onLeave", self.leaveUpdate, callback)
+end
+local current
+function Sensor.leaveUpdate(event,self,t,tpos)
+    if self:inbox(tpos) then 
+        if t.state == BEGAN or t.state == MOVING then 
+            self.touching[t.id] = true -- this is touching
+        else
+            self.touching[t.id] = nil -- this is not
+        end
+    else
+        self.touching[t.id] = nil 
+    end
+    -- final state
+    local state1 = false -- one touch is enough to be touched
+    for i,t in pairs(self.touching) do state1= true ; break end
+    --if state has changed, send callback
+    if state1 ~= event.state then
+        event.state = state1
+        event.touch = t
+        event:callback()
+    end
+end
+
+-- tap gesture, Yojimbo2000 version
+function Sensor:onTap(callback)
+    self:register("onTap", self.tapUpdate, callback)
+end
+function Sensor.tapUpdate(event,self,t,tpos)
+    if self.touches[t.id] then -- the touch must have started on me
+        if t.state == BEGAN then
+            self.parent.highlighted = true
+        elseif t.state == MOVING then
+            if not self:inbox(tpos) then --if a touch begins within the element, but then drifts off it, it is cancelled. ie the user can change their mind. This is the same as on iOS.
+                self.parent.highlighted = false
+                event.cancelled = true
+            end
+        elseif t.state == ENDED and not event.cancelled then
+            self.parent.highlighted = false
+            event.tpos = tpos
+            event:callback()
+        end
+    end
+    if event.cancelled and (t.state == ENDED or t.state == CANCELLED ) then
+        event.cancelled = nil -- reset cancel
+    end
+end
+
+-- tap gesture, jmv38 initial version, renamed quickTap
+function Sensor:onQuickTap(callback)
+    self:register("onQuickTap", self.quickTapUpdate, callback)
+end
+function Sensor.quickTapUpdate(event,self,t,tpos)
+    if self.touches[t.id] then -- the touch must have started on me
+        if t.state == BEGAN then
+            event.totalMove = 0
+            event.t0 = ElapsedTime
+        elseif t.state == MOVING then
+            -- integrate finger movement
+            event.totalMove = event.totalMove + abs(t.deltaX) + abs(t.deltaY)
+        elseif t.state == ENDED 
+        and event.totalMove < 10  -- the finger should not have moved too much ...
+        and (ElapsedTime-event.t0) < 0.5 then -- and delay should not be too long
+            event.touch = t
+            event.tpos = tpos
+            event:callback()
+        end
+    end
+end
+
+-- a double tap gesture
+function Sensor:onDoubleTap(callback)
+    self:register("onDoubleTap", self.doubleTapUpdate, callback)
+end
+function Sensor.doubleTapUpdate(event,self,t,tpos)
+    if self.touches[t.id] then -- the touch must have started on me
+        if t.state == BEGAN then
+            event.totalMove = 0
+            event.t0 = ElapsedTime
+        elseif t.state == MOVING then
+            -- integrate finger movement
+            event.totalMove = event.totalMove + abs(t.deltaX) + abs(t.deltaY)
+        elseif t.state == ENDED 
+        and event.totalMove < 20  -- the finger should not have moved too much ...
+        and (ElapsedTime-event.t0) < 2.0 -- and delay should not be too long...
+        and t.tapCount == 2 then -- and 2 taps
+            event.touch = t
+            event.tpos = tpos
+            event:callback()
+        end
+    end
+end
+
+-- a single tap gesture
+function Sensor:onSingleTap(callback)
+    self:register("onSingleTap", self.singleTapUpdate, callback)
+end
+function Sensor.singleTapUpdate(event,self,t,tpos)
+    if self.touches[t.id] then -- the touch must have started on me
+        if t.state == BEGAN then
+            event.totalMove = 0
+            event.t0 = ElapsedTime
+        elseif t.state == MOVING then
+            -- integrate finger movement
+            event.totalMove = event.totalMove + abs(t.deltaX) + abs(t.deltaY)
+        elseif t.state == ENDED 
+        and event.totalMove < 10  -- the finger should not have moved too much ...
+        and (ElapsedTime-event.t0) < 0.5 -- and delay should not be too long...
+        and t.tapCount == 1 then -- and 2 taps
+            event.touch = t
+            event.tpos = tpos
+            event:callback()
+        end
+    end
+end
+
+-- long press gesture
+function Sensor:onLongPress(callback)
+    self:register("onLongPress", self.longPressUpdate, callback)
+end
+function Sensor.longPressUpdate(event,self,t,tpos)
+    local tmin = 1
+    if self.touches[t.id] then -- the touch must have started on me
+        if t.state == BEGAN then
+            event.totalMove = 0
+            event.cancel = false
+            event.id = t.id
+            event.tween = tween.delay(tmin,function()
+                event.tween = nil
+                if event.totalMove > 10 or event.id ~= t.id then  event.cancel = true end
+                if event.cancel then return end
+                event.tpos = tpos
+                event:callback()
+            end)
+        elseif t.state == MOVING and event.id == t.id then
+            -- integrate finger movement
+            event.totalMove = event.totalMove + abs(t.deltaX) + abs(t.deltaY)
+        elseif (t.state == ENDED or t.state == CANCELLED) and event.id == t.id then
+            event.cancel = true
+            if event.tween then tween.stop(event.tween) end
+        end
+    end
+end
+
+-- swipe gesture
+function Sensor:onSwipe(callback)
+    self:register("onSwipe", self.swipeUpdate, callback)
+end
+function Sensor.swipeUpdate(event,self,t,tpos)
+    if self.touches[t.id] then -- the touch must have started on me
+        if t.state == BEGAN then
+            event.dx = 0
+            event.dy = 0
+            event.t0 = ElapsedTime
+        elseif t.state == MOVING then
+            -- track net finger movement
+            event.dx = event.dx + t.deltaX
+            event.dy = event.dy + t.deltaY
+        elseif t.state == ENDED 
+        and (ElapsedTime-event.t0) < 1 then -- delay should not be too long
+            -- and the finger should have moved enough:
+            local minMove = 70
+            if abs(event.dx) < minMove  then event.dx = 0 end
+            if abs(event.dy) < minMove  then event.dy = 0 end
+            if event.dx ~= 0 or event.dy ~= 0 then
+                event:callback() -- use event.dx and .dy to know the swipe direction
+            end
+        end
     end
 end
 
@@ -1726,6 +1789,15 @@ Soda.style.default = {
         title = {fill = "white"}
     },
 
+    popUp = {
+        shape = {fill = "black", stroke = "grey"},
+        text = {fill = "white"},
+        highlight = {
+            shape = {fill = "white"},
+            text = {fill = "black"}
+        }
+    },
+
     switch = {
         shape = {},
         text = {},
@@ -1739,7 +1811,11 @@ Soda.style.default = {
     textBox = {font = "Inconsolata", fill = "black", fontSize = 1},
 }
 
-Soda.symbol = {menu = "\u{2630}", back = "\u{ff1c}", forward = "\u{ff1e}", close = "\u{2715}", down = "\u{25bc}", gear = "\u{2699}", add = "\u{FF0B}", delete = "\u{232B}"}
+Soda.symbol = {menu = "\u{2630}", back = "\u{ff1c}", forward = "\u{ff1e}", close = "\u{2715}", down = "\u{25bc}", gear = "\u{2699}", add = "\u{FF0B}", delete = "\u{232B}", widen = "\u{2194}", undo = "\u{21ba}"} 
+
+for k,v in pairs(Soda.symbol) do
+    Soda.symbol[k] = v.."\u{fe0e}" --an escape code which forces preceding character to display as a symbol, not an emoji
+end
 
 function Soda.setStyle(sty)
     for k,v in pairs(sty) do
@@ -1824,6 +1900,10 @@ function Soda:outline(t) --edge 1=left, 2 = top, 4 = right, 8 = bottom
     end
 end
   ]]
+
+
+
+
 
 
 --# RoundRect
@@ -2011,6 +2091,11 @@ void main()
 }
 ]]
 }
+
+
+
+
+
 
 --# Blur
 Soda.Gaussian = class() --a component for nice effects like shadows and blur
@@ -2222,6 +2307,9 @@ void main()
 
 
 
+
+
+
 --# FRAME
 Soda.Frame = class() --the master class for all UI elements. 
 
@@ -2269,8 +2357,29 @@ function Soda.Frame:init(t)
         self.mesh[#self.mesh+1] = Soda.Shadow{parent = self}
     end
     
-    self.inactive = self.inactive or self.hidden  --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
-   -- if self.inactive then self:deactivate() end
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self:setInactive(self.inactive or self.hidden)
+    --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation    
+
+end
+
+function Soda.Frame:setInactive(b)
+    self.inactive = b
+    self.sensor.enabled = not self.inactive
+end
+
+function Soda.Frame:childrenTouched(t,tpos)
+    local off = tpos - vec2(self:left(), self:bottom())
+    for i = #self.child, 1, -1 do --children take priority over frame for touch
+        local v = self.child[i]
+        if v:touched(t, off) then return true end
+    end
+end
+
+function Soda.Frame:touched(t, tpos)
+    if self.inactive then return end
+    if self.sensor:touched(t, tpos) then return true end
+    return self.alert
 end
 
 function Soda.Frame:storeParameters(t)
@@ -2326,8 +2435,10 @@ end
 
 function Soda.Frame:getTextSize(sty, tex)
     pushStyle()
+
    -- Soda.setStyle(Soda.style.default.text)
     Soda.setStyle(sty or self.style.text) --sty or 
+
     local w,h = textSize(tex or self.title)
     popStyle()
     return w,h
@@ -2335,7 +2446,9 @@ end
 
 function Soda.Frame:show(direction)
     self.hidden = false --so that we can see animation
-    self.inactive=false
+
+    self:setInactive(false)
+
     if direction then --animation
         self:setPosition()
         local targetX = self.x
@@ -2344,11 +2457,7 @@ function Soda.Frame:show(direction)
         elseif direction==RIGHT then
             self.x = WIDTH + self.w * 0.5
         end
-        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut) --, function() self.inactive=false enduser cannot touch buttons until animation completes
-    --[[
-    else --no animation
-        self.inactive = false
-          ]]
+        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut) 
     end
     if self.shapeArgs and self.shapeArgs.tex then self.shapeArgs.resetTex = self.shapeArgs.tex end --force roundedrect to switch texture (because two rects of same dimensions are cached as one mesh)
 end
@@ -2362,10 +2471,10 @@ function Soda.Frame:hide(direction)
         elseif direction==RIGHT then
             targetX = WIDTH + self.w * 0.5
         end
-        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut, function() self.hidden = true self.inactive=true  end) --user cannot touch buttons until animation completes
+        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut, function() self.hidden = true self:setInactive(true)  end) --user cannot touch buttons until animation completes
     else
         self.hidden = true
-        self.inactive = true
+        self:setInactive(true)
     end
 end
 
@@ -2376,21 +2485,11 @@ function Soda.Frame:toggle(direction)
 end
 
 function Soda.Frame:activate()
-    self.inactive = false
-    --[[
-    for i,v in ipairs(self.child) do
-        v:activate()
-    end
-      ]]
+        self:setInactive(false)
 end
 
 function Soda.Frame:deactivate()
-    self.inactive = true
-    --[[
-    for i,v in ipairs(self.child) do
-        v:deactivate()
-    end
-      ]]
+        self:setInactive(true)
 end
 
 function Soda.Frame:draw(breakPoint)
@@ -2420,7 +2519,6 @@ function Soda.Frame:draw(breakPoint)
     if self.shape then
         self:drawShape(sty)
     end
-    
         popStyle()
     pushStyle()
     self:setStyle(sty, "body", "text")
@@ -2447,10 +2545,7 @@ function Soda.Frame:draw(breakPoint)
     popStyle()
     
     for i, v in ipairs(self.child) do --nb children are drawn with parent's transformation
-        --[[
-        local ok, err = xpcall(function()  v:draw(breakPoint) end, function(trace) return debug.traceback(trace) end)
-        if not ok then print(v.title, err) end
-        ]]
+
         if v.kill then
             table.remove(self.child, i)
         else
@@ -2458,18 +2553,14 @@ function Soda.Frame:draw(breakPoint)
         end
     end
     popMatrix()
-  --  popStyle()
+
 end
 
 function Soda.Frame:drawContent() end --overridden by subclasses
 
 function Soda.Frame:drawShape(sty)
-  --  pushStyle()
-  --  Soda.setStyle(sty.shape) --(Soda.style.default.shape)
- --   Soda.setStyle(sty.shape)
     self:setStyle(sty, "shape")
     self.shape(self.shapeArgs)
-   -- popStyle()
 end
 
 function Soda.Frame:bottom()
@@ -2488,27 +2579,6 @@ function Soda.Frame:right()
     return self.x + self.w * 0.5
 end
 
-function Soda.Frame:keyboardHideCheck() --put this in touch began branches of end nodes (buttons, switches, things unlikely to have children)
-    if Soda.keyboardEntity and Soda.keyboardEntity~=self then
-        hideKeyboard()
-        Soda.keyboardEntity = nil
-    end
-end
-
-function Soda.Frame:touched(t, tpos)
-    if self.inactive then return end
-    local trans = tpos - vec2(self:left(), self:bottom()) --translate the touch position
-    for i = #self.child, 1, -1 do --children take priority over frame for touch
-        local v = self.child[i]
-        if not v.inactive then
-            if v:touched(t, trans) then
-            return true end
-        end
-    end
-  --  if self.alert then return true end --or self:pointIn(tpos.x, tpos.y) 
-    return self.alert
-end
-
 function Soda.Frame:selectFromList(child) --method used by parents of selectors. 
     if child==self.selected then --pressed the one already selected
         if self.noSelectionPossible then
@@ -2519,11 +2589,7 @@ function Soda.Frame:selectFromList(child) --method used by parents of selectors.
         if self.selected then 
 
             self.selected.highlighted = false 
-            --[[
-            for i,v in ipairs(self.child) do
-                if v~=child then v.highlighted = false end
-            end
-              ]]
+
             if self.selected.panel then self.selected.panel:hide() end
         end
         self.selected = child
@@ -2550,6 +2616,10 @@ function Soda.Frame:orientationChanged()
 end
 
 
+
+
+
+
 --# Button
 Soda.Button = class(Soda.Frame) --one press, activates on release
 
@@ -2560,8 +2630,15 @@ function Soda.Button:init(t)
     t.subStyle = t.subStyle or {"button"}
     Soda.Frame.init(self, t)
     --table.insert(self.styleList, 2, self.style["button"])
+--
+    -- #################################### <JMV38 changes>
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self.sensor:onTap(function(event) self:callback() end)
 end
-
+function Soda.Button:touched(t, tpos)
+    if self.sensor:touched(t, tpos) then return true end
+end
+--[[
 function Soda.Button:touched(t, tpos)
     if t.state == BEGAN then
         if self:pointIn(tpos.x, tpos.y) then
@@ -2586,6 +2663,8 @@ function Soda.Button:touched(t, tpos)
     end
    -- return Soda.Frame.touched(self, t, tpos) --a button shouldn't have children
 end
+--]]
+    -- #################################### </JMV38 changes>
 
 ----- Some button factories:
 
@@ -2673,12 +2752,28 @@ function Soda.QueryButton(t)
     return Soda.Button(t)
 end
 
+
+
+
+
+
 --# Toggle
 Soda.Toggle = class(Soda.Button) --press toggles on/ off states
 
 function Soda.Toggle:init(t)
     Soda.Button.init(self,t)
     self:toggleSettings(t)
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self.sensor:onTap(function(event) self:toggleMe() end)
+end
+
+function Soda.Toggle:toggleMe()
+    self.on = not self.on
+    if self.on then
+        self:switchOn()
+    else
+        self:switchOff()
+    end
 end
 
 function Soda.Toggle:toggleSettings(t)
@@ -2704,44 +2799,12 @@ function Soda.Toggle:switchOff()
     self:callbackOff()
 end
 
-function Soda.Toggle:touched(t, tpos)   
-    if t.state == BEGAN then
-        if self:pointIn(tpos.x, tpos.y) then
-            self.touchId = t.id
-            self:keyboardHideCheck()
-            return true
-        end
-    elseif self.touchId and self.touchId == t.id then
-        if t.state == MOVING then
-            if not self:pointIn(tpos.x, tpos.y) then --cancelled
-                self.touchId = nil
-                
-                return true
-            end
-        else --ended     
-            self.touchId = nil
-            self.on = not self.on
-            if self.on then 
-                self:switchOn() 
-                
-            else 
-                self:switchOff() 
-                
-            end
-            return true
-        end
-        
-    end
-   -- return Soda.Frame.touched(self, t, tpos) ---switch shouldn't have children
-end
-
 ----- Some toggle factories:
 
 function Soda.MenuToggle(t)
     t.title = "\u{2630}" --the "hamburger" menu icon
     t.w, t.h = 40, 40
-    t.style = t.style --or Soda.style.darkIcon
-    t.subStyle = t.subStyle or {"icon", "button"}
+    t.style = t.style or Soda.style.darkIcon
     return Soda.Toggle(t)
 end
 
@@ -2752,8 +2815,6 @@ function Soda.SettingsToggle(t)
     t.subStyle = t.subStyle or {"icon", "button"}
     return Soda.Toggle(t)
 end
-
-
 
 --# Switch
 Soda.Switch = class(Soda.Toggle) --an iOS-style switch with a lever that moves back and forth
@@ -2778,6 +2839,11 @@ function Soda.Switch:init(t)
     self.knob = Soda.Knob{parent = self, x = 0, y = 0.5, w=38, h=38, shape = Soda.ellipse, shadow = true}
     
     self:toggleSettings(t)
+    
+    self.knob.sensor.doNotInterceptTouches = true
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self.sensor:onTap(function(event) self:toggleMe() end)
+
 end
 
 function Soda.Switch:switchOn()
@@ -2825,6 +2891,677 @@ function Soda.Knob:unHighlight()
 
 end
 
+
+--# TextEntry
+-- TextEntry2
+-- same as textEntry, plus a select text function
+-- author: jmv38, from yojimbo2000 first version
+
+-- functions:
+-- tap inside the text block to show keyboard and tap text
+-- tap anywhere to place the cursor there
+-- tap the cursor to show the paste dialog bar
+-- double tap the cursor to show the selection dialog and cursors
+-- drag the text when too big to finto the block
+
+-- under the hood:
+--      TextEntry is simply showing the text, with a drag function
+--      TextEditor is the text modifying object
+
+-- version 2.4
+--      subStyle = {"popUp"} for text menus
+--      BACKSPACE deletes the selection if user in selection mode
+-- version 2.3
+--      undo 5 levels, improved exeprience
+--      double tap selects the word below
+-- version 2.2
+--      full rework
+-- version 2.1
+--      cut and delete corrected for start=0 bug, and stop too (was there a pb...?)↔︎
+
+
+-- ###############################################################################
+-- some classes i want to keep local but available anywhere in this tab
+local TextEntry  -- the main class for text box (included in soda)
+local TextEditor -- a class managing the text edition tools
+local Cursor -- a class for cursor object
+local Selector -- a class for a text selection object
+-- ###############################################################################
+
+TextEntry = class(Soda.Frame)
+TextEntry.usesKeyboard = true
+Soda.TextEntry = TextEntry
+
+-- TextEntry itself is doing nothing but displaying the text, text edition is inside TextEditor
+function TextEntry:init(t)
+    t.shape = Soda.RoundedRectangle
+    t.label = {x=10, y=0.5} 
+    Soda.Frame.init(self, t)
+    table.insert(self.styleList, 2, self.style["button"])
+    self:inputString(t.default or "")
+    self:updateTextW()
+    self.offset = vec2(self.label.w + 5, (self.h-self.label.h)*0.5) --bottom corner of text-entry
+    self.Xscroll = 0 -- when text is bigger than window, it can be scrolled
+    
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    --[[self.sensor:onDrag(function(event) 
+        -- move the interface to access other text box while keyboard is there
+        
+        if event.totalMove > 20 and isKeyboardShowing() then 
+           Soda.UIoffset = Soda.UIoffset + event.touch.deltaY
+        end 
+          
+    end)]]
+    self.sensor:onTouch(function(event) self:autoScrollUpdate(event) end)
+    -- this object is to isolate the edition functions and objects from TextEntry
+    self.editor = TextEditor( self )
+end
+
+function TextEntry:output()
+    return self.text
+end
+
+-- move the text inside its box 
+function TextEntry:horizontalScroll(t)
+    local t = t or {}
+    if t.state == BEGAN or t.state == MOVING then
+        if self.freeScroll then -- if some animation is running, stop it
+            tween.stop(self.freeScroll)
+            self.freeScroll = false
+        end
+        self.Xscroll = self.Xscroll + t.deltaX
+    else -- come back into position, with a smooth animation effect
+        -- create the callback once at first usage and save it
+        self.updt = self.updt or function()
+            self.freeScroll = false
+        end 
+        self:updateTextW()
+        if self.Xscroll and self.clipW then
+        if self.Xscroll > 0 or self.clipW > self.textW then
+            self.freeScroll = tween(0.5, self, {Xscroll=0}, tween.easing.backOut, self.updt)
+        elseif self.Xscroll < 0 then
+            local minScroll = self.clipW - self.textW -10
+            if self.Xscroll < minScroll then
+                self.freeScroll = tween(0.5, self, {Xscroll=minScroll}, tween.easing.backOut,self.updt)
+            end
+        end
+        end
+    end
+end
+
+function TextEntry:autoScrollUpdate(event)
+    local state = event.touch.state
+    local tpos = event.tpos
+    if (state == BEGAN or state == MOVING) and self.sensor:inbox(tpos) then
+        self:autoScroll(tpos.x)
+    else
+        self.autoScrollDelta = false
+    end
+end
+function TextEntry:autoScroll(x)
+    local direction = false
+    if x then
+        if x < self.clipX + 50 then direction = 1 end
+        if x > self.clipX + self.clipW - 50 then direction = -1 end
+        self.autoScrollDelta = direction
+    end
+    if self.autoScrollDelta then
+        self.minScroll = self.clipW - self.textW -10
+        self.maxScroll = 0
+        self.autoScrollFunc = self.autoScrollFunc or function()
+            if self.autoScrollDelta then
+                local editor = self.editor
+                if editor.inputMode then
+                    local c = editor.inputCursor
+                    c:setIndex( c.index - self.autoScrollDelta )
+                end
+                self.Xscroll = self.Xscroll +  self.characterW * self.autoScrollDelta
+                if self.Xscroll < self.minScroll then 
+                    self.Xscroll = self.minScroll 
+                    self.autoScrollDelta = false
+                end
+                if self.Xscroll > self.maxScroll then 
+                    self.Xscroll = self.maxScroll 
+                    self.autoScrollDelta = false
+                end
+                self:autoScroll()
+            end
+        end
+        tween.delay( 0.05, self.autoScrollFunc)
+       -- self.debug = true
+    else
+        -- self.debug = false
+    end
+end
+
+function TextEntry:updateTextW()
+    pushStyle()
+    Soda.setStyle(self.style.textEntry)
+     --width of a character (nb fixed-width font only, to simplify creation of touchable text)
+    self.characterW = textSize("a")
+    self.textW = self.text:len() * self.characterW
+    popStyle()
+end
+
+-- enter text and reset things
+function TextEntry:inputString(txt)
+    self.text = txt
+    self:updateTextW()
+    self:horizontalScroll()
+end
+
+function TextEntry:subText()
+    -- too long strings wont draw properly => extract a smaller sustring
+    -- this string is comprised between startIndex and stopIndex (included)
+    self.characterW = self.characterW or self:getTextSize(self.style.textEntry, "a")
+    self.startIndex = 1
+    if self.Xscroll < 0 then
+        self.startIndex = math.floor(-self.Xscroll/self.characterW) + 1
+    end
+    self.stopIndex = self.startIndex + math.floor(self.clipW/self.characterW) +1
+    local nbcar = self.text:len()
+    if nbcar == 0 then return "" end
+    if self.startIndex > nbcar then return "" end
+    if self.stopIndex > nbcar then self.stopIndex = nbcar end
+    return self.text:sub(self.startIndex , self.stopIndex)
+end
+function TextEntry:draw(breakPoint)
+    Soda.Frame.draw(self, breakPoint) -- generic stuff
+    self:drawText() -- the text inside its box
+    if not isKeyboardShowing() then self.editor:closeEdition() end
+end
+
+-- an extension of clip function:
+--  clip(x,y,w,h) is as usual
+--  clip(x,y,w,h,true) is using the current translation state to define its position
+local stdClip = clip -- remember standard clip function
+clip = function(x,y,w,h,relative)
+    if x == nil then stdClip() return end
+    if relative then -- translate the clip using current translation
+        local m = modelMatrix()
+        local x0,y0 = m[13],m[14]
+        stdClip(x0+x,y0+y,w,h)
+    else
+        stdClip(x,y,w,h)
+    end
+end
+    
+function TextEntry:drawText()
+    -- text is written from this position
+    local x = self:left() + self.offset.x 
+    local y = self:bottom()
+    -- these values are used by text editor, so they must be saved ...
+    self.textX = x + self.Xscroll -- the starting point for text 
+    -- ... and the area where the text shows up:
+    self.clipX = x
+    self.clipY = y
+    self.clipW = self.w-self.offset.x - 5
+    self.clipH = self.h
+    pushStyle()
+    -- make a clip area fpr the text
+    clip( self.clipX, self.clipY, self.clipW, self.clipH, true)
+        if self.debug then background(255, 205, 0, 12) end -- debug: to view area
+        -- inside this area, draw the text
+        Soda.setStyle(self.style.textEntry)
+        textAlign(LEFT)
+        textMode(CORNER)
+        -- draw only a subtext (too long text will not draw, due to some codea limit)
+        text(self:subText(), self.textX + self.characterW *self.startIndex, y+self.offset.y)
+    clip()
+    popStyle()
+end
+
+-- ###############################################################################
+
+TextEditor = class() -- manages the text edition tools life
+local objectEdited -- the only one object that can be edited at a time is stored here
+
+--  creates all the edition tools needed, and makes the reactions to events being coherent
+function TextEditor:init(parent)
+    self.parent = parent
+    -- a cursor for entering text
+    self.inputCursor = Cursor{parent=self.parent, x=0, y=0, h=self.parent.h, w=3}
+    -- a selection tool
+    self.selector = Selector{parent=self.parent, x=0, y=0, h=self.parent.h, w=3}
+    -- on startup everything is hidden
+    self.inputCursor:hide() 
+    self.selector:hide() 
+    -- create menus
+    self:selectionMenuInit()
+    self:inputMenuInit()
+    
+    -- tapping the parent makes the cursor show up, and the keyboard
+    self.parent.sensor:onSingleTap(function(event) self:enterInputMode(event.tpos) end)
+    -- double tap the cursor to enter into selection mode
+    self.inputCursor.sensor:onDoubleTap(function(event) self:enterSelectionMode(event.tpos) end)
+    -- single tap to open paste menu
+    self.inputCursor.sensor:onSingleTap(function(event) self:openInputMenu() end)
+
+end
+
+-- ############## mode switching related stuff ##############
+
+-- prepare object for receiving text
+function TextEditor:enterInputMode(tpos)
+    self:startEdition()
+    if self.selectionMode then 
+        self.inputCursor.index = self.selector.infCursor.index
+        self:leaveSelectionMode() 
+    end
+    self.inputMode = true
+    -- put the cursor at good position, and show it
+    if tpos then self.inputCursor:setFromPosition(tpos.x) end
+    self.inputCursor:show()
+    -- bring up the keyboard, if not yet here
+end
+-- end properly input mode
+function TextEditor:leaveInputMode()
+    self.inputMode = false
+    self.inputCursor:hide()
+    self:closeInputMenu()
+end
+-- enter selection mode
+function TextEditor:enterSelectionMode(tpos)
+    self:leaveInputMode() -- you can enter selection mode only from input mode
+    self.selectionMode = true
+    -- put the cursor at good position, and show it
+    self.selector:selectAll()
+    self.selector:setFromPosition(self.inputCursor.x)
+    self.selector:show()
+    self.selectionMenu:show()
+end
+-- end properly selection mode
+function TextEditor:leaveSelectionMode(tpos)
+    self.selectionMode = false
+    self.selector:hide()
+    self.selectionMenu:hide()
+end
+-- start editing an object
+function TextEditor:startEdition()
+    if  objectEdited ~= self.parent then 
+        -- close the other object being edited, if any
+        if objectEdited then objectEdited.editor:closeEdition() end
+        -- update state data
+        objectEdited = self.parent
+    end
+    -- create the undo function
+    self:pushUndo()
+    self:startTextInput()
+end
+-- end properly the edition phase
+function TextEditor:closeEdition()
+    if  objectEdited ~= self.parent then return end
+    objectEdited = false
+    if self.inputMode then self:leaveInputMode() end
+    if self.selectionMode then self:leaveSelectionMode() end
+    -- fire a callback when edition finished, with a delay in case the order comes from draw
+    tween.delay(0.001, function() self.parent.callback(self.parent.text) end ) 
+    self:endTextInput()
+end
+-- a stack of undo's
+function TextEditor:pushUndo()
+    self.undos = self.undos or {} -- table of undo's
+    local txt = self.parent.text
+    local func = function() self.parent:inputString(txt) end
+    table.insert(self.undos,1,func)
+    local maxi = 5
+    if #self.undos > maxi then table.remove(self.undos,maxi+1) end -- not too many levels
+end
+function TextEditor:popUndo()
+    local func = self.undos[1]
+    -- remove undos, but the first one
+    if #self.undos > 1 then table.remove(self.undos,1) end
+    return func
+end
+-- ############## text input stuff ##############
+-- i have left this part isolated because it is closely related to Soda and i dont understand everything
+-- it could be merged with above function, but there is no real need for that
+
+function TextEditor:startTextInput()
+    local delay = 0.5  -- animation
+    if not isKeyboardShowing() then 
+        showKeyboard() 
+        delay = 1.0  -- more time is needed when keyboard was not here
+    end
+    if Soda.keyboardEntity ~= self then
+        -- adapt the interface position to this object
+        local h = 0.3
+        local y = self.parent:bottom() + self.parent.offset.y
+        if CurrentOrientation == LANDSCAPE_LEFT or CurrentOrientation == LANDSCAPE_RIGHT then h = 0.4 end
+        local typewriter = math.max(0, (HEIGHT * h) - y) -- new position
+        tween(delay,Soda,{UIoffset=typewriter},tween.easing.cubicOut) -- go there smoothly
+    end
+    Soda.keyboardEntity = self
+end
+
+function TextEditor:endTextInput()
+    Soda.keyboardEntity = nil
+end
+
+function TextEditor:keyboard(key)
+    if key == RETURN then
+        hideKeyboard() --hide keyboard triggers end of text input event in TextEntry:draw()
+        self:closeEdition()
+    elseif key == BACKSPACE then
+        if self.selectionMode then
+            local start = self.selector.infCursor.index
+            local stop = self.selector.supCursor.index
+            self:delete(start,stop)
+        else
+            local start = self.inputCursor.index - 1
+            local stop = self.inputCursor.index
+            if start >0 then
+                self:delete(start,stop)
+                self.inputCursor.index = self.inputCursor.index - 1   -- and move cursor back 1 char
+            end
+        end
+    elseif key:len()==1 then
+        self:paste(key)
+        self.inputCursor.index = self.inputCursor.index + 1   -- and move cursor up 1 char
+    end
+end
+
+
+-- ############## input menu related stuff ##############
+
+function TextEditor:inputMenuInit()
+    self.inputMenu = Soda.Segment{
+        parent = self.parent, 
+        x = 0.5, y = 50, w = 0.3, h = 40,
+        subStyle = {"popUp"},
+        text = {"undo","paste", "sel", "close"},
+        default = 0, 
+    }
+    
+    for i, child in ipairs(self.inputMenu.child) do
+        child.callback = function() 
+            self:inputMenuAction(child.title) 
+            tween.delay(0.2, function() 
+                child.highlighted = false
+                self.inputMenu.selected = nil
+            end)
+        end
+        child.usesKeyboard = true
+    end
+    self.inputMenu:hide()
+end
+function TextEditor:openInputMenu()
+    self.inputMenu.x = self.inputCursor.x
+    self.inputMenu:show()
+end
+function TextEditor:closeInputMenu()
+    self.inputMenu:hide()
+end
+function TextEditor:inputMenuAction(action)
+    if action=="close" then --
+        self:closeInputMenu()
+    elseif action=="paste" then
+        self:paste(pasteboard.text or "")
+    elseif action=="sel" then
+        self:enterSelectionMode()
+    elseif action=="undo" then
+        self:undo()
+    end
+end
+
+-- ############## selection menu related stuff ##############
+
+-- create a tool bar for selection
+function TextEditor:selectionMenuInit()
+    self.selectionMenu = Soda.Segment{
+        parent = self.parent, 
+        x = 0.5, y = 50, w = 0.5, h = 40,
+        subStyle = {"popUp"},
+        text = {Soda.symbol.delete,"undo","cut", "copy", "paste", Soda.symbol.widen},
+        default = 0, 
+    }
+    for i, child in ipairs(self.selectionMenu.child) do
+        child.callback = function() 
+            self:selectionAction(child.title) 
+            tween.delay(0.2, function() 
+                child.highlighted = false
+                self.selectionMenu.selected = nil
+            end)
+        end
+        child.usesKeyboard = true
+    end
+    self.selectionMenu:hide()
+end
+-- decode the output of selection menu
+function TextEditor:selectionAction(action)
+    local start = self.selector.infCursor.index
+    local stop = self.selector.supCursor.index
+
+    if action==Soda.symbol.delete then 
+        self:delete(start,stop)
+    --[[
+    elseif action==Soda.symbol.close then 
+        self:enterInputMode()
+          ]]
+    elseif action=="undo" then 
+        self:undo()
+    elseif action=="cut" then 
+        self:selectionCopy()
+        self:delete(start,stop)
+    elseif action=="copy" then 
+        self:selectionCopy()
+    elseif action==Soda.symbol.widen then --"<-->"
+        self.selector:selectAll()
+    elseif action=="paste" then 
+        self:delete(start,stop)
+        self:paste(pasteboard.text or "")
+    end
+end
+function TextEditor:selectionCopy()
+    local start = self.selector.infCursor.index
+    local stop = self.selector.supCursor.index-1
+    local txt = self.parent.text:sub(start,stop)
+    pasteboard.text = txt
+end
+function TextEditor:split(start,stop)
+    stop = stop or start
+    local str = self.parent.text
+    local txt1 = ""
+    if start > 1 then txt1 = str:sub(1,start-1) end
+    local txt2 = ""
+    if stop <= str:len() then txt2 = str:sub(stop) end
+    return txt1,txt2
+end
+function TextEditor:paste(txt)
+    if self.selectionMode then self:enterInputMode() end
+    local txt1,txt2 = self:split(self.inputCursor.index)
+    -- txt = "|test|" -- debug
+    txt = txt1 .. txt .. txt2
+    self.parent:inputString(txt)
+end
+function TextEditor:delete(start,stop)
+    self:enterInputMode()
+    local txt1,txt2 = self:split(start,stop)
+    local txt = txt1 .. txt2
+    self.parent:inputString(txt)
+end
+function TextEditor:undo()
+    local func = self:popUndo()
+    if func then 
+        local newTxt = self.parent.text
+        func() 
+        if self.parent.text == newTxt then
+            -- one more time, to avoid the "nothing happened?" feeling
+            func = self:popUndo()
+            if func then func() end
+        end
+        self.inputCursor:setFromPosition(self.inputCursor.x)
+        self.selector.infCursor:setFromPosition(self.selector.infCursor.x)
+        self.selector.supCursor:setFromPosition(self.selector.supCursor.x)
+    end
+end
+-- ###############################################################################
+
+-- a cursor object
+-- can be a blinking cursor, or a cursor with a round tip
+-- it is mainly a graphic object, plus a memory to store the current index
+Cursor = class(Soda.Frame)
+function Cursor:init(t)
+    t.update = self.update -- because Frame.init erases this function otherwise
+    Soda.Frame.init(self, t)
+    -- the index is before the concerned character. It can be 1 char bigger that the string.
+    self.index = self.parent.text:len() +1 -- default position is at string end
+    self:update()
+    self.sensor.extra = 20 -- make the sensor big enough to be draggable
+    -- dragging the cursor is simple enough to be included in cursor itself
+    self.sensor:onDrag(function(event) 
+        if event.totalMove > 20 then self:setFromPosition(event.tpos.x) end
+    end)
+    self.sensor.doNotInterceptTouches = true -- let parent hear (for auto scrolling)
+    self.debug = false -- for debugging
+end
+
+function Cursor:update()
+    -- update position
+    local x = self.parent.textX or 0 -- to avoid problem at init
+    self.x = x + (self.index-1) * self.parent.characterW
+end
+
+function Cursor:setFromPosition(xpos)
+    local x = self.parent.textX or 0 -- to avoid problem at init
+    -- convert position into a char index
+    local index = math.floor( (xpos - x) / self.parent.characterW + 1)
+    self:setIndex(index)
+end
+function Cursor:setIndex(index)
+    -- make sure the index is acceptable
+    local maxIndex = self.parent.text:len() + 1
+    if index > maxIndex then index = maxIndex end
+    if index < 1 then index = 1 end
+    -- this part is for there are 2 cursors blocking each other
+    if self.infLimit then
+        local infLimit = self.infLimit.index + 1
+        if index < infLimit then index = infLimit end
+    end
+    if self.supLimit then
+        local supLimit = self.supLimit.index - 1
+        if supLimit < index then index = supLimit end
+    end
+    -- apply this value
+    self.index = index
+    self:update()
+end
+
+function Cursor:draw()
+    if self.hidden then return end
+    self:update()
+    pushStyle()
+    rectMode(CENTER)
+    noStroke()
+    fill(0, 201, 255, 200)
+    local p = self.parent
+    clip( p.clipX-10, -10, p.clipW, p.clipH+20, true) -- the cursor should disappear too
+    -- background(255, 216, 0, 83) -- debug
+    if self.hTip then -- if this exists, draw a dot on the cursor
+        rect(self.x,self.y, self.w, self.h)
+        ellipse(self.x,self.y+self.hTip,15)
+    else -- blink the cursor
+        if (ElapsedTime/0.4)%2<1.3 then
+            rect(self.x,self.y,self.w,self.h)
+        end
+    end
+    if self.debug then
+        -- show the index value
+        textMode(CENTER)
+        fill(0)
+        fontSize(12)
+        text(tostring(self.index),self.x,self.y+ (self.hTip or self.h/3))
+    end
+    clip()
+    popStyle()
+end
+
+-- ###############################################################################
+
+-- a selector object
+-- it is mainly a graphic object, 2 cursors and a rectangle between
+Selector = class(Soda.Frame)
+function Selector:init(t)
+    t.update = self.update -- because Frame.init erases this function otherwise
+    Soda.Frame.init(self, t)
+    self.sensor.enabled = false
+    -- two cursors for selecting text
+    local h=self.parent.h
+    self.supCursor = Cursor{parent=self.parent,x=10,y=0, h=h, w=3, hTip=-h/2}
+    self.infCursor = Cursor{parent=self.parent,x=10,y=0, h=h, w=3, hTip= h/2}
+    -- these cursors are bound by each other
+    self.supCursor.infLimit = self.infCursor
+    self.infCursor.supLimit = self.supCursor
+    -- on startup all cursors are hidden
+    self._hide = Soda.Frame.hide
+    self._show = Soda.Frame.show
+    self:hide()
+    self.debug = false -- for debugging
+end
+function Selector:selectAll()
+    self.supCursor.index = self.parent.text:len() +1
+    self.infCursor.index = 1
+end
+function Selector:hide()
+    self:_hide()
+    self.supCursor:hide()
+    self.infCursor:hide()
+end
+function Selector:show()
+    self:_show()
+    self.supCursor:show()
+    self.infCursor:show()
+end
+function Selector:update()
+    self.supCursor:update()
+    self.infCursor:update()
+end
+
+function Selector:setFromPosition(xpos)
+    self.supCursor:setFromPosition(xpos)
+    self.infCursor:setFromPosition(xpos)
+    local txt = self.parent.text
+    local start = self.infCursor.index
+    self.infCursor.index = 1
+    if start >1 then
+        for i = start-1, 1, -1 do
+            if txt:sub(i,i) == " " then
+                self.infCursor.index = i+1
+                break
+            end
+        end
+        
+    end
+    local stop = self.supCursor.index
+    self.supCursor.index = txt:len()+1
+    if stop < txt:len() then
+        for i = stop+1, txt:len() do
+            if txt:sub(i,i) == " " then
+                self.supCursor.index = i
+                break
+            end
+        end
+    end
+end
+
+function Selector:draw()
+    if self.hidden then return end
+    self:update()
+    pushStyle()
+    noStroke()
+    local x0 = self.infCursor.x
+    local y0 = 0
+    local x1 = self.supCursor.x
+    local y1 = self.supCursor.h
+    fill(0, 201, 255, 100)
+    rectMode(CORNERS)
+    local p = self.parent
+    clip( p.clipX-10, 0, p.clipW, p.clipH, true)
+    rect(x0,y0,x1,y1)
+    clip()
+    popStyle()
+end
+
 --# Slider
 Soda.Slider = class(Soda.Frame)
 
@@ -2833,24 +3570,17 @@ function Soda.Slider:init(t)
     t.w = t.w or 300
     t.h = 60
     t.style = Soda.style.switch
+    self.range = t.max - t.min
     self.value = t.start or t.min
     self.value = clamp(self.value, t.min, t.max)
     self.decimalPlaces = t.decimalPlaces or 0
 
     t.label = {x = 0, y = -0.001}
   --  t.shapeArgs = {x = 0, y = 20, h = 0}
-
-    Soda.Frame.init(self, t)
-    self.sliderLen = self.w - 40
-    self.shapeArgs.w = self.sliderLen
     self.snapPoints = t.snapPoints or {}
-    --calculate snap positions
     self.snapPos = {}
-    for i,v in ipairs(self.snapPoints) do
-        self.snapPos[i] = 20 + self:posFromValue(v)
-    end
-    self.range = self.max - self.min
-  self.snapStep = lerp(5 / self.sliderLen, 0, self.range)
+    Soda.Frame.init(self, t)
+
     self.knob = Soda.SliderKnob{
         parent = self, 
         x = 0, y = 0, w=35, h=35, 
@@ -2859,7 +3589,6 @@ function Soda.Slider:init(t)
        -- highlightable = true,
         shadow = true
     }
-    self.knob.x = 20 + self:posFromValue()
     
     self.valueLabel = Soda.Frame{
         parent = self,
@@ -2869,6 +3598,31 @@ function Soda.Slider:init(t)
         label = {x = -0.001, y = -0.001}
     }
     
+    self.sensor:onQuickTap(function(event) self:smallChange(event.tpos) end)
+    
+end
+
+function Soda.Slider:setPosition()
+    Soda.Frame.setPosition(self)
+    self.sliderLen = self.w - 40
+    self.shapeArgs.w = self.sliderLen    
+    --calculate snap positions
+    for i,v in ipairs(self.snapPoints) do
+        self.snapPos[i] = 20 + self:posFromValue(v)
+    end
+    self.snapStep = lerp(5 / self.sliderLen, 0, self.range)
+end
+
+function Soda.Slider:smallChange(tpos)
+    if tpos.x < self:left() + self.knob.x then
+        self.value = math.max(self.min, self.value - 1 )
+    else
+        self.value = math.min(self.max, self.value + 1)
+    end
+
+    self.knob.x = 20 + self:posFromValue()
+    self.valueLabel.title = tostring(self.value)
+    self:callback(self.value)
 end
 
 function Soda.Slider:posFromValue(val)
@@ -2882,10 +3636,7 @@ function Soda.Slider:valueFromPos(x)
    for _,v in ipairs(self.snapPoints) do
       if math.abs(self.value - v) < self.snapStep then
         self.value = v 
-    --[[
-    for i,v in ipairs(self.snapPos) do 
-        if math.abs(x - v) < 5 then 
-            self.value = self.snapPoints[i] ]]
+
             self.knob.x = 20 + self:posFromValue()
         end
     end
@@ -2900,6 +3651,7 @@ function Soda.Slider:drawContent()
     local x, y = self:posFromValue() + 20, 20
 --  Soda.setStyle(Soda.style.switch.shape)
     pushStyle()
+
     stroke(Soda.themes.default.blue)
     strokeWidth(2)
     line(20, y, x,y)
@@ -2909,217 +3661,66 @@ function Soda.Slider:drawContent()
         if v > x then 
             --Soda.setStyle(Soda.style.switch.shape) 
             fill(Soda.themes.default.grey)
+
         end
      --   line(v,y-10,v,y+10)
         ellipse(v,y,8)
     end
  --   Soda.setStyle(Soda.style.switch.shape)
+
     stroke(Soda.themes.default.grey)
+
     strokeWidth(2)
     line(x, y, self.w-20,y)
     popStyle()
 end
---[[
-function Soda.Slider:draw()
-    
-end
-
-function Soda.Slider:draw()
-    -- Codea does not automatically call this method
-end
-]]
-function Soda.Slider:touched(t, tpos)
-   if Soda.Frame.touched(self, t, tpos) then return true end
-  --  Soda.Frame.touched(self, t, tpos)
-    if t.state == ENDED and self:pointIn(tpos.x, tpos.y) then
-        if tpos.x < self:left() + self.knob.x then
-            self.value = math.max(self.min, self.value - 1 )
-        else
-            self.value = math.min(self.max, self.value + 1)
-        end
-        --  self.label.text = tostring(self.value)
-        self.knob.x = 20 + self:posFromValue()
-        self.valueLabel.title = tostring(self.value)
-        self:callback(self.value)
-    end
-    
-end
 
 Soda.SliderKnob = class(Soda.Frame)
 
+function Soda.SliderKnob:init(t)
+    Soda.Frame.init(self,t)
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self.sensor:onDrag(function(event) self:move(event.touch) end)
+end
+
+function Soda.SliderKnob:setPosition()
+    Soda.Frame.setPosition(self)
+    self.x = 20 + self.parent:posFromValue()
+end
+
 function Soda.SliderKnob:touched(t, tpos)
+    if self.sensor:touched(t, tpos) then return true end
+end
+function Soda.SliderKnob:move(t)
     if t.state == BEGAN then
-        if self:pointIn(tpos.x, tpos.y) then
-            self.touchId = t.id
-            self.highlighted = true
-            self:keyboardHideCheck()
-            return true
-        end
-    elseif self.touchId and self.touchId == t.id then
-        
-        self.x = clamp(self.x + t.deltaX * math.min(1, (t.deltaX * 0.5)^ 2),20,20 + self.parent.sliderLen)
-        self.parent:valueFromPos(self.x)
-        if t.state == ENDED then    
-            self.touchId = nil
-            self.highlighted = false   
-            self.parent:callback(self.parent.value)   
-        end
-        return true
+        self.touchId = t.id
+        self.highlighted = true
+        --self:keyboardHideCheck()
     end
-
-end
-
---# TextEntry
-Soda.TextEntry = class(Soda.Frame)
-
-function Soda.TextEntry:init(t)
-    t.shape = Soda.RoundedRectangle
-    t.label = {x=10, y=0.5} 
-    Soda.Frame.init(self, t)
-    table.insert(self.styleList, 2, self.style["button"])
-    self.offset = vec2(self.label.w + 15, (self.h-self.label.h)*0.5) --bottom corner of text-entry (because left-aligned text needs to be drawn in CORNER mode)
-    
-    self.characterW = self:getTextSize(self.style.textEntry, "a") --width of a character (nb fixed-width font only, because this massively simplifies creation of touchable text)
-    
-    self:inputString(t.default or "")
-end
-
-function Soda.TextEntry:inputString(txt)
-    self.input = {} --table containing each character
-    local capacity = (self.w - self.offset.x - 10)//self.characterW --how many characters can fit in the text box
-    self.start = math.max(1, txt:len() + 1 - capacity) --the start position of the displayed text, this increases if text width is greater than box width
-    for letter in txt:gmatch(".") do --populate input table with contents of txt
-        self.input[#self.input+1]=letter
+    self.x = clamp(self.x + t.deltaX * math.min(1, (t.deltaX * 0.5)^ 2),20,20 + self.parent.sliderLen)
+    self.parent:valueFromPos(self.x)
+    if t.state == ENDED then
+        self.highlighted = false
+        self.parent:callback(self.parent.value)
     end
-    self.cursor = #self.input+1 --cursor = insertion point for self.input
-    self.cursorPos = (self.cursor-self.start) * self.characterW --relative x coords of cursor 
-    self.text = table.concat(self.input, "", self.start)
-    self.textW = self:getTextSize(self.style.textEntry, self.text)
-end
-
-function Soda.TextEntry:draw(breakPoint)
-    Soda.Frame.draw(self, breakPoint)
-    local x = self:left() + self.offset.x
-    local y = self:bottom() + self.offset.y
-    pushStyle()
-
-    if Soda.keyboardEntity and Soda.keyboardEntity == self then
-        if not isKeyboardShowing() then --end of text entry
-            Soda.keyboardEntity = nil 
-            tween.delay(0.001, function() self:callback(self:output()) end ) --because callback is in draw loop, delay it until end of draw
-        end
-        local h = 0.3 --0.25
-        if CurrentOrientation == LANDSCAPE_LEFT or CurrentOrientation == LANDSCAPE_RIGHT then h = 0.4 end --0.35
-        local typewriter = math.max(0, (HEIGHT * h) - y)
-        Soda.UIoffset = Soda.UIoffset + (typewriter - Soda.UIoffset) * 0.1
-        if (ElapsedTime/0.25)%2<1.3 then
-            noStroke()
-            fill(0, 201, 255, 200)
-            rect(x+self.cursorPos+1,self.y,3,30)
-        end
-    end
-        
-   Soda.setStyle(self.style.textEntry)
---  Soda.setStyle(self.style.text)
-
-    textAlign(LEFT)
-    textMode(CORNER)
-    text(self.text, x, y)
-     popStyle()
-end
-
-function Soda.TextEntry:output()
-    return table.concat(self.input)
-end
-
-function Soda.TextEntry:touched(t, tpos)
-    if self:pointIn(tpos.x, tpos.y) then
-        if Soda.keyboardEntity and Soda.keyboardEntity == self then
-            --select text, move cursor
-            local tp = tpos.x - (self:left() + self.offset.x)
-            
-          --  if tp<=self.textW then
-              --  print("char", self.characterW)
-                self.cursor = math.tointeger(self.start + ((math.min(tp, self.textW) + self.characterW * 0.5)//self.characterW) )
-            --  print("tp",tp,"cursorPos",self.cursorPos, "cursor", self.cursor)
-             self:getCursorPos()
-           -- self.cursorPos = self.cursor * self.characterW
-          --  end
-        else
-            if not isKeyboardShowing() then showKeyboard() end
-            Soda.keyboardEntity = self
-            --[[
-            local off = (HEIGHT * 0.4 ) - self.label.y
-            if off> 0 then
-            tween(0.5, Soda, {UIoffset = off} )
-        end
-            ]]
-        end
-        return true
-
-    end
-end
-
-function Soda.TextEntry:getCursorPos() --this method works with non-fixed width too
-    local beforeCursor = table.concat(self.input, "", self.start, self.cursor-1)
-    self.cursorPos = self:getTextSize(self.style.textEntry, beforeCursor)
-end
-
-function Soda.TextEntry:keyboard(key)
-    if key == RETURN then
-      --  tween(0.5, Soda, {UIoffset = 0} )
-        hideKeyboard() --hide keyboard triggers end of text input event in TextEntry:draw()
-    elseif key == BACKSPACE then
-        if #self.input>0 and self.cursor>1 then
-            table.remove(self.input, self.cursor-1)
-            self.cursor = self.cursor - 1    
-            self.start = math.max(1, self.start - 1  )    
-        end
-    else
-        if key:len()==1 then
-            table.insert(self.input, self.cursor, key)
-            self.cursor = self.cursor + 1
-        else --user has pasted multiple letters
-            for letter in key:gmatch(".") do
-                table.insert(self.input, self.cursor, letter)
-                self.cursor = self.cursor + 1               
-            end
-        end
-    end
-   -- self.text = table.concat(self.input, "", self.start)
-    
-    if self.textW + self.characterW > self.w - self.offset.x - 10 then
-       self.start = self.start + 1 
-        
-    end
-    self.text = table.concat(self.input, "", self.start)
-    self.textW = self:getTextSize(self.style.textEntry, self.text)
-   -- self:getCursorPos()
-    self.cursorPos = ((self.cursor - self.start)) * self.characterW
-end
-
+end   
 
 --# Selector
 Soda.Selector = class(Soda.Button) --press deactivates its siblings
 
-function Soda.Selector:touched(t, tpos)
-    if t.state == BEGAN then
-        if self:pointIn(tpos.x, tpos.y) then
-            self.touchId = t.id
-            self:keyboardHideCheck()
-            return true
-        end
-    elseif self.touchId and self.touchId == t.id then
-        if t.state == ENDED and self:pointIn(tpos.x, tpos.y) then
-    
-            self:keyboardHideCheck()
-            self:callback()
-            self.touchId = nil
-            --  self.highlighted = true
-            self.parent:selectFromList(self)
-            return true
-        end
-    end
+function Soda.Selector:init(t)
+    t.shape = t.shape or Soda.RoundedRectangle
+    t.label = t.label or { x=0.5, y=0.5}
+    t.highlightable = true
+    t.subStyle = t.subStyle or {"button"}
+   Soda.Frame.init(self, t)
+
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self.sensor:onQuickTap(function(event) 
+        self:callback() 
+        self.parent:selectFromList(self) 
+    end)
+
 end
 
 --# Segment
@@ -3146,9 +3747,11 @@ function Soda.Segment:init(t)
             panel = t.panels[i]
             panel:hide() --hide the panel by default
         end
-        local this = Soda.Selector{parent = self, idNo = i, title = t.text[i], x = x, y = 0.5, w = w, h=t.h, shape = shape, shapeArgs={corners=corners}, panel = panel}  --self.h * 0.5, w+++0.002
-        
+
+        local this = Soda.Selector{parent = self, idNo = i, title = t.text[i], x = x, y = 0.5, w = w, h=t.h, shape = shape, shapeArgs={corners=corners}, panel = panel, subStyle = t.subStyle}  --self.h * 0.5, w+++0.002
+
         if not t.noSelectionPossible and i==default then 
+
             self:selectFromList(this)
             --[[
             this.highlighted = true
@@ -3161,6 +3764,10 @@ function Soda.Segment:init(t)
 end
 
 
+
+
+
+
 --# Scroll
 Soda.Scroll = class(Soda.Frame) --touch methods for scrolling classes, including distinguishing scroll gesture from touching a button within the scroll area, and elastic bounce back
 
@@ -3170,10 +3777,38 @@ function Soda.Scroll:init(t)
     self.scrollY = 0
     self.touchMove = 1
     Soda.Frame.init(self,t)
+ 
+    self.freeScroll = false
+    self.sensor:onDrag(function(event) self:verticalScroll(event.touch, event.tpos) end)
 end
 
-function Soda.Scroll:updateScroll()
+function Soda.Scroll:childrenTouched(t,tpos)
+    local off = tpos - vec2(self:left(), self:bottom() + self.scrollY)
+    for _, v in ipairs(self.child) do --children take priority over frame for touch
+       if v:touched(t, off) then return true end
+    end
+end
+
+function Soda.Scroll:verticalScroll(t,tpos)
+  --  if (t.state == BEGAN or t.state == MOVING) and self.sensor:inbox(tpos) then
+    if (t.state == BEGAN or t.state == MOVING) and self.sensor:inbox(tpos) then
+        self.scrollVel = t.deltaY
+        self.scrollY = self.scrollY + t.deltaY
+        self.freeScroll = false
+    else
+        self.freeScroll = true
+    end
+end
+
+function Soda.Scroll:touched(t, tpos)
+    if self.inactive then return end
+    if self.sensor:touched(t, tpos) then return true end
+    return self.alert
+end
     
+function Soda.Scroll:updateScroll()
+    if self.freeScroll == false then return end
+ 
     local scrollH = math.max(0, self.scrollHeight -self.h)
     if self.scrollY<0 then 
       --  self.scrollVel = self.scrollVel +   math.abs(self.scrollY) * 0.005
@@ -3186,38 +3821,6 @@ function Soda.Scroll:updateScroll()
         self.scrollVel = self.scrollVel * 0.94
     end
 end
-
-function Soda.Scroll:touched(t, tpos)
-    if self.inactive then return end
-    if self:pointIn(tpos.x, tpos.y) then
-        
-        if t.state == BEGAN then
-            self.scrollVel = t.deltaY
-            self.touchId = t.id
-            self.touchMove = 0
-            self:keyboardHideCheck()
-        elseif self.touchId and self.touchId == t.id then
-            self.touchMove = self.touchMove + math.abs(t.deltaY) --track ammount of vertical motion
-            if t.state == MOVING then
-                self.scrollVel = t.deltaY
-                self.scrollY = self.scrollY + t.deltaY
-                
-            else --ended
-                self.touchId = nil
-            end
-    
-        end
-        if self.touchMove<10 then --only test selectors if this touch was not a scroll gesture
-            local off = tpos - vec2(self:left(), self:bottom() + self.scrollY)
-            for _, v in ipairs(self.child) do --children take priority over frame for touch
-                if v:touched(t, off) then return true end
-            end
-        end
-        return true
-    end
-    return self.alert
-end
-
 
 --# ScrollShape
 Soda.ScrollShape = class(Soda.Scroll) --scrolling inside a shape, eg a rounded rectangle
@@ -3284,16 +3887,9 @@ function Soda.ScrollShape:drawImage()
     for _, v in ipairs(self.child) do
         v:draw()
     end
-    
-    --[[
-    if breakPoint then
-    -- setContext(breakPoint.mesh[1].image)
-    -- setContext(breakPoint.image)
-    breakPoint.image()
-else
-    ]]
 
 end
+
 
 
 
@@ -3306,10 +3902,12 @@ function Soda.TextScroll:init(t)
    -- t.shape = t.shape or Soda.rect
     
     Soda.Scroll.init(self, t)
+
     self.content = ""
     self.characterW, self.characterH = self:getTextSize(self.style.textBox, "a") --Soda.style.textBox
     self:clearString()
     self:inputString(t.textBody or "")
+
 end
 
 function Soda.TextScroll:clearString()
@@ -3338,7 +3936,9 @@ function Soda.TextScroll:inputString(txt, bottom)
     self.scrollHeight = #self.lines * self.characterH
     if bottom then 
         --self.scrollY = self.scrollHeight -self.h 
+
         self.scrollVel = ((self.scrollHeight -self.h) - self.scrollY ) * 0.07
+
     end
     --put lines back into chunks of text, 10 lines high each
     local n = #self.lines//10
@@ -3364,11 +3964,11 @@ function Soda.TextScroll:drawContent()
     translate(self:left(),self:bottom())--+self.scrollY
     self:drawShape(Soda.style.default)
       ]]
-        pushMatrix()
-        local mm = modelMatrix()
+    pushMatrix()
+    local mm = modelMatrix()
     translate(10, self.scrollY)
 
-    clip(mm[13]+2, mm[14]+2, self.w-4, self.h-4) --nb translate doesnt apply to clip. (idea: grab transformation from current model matrix?) --self.parent:left()+self:left(),self.parent:bottom()+self:bottom()
+    clip(mm[13]+2, mm[14]+2, self.w-4, self.h-4) --nb translate doesnt apply to clip. 
     
     --calculate which chunks to draw
     local lineStart = math.max(1, math.ceil(self.scrollY/self.characterH))
@@ -3383,7 +3983,6 @@ function Soda.TextScroll:drawContent()
   popMatrix()
     
 end
-
 
 --# List
 Soda.List = class(Soda.ScrollShape)
@@ -3407,13 +4006,17 @@ function Soda.List:init(t)
             panel = t.panels[i]
             panel:hide() --hide the panel by default
         end
-        
+
         local item = Soda.Selector{parent = self, idNo = i, title = number..v, label = {x = 10, y = 0.5}, subStyle = {"listItem"}, shape = Soda.rect, highlightable = true, x = 0, y = -0.001 - (i-1)*40, w = 1, h = 42, panel = panel} --label = { text = v, x = 0, y = 0.5}, title = v,Soda.rect
+
+        item.sensor.doNotInterceptTouches = true
+ 
         if t.default and i==t.default then
           --  item.highlighted = true
             self:selectFromList(item)
         end
     end
+    self.sensor:onDrag(function(event) self:verticalScroll(event.touch, event.tpos) end)
 end
 
 function Soda.List:clearSelection()
@@ -3458,7 +4061,6 @@ function Soda.DropdownList:init(t)
         end
     } 
 
-    --add clear list method (...perhaps this should be a class, not a wrapper?)
     
     self.button.callback = function() self.list:toggle() end --callback has to be outside of constructor only when two elements' callbacks both refer to each-other.
 
@@ -3477,46 +4079,6 @@ end
 function Soda.DropdownList:activate()
     self.button:activate()
 end
-
---[[
-function Soda.DropdownList(t)
-    local this = Soda.Button{
-        parent = t.parent, x = t.x, y = t.y, w = t.w, h = t.h,
-        title = "\u{25bc} "..t.title..": Select from list",
-        label = {x = 10, y = 0.5}
-    }
-
-    local callback = t.callback or null
-
-    this.list = Soda.List{
-        parent = t.parent,
-        hidden = true,
-        x = t.x, y = this:bottom() - t.parent.h, w = t.w, h = this:bottom(),
-        text = t.text,   
-        panels = t.panels, 
-        default = t.default,  
-        enumerate = t.enumerate,
-        callback = function(self, selected, txt) 
-            this.title = "\u{25bc} "..t.title..": "..txt
-            this:setPosition() --to recalculate left-justified label
-            self:hide() 
-            callback(self, selected, txt)
-        end
-    } 
-    
-    this.clearSelection = function() 
-        this.list:clearSelection() 
-        this.title = "\u{25bc} "..t.title..": Select from list"
-        this:setPosition() --to recalculate left-justified label
-    end
-    --add clear list method (...perhaps this should be a class, not a wrapper?)
-    
-    this.callback = function() this.list:toggle() end --callback has to be outside of constructor only when two elements' callbacks both refer to each-other.
-    
-    return this
-end
-  ]]
-
 
 --# Windows
 --factories for various window types
@@ -3561,7 +4123,13 @@ function Soda.Window:init(t)
         }
     end
    -- t.shadow = true
-
+    if t.draggable then
+        self.sensor:onDrag(function(event) 
+            if isKeyboardShowing() then return end -- no winsow drag when keyboard is showing
+            self.x = self.x + event.touch.deltaX 
+            self.y = self.y + event.touch.deltaY
+        end)
+    end
 end
 
 function Soda.Window:closeAction()     --do we want to hide this Window or kill it?
@@ -3571,44 +4139,6 @@ function Soda.Window:closeAction()     --do we want to hide this Window or kill 
         self.kill = true 
     end
 end
-
---[[
-function Soda.Window(t)
-    t.shape = t.shape or Soda.RoundedRectangle
-    t.shapeArgs = t.shapeArgs or {}
-    t.shapeArgs.radius = 25
-    t.label = t.label or {x=0.5, y=-15}
-    
-    local callback = t.callback or null
-    local this = Soda.Frame(t)
-    
-    --do we want to hide this Window or kill it?
-    local closeAction 
-    if t.doNotKill then
-        closeAction = function() this:hide() end
-    else
-        closeAction = function() this.kill = true end
-    end
-    
-    if t.ok then
-        local title = "OK"
-        if type(t.ok)=="string" then title = t.ok end
-        Soda.Button{parent = this, title = title, x = -10, y = 10, w = 0.3, h = 40, callback = function() closeAction() callback() end} --style = Soda.style.transparent,blurred = t.blurred,
-    end
-    
-    if t.cancel then
-        local title = "Cancel"
-        if type(t.cancel)=="string" then title = t.cancel end
-        Soda.Button{parent = this, title = title, x = 10, y = 10, w = 0.3, h = 40, callback = closeAction,  subStyle = {"warning"}, --style = Soda.style.warning} 
-    end
-    
-    if t.close then
-        Soda.CloseButton{parent = this, x = 5, y = -5, callback = closeAction, style = Soda.style.icon}
-    end
-   -- t.shadow = true
-    return this
-end
-  ]]
 
 function Soda.Window2(t)
     t.shape = t.shape or Soda.RoundedRectangle
@@ -3631,31 +4161,13 @@ function Soda.TextWindow:init(t)
     Soda.Window.init(self, t)
     
     self.scroll = Soda.TextScroll{
-       -- parent = t.parent,
-       -- label = {x=0.5, y=-10, text = t.title},
-      --    shape = t.shape or Soda.RoundedRectangle,
-     --   shapeArgs = t.shapeArgs,
-     --   shadow = t.shadow,
-     --   style = t.style,
+
      parent = self,
       x = 10, y = 1, w = -20, h = -2,
      --   x = t.x or 0.5, y = t.y or 20, w = t.w or 700, h = t.h or -20,
         textBody = t.textBody,
         priority = 1
     }  
-
-    
-    --[[
-    if t.closeButton then
-        Soda.CloseButton{
-            parent = this,
-            x = -5, y = -5,
-            style = Soda.style.icon,
-            shape = Soda.ellipse,
-            callback = function() this.kill = true end  
-        }
-        end
-      ]]
 
 end
 
@@ -3666,70 +4178,6 @@ end
 function Soda.TextWindow:clearString()
     self.scroll:clearString()
 end
-
---[[
-function Soda.TextWindow(t)
-    t.x = t.x or 0.5 
-    t.y = t.y or 20
-    t.w = t.w or 700
-    t.h = t.h or -20
-    t.style = t.style or Soda.style.thickStroke
-    local this = Soda.Window(t)
-    
-    local scroll = Soda.TextScroll{
-       -- parent = t.parent,
-       -- label = {x=0.5, y=-10, text = t.title},
-      --    shape = t.shape or Soda.RoundedRectangle,
-     --   shapeArgs = t.shapeArgs,
-     --   shadow = t.shadow,
-     --   style = t.style,
-     parent = this,
-      x = 10, y = 1, w = -20, h = -2,
-     --   x = t.x or 0.5, y = t.y or 20, w = t.w or 700, h = t.h or -20,
-        textBody = t.textBody,
-    }  
-    
-    this.inputString = function(_, ...) scroll:inputString(...) end
-    this.clearString = function() scroll:clearString() end
-    --pass the textscroll's method to the enclosing wrapper (make this a subclass, not a wrapper)
-    
-    --[==[
-    if t.closeButton then
-        Soda.CloseButton{
-            parent = this,
-            x = -5, y = -5,
-            style = Soda.style.icon,
-            shape = Soda.ellipse,
-            callback = function() this.kill = true end  
-        }
-        end
-      ]==]
-    return this
-end
-  ]]
---[[
-function Soda.Alert2Dark(t)
-    local this = Soda.Window{title = t.title, h = 0.2, blurred = true}
-    
-    local ok = Soda.Button{parent = this, title = t.ok or "OK", x = 0, y = 0, w = 0.5, h = 50, style = Soda.style.dark, shape = Soda.outline, shapeArgs = {edge = TOPEDGE | RIGHTEDGE}} --style = Soda.style.transparent,blurred = true --{edgeX = LEFT, edgeY = 1, r = 25}
-    
-    local cancel = Soda.Button{parent = this, title = t.cancel or "Cancel", x = 0.75, y = 0, w = 0.5, h = 50, style = Soda.style.dark, shape = Soda.outline, shapeArgs = {edge = TOPEDGE}, callback = function() this.kill = true end} --style = Soda.style.transparent,{edgeX = RIGHT, edgeY = 1, r = 25}
-    return this
-end
-
-function Soda.Alert2(t)
-    local this = Soda.Frame{h = 0.25} --, edge = ~BOTTOMEDGE
-     
-    this.mesh = {
-        Soda.Mesh{parent = this, shape = Soda.roundedRect, style = Soda.style.default, shapeArgs = {r = 25}, label = {x=0.5, y=0.6, text = t.title}}}
-    
-    this.mesh[2] = Soda.Shadow{parent = this}
-    
-    local ok = Soda.Button{parent = this, title = t.ok or "OK", x = 0.251, y = 0, w = 0.5, h = 50, shapeArgs = {r = 25, edge = LEFTEDGE | BOTTOMEDGE}} --style = Soda.style.transparent,blurred = true --{edgeX = LEFT, edgeY = 1, r = 25}
-    local cancel = Soda.Button{parent = this, title = t.cancel or "Cancel", x = 0.748, y = 0, w = 0.5, h = 50, shapeArgs = {r = 25, edge = RIGHTEDGE | BOTTOMEDGE}, callback = function() this.kill = true end} --style = Soda.style.transparent,{edgeX = RIGHT, edgeY = 1, r = 25}
-    return this
-end
-  ]]
 
 function Soda.Alert2(t)
         t.shape = t.shape or Soda.RoundedRectangle
@@ -3790,4 +4238,3 @@ function Soda.Alert(t)
     } --style = Soda.style.transparent,blurred = t.blurred,
     return this
 end
-

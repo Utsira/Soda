@@ -7,12 +7,13 @@ function calculator.init()
         blurred = true,
         shadow = true,
         hidden = true,
-        doNotKill = true
+        doNotKill = true,
+        draggable = true
       --  style = {shape = {fill = color(255), stroke = color(50, 128)}, text = {fontSize = 1.25, fill = color(255), font = "HelveticaNeue-Light" }}-- Soda.style.darkBlurred
     }
     local s = 70
     local result = true
-    
+
     local display = Soda.Frame{
         parent = calculator.window,
         x = 0, y = -50, w = 1, h = 120,
@@ -68,7 +69,6 @@ function calculator.init()
     local buttonStyle3 = {shape = {fill = color(255), stroke = color(128)}, text = {fontSize = 1.25, 
     fill = color(0, 49, 255, 255), font = "HelveticaNeue-Light"}}
 
-    
     Soda.Button{
         parent = calculator.window,
         w = s*2, h = s,
@@ -202,7 +202,7 @@ function demo1()
         shadow = true,
         shapeArgs = { corners = 1 | 2} --only round left-hand corners
     }
-    
+
     --A menu button to show & hide the main panel
     
     local menu = Soda.MenuToggle{x = -20, y = -20, subStyle = {"darkIcon"}, --a button to activate the above panel
@@ -409,4 +409,8 @@ function demo2()
     
     local inkey = Soda.TextEntry{parent = box, title = "Nick-name:", x=20, y=80, w=0.7, h=40} 
 end
+
+
+
+
 

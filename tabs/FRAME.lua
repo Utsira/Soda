@@ -44,8 +44,29 @@ function Soda.Frame:init(t)
         self.mesh[#self.mesh+1] = Soda.Shadow{parent = self}
     end
     
-    self.inactive = self.inactive or self.hidden  --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation
-   -- if self.inactive then self:deactivate() end
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self:setInactive(self.inactive or self.hidden)
+    --elements that are defined as hidden (invisible) are also inactive (untouchable) at initialisation    
+
+end
+
+function Soda.Frame:setInactive(b)
+    self.inactive = b
+    self.sensor.enabled = not self.inactive
+end
+
+function Soda.Frame:childrenTouched(t,tpos)
+    local off = tpos - vec2(self:left(), self:bottom())
+    for i = #self.child, 1, -1 do --children take priority over frame for touch
+        local v = self.child[i]
+        if v:touched(t, off) then return true end
+    end
+end
+
+function Soda.Frame:touched(t, tpos)
+    if self.inactive then return end
+    if self.sensor:touched(t, tpos) then return true end
+    return self.alert
 end
 
 function Soda.Frame:storeParameters(t)
@@ -101,8 +122,10 @@ end
 
 function Soda.Frame:getTextSize(sty, tex)
     pushStyle()
+
    -- Soda.setStyle(Soda.style.default.text)
     Soda.setStyle(sty or self.style.text) --sty or 
+
     local w,h = textSize(tex or self.title)
     popStyle()
     return w,h
@@ -110,7 +133,9 @@ end
 
 function Soda.Frame:show(direction)
     self.hidden = false --so that we can see animation
-    self.inactive=false
+
+    self:setInactive(false)
+
     if direction then --animation
         self:setPosition()
         local targetX = self.x
@@ -119,11 +144,7 @@ function Soda.Frame:show(direction)
         elseif direction==RIGHT then
             self.x = WIDTH + self.w * 0.5
         end
-        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut) --, function() self.inactive=false enduser cannot touch buttons until animation completes
-    --[[
-    else --no animation
-        self.inactive = false
-          ]]
+        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut) 
     end
     if self.shapeArgs and self.shapeArgs.tex then self.shapeArgs.resetTex = self.shapeArgs.tex end --force roundedrect to switch texture (because two rects of same dimensions are cached as one mesh)
 end
@@ -137,10 +158,10 @@ function Soda.Frame:hide(direction)
         elseif direction==RIGHT then
             targetX = WIDTH + self.w * 0.5
         end
-        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut, function() self.hidden = true self.inactive=true  end) --user cannot touch buttons until animation completes
+        tween(0.4, self, {x=targetX}, tween.easing.cubicInOut, function() self.hidden = true self:setInactive(true)  end) --user cannot touch buttons until animation completes
     else
         self.hidden = true
-        self.inactive = true
+        self:setInactive(true)
     end
 end
 
@@ -151,21 +172,11 @@ function Soda.Frame:toggle(direction)
 end
 
 function Soda.Frame:activate()
-    self.inactive = false
-    --[[
-    for i,v in ipairs(self.child) do
-        v:activate()
-    end
-      ]]
+        self:setInactive(false)
 end
 
 function Soda.Frame:deactivate()
-    self.inactive = true
-    --[[
-    for i,v in ipairs(self.child) do
-        v:deactivate()
-    end
-      ]]
+        self:setInactive(true)
 end
 
 function Soda.Frame:draw(breakPoint)
@@ -195,7 +206,6 @@ function Soda.Frame:draw(breakPoint)
     if self.shape then
         self:drawShape(sty)
     end
-    
         popStyle()
     pushStyle()
     self:setStyle(sty, "body", "text")
@@ -222,10 +232,7 @@ function Soda.Frame:draw(breakPoint)
     popStyle()
     
     for i, v in ipairs(self.child) do --nb children are drawn with parent's transformation
-        --[[
-        local ok, err = xpcall(function()  v:draw(breakPoint) end, function(trace) return debug.traceback(trace) end)
-        if not ok then print(v.title, err) end
-        ]]
+
         if v.kill then
             table.remove(self.child, i)
         else
@@ -233,18 +240,14 @@ function Soda.Frame:draw(breakPoint)
         end
     end
     popMatrix()
-  --  popStyle()
+
 end
 
 function Soda.Frame:drawContent() end --overridden by subclasses
 
 function Soda.Frame:drawShape(sty)
-  --  pushStyle()
-  --  Soda.setStyle(sty.shape) --(Soda.style.default.shape)
- --   Soda.setStyle(sty.shape)
     self:setStyle(sty, "shape")
     self.shape(self.shapeArgs)
-   -- popStyle()
 end
 
 function Soda.Frame:bottom()
@@ -263,27 +266,6 @@ function Soda.Frame:right()
     return self.x + self.w * 0.5
 end
 
-function Soda.Frame:keyboardHideCheck() --put this in touch began branches of end nodes (buttons, switches, things unlikely to have children)
-    if Soda.keyboardEntity and Soda.keyboardEntity~=self then
-        hideKeyboard()
-        Soda.keyboardEntity = nil
-    end
-end
-
-function Soda.Frame:touched(t, tpos)
-    if self.inactive then return end
-    local trans = tpos - vec2(self:left(), self:bottom()) --translate the touch position
-    for i = #self.child, 1, -1 do --children take priority over frame for touch
-        local v = self.child[i]
-        if not v.inactive then
-            if v:touched(t, trans) then
-            return true end
-        end
-    end
-  --  if self.alert then return true end --or self:pointIn(tpos.x, tpos.y) 
-    return self.alert
-end
-
 function Soda.Frame:selectFromList(child) --method used by parents of selectors. 
     if child==self.selected then --pressed the one already selected
         if self.noSelectionPossible then
@@ -294,11 +276,7 @@ function Soda.Frame:selectFromList(child) --method used by parents of selectors.
         if self.selected then 
 
             self.selected.highlighted = false 
-            --[[
-            for i,v in ipairs(self.child) do
-                if v~=child then v.highlighted = false end
-            end
-              ]]
+
             if self.selected.panel then self.selected.panel:hide() end
         end
         self.selected = child
@@ -323,4 +301,8 @@ function Soda.Frame:orientationChanged()
         v:orientationChanged()
     end
 end
+
+
+
+
 

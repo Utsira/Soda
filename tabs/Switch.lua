@@ -20,6 +20,11 @@ function Soda.Switch:init(t)
     self.knob = Soda.Knob{parent = self, x = 0, y = 0.5, w=38, h=38, shape = Soda.ellipse, shadow = true}
     
     self:toggleSettings(t)
+    
+    self.knob.sensor.doNotInterceptTouches = true
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self.sensor:onTap(function(event) self:toggleMe() end)
+
 end
 
 function Soda.Switch:switchOn()
@@ -66,3 +71,4 @@ function Soda.Knob:unHighlight()
     self.tween2 = tween.sequence(t1, t2)
 
 end
+

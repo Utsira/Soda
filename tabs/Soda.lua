@@ -1,22 +1,18 @@
 Soda = {}
 Soda.version = "0.6"
 SodaIsInstalled = true
+Soda.items = {} --holds all top-level ui elements (i.e. anything without a parent)
+
 function Soda.setup()
-    --  parameter.watch("#Soda.items")
-    parameter.watch("Soda.UIoffset")
     Soda.Assets()
     Soda.baseFontSize = 20
     Soda.theme = Soda.themes.default
     textAlign(CENTER)
     rectMode(CENTER)
-
 end
 
 function Soda.Assets()
-    Soda.items = {} --holds all top-level ui elements (i.e. anything without a parent)
-    
     Soda.darken.assets() --used to darken underlying interface elements when alert flag is set.
-    
     Soda.UIoffset = 0 --used to scroll up screen when keyboard appears
 end
 
@@ -39,7 +35,9 @@ end
 function Soda.camera()
     if not isKeyboardShowing() then
         Soda.UIoffset = Soda.UIoffset * 0.9
-
+    elseif not Soda.focus.usesKeyboard then --check whether a keyboard-using element has lost focus
+        --so that touching another element will end textentry
+        hideKeyboard()
     end
     translate(0, Soda.UIoffset)
 end

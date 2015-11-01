@@ -63,6 +63,20 @@ Forum Discussion: http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerfu
 
 ## Version Notes
 
+###  v0.7
+
+* Big changes underneath the hood: all touch logic is now handled by Jmv38's *Sensor* engine (renamed Gesture in Soda), making for a more modular architecture that will be easier to maintain and expand in future.
+
+* Jmv38 has rewritten the text entry boxes. Now features fully selectable text with draggable selection start and end points, the ability to scroll the text by dragging and holding the cursor to either end of the entry box, and a pop-up menu for cut, copy, paste, and 5-level undo.
+
+* Windows can now be draggable: add `draggable = true` to the window's constructor to add this. The window can be moved by dragging any part of the window that does not contain interface elements. See the calculator demo for an example of this.
+
+* Various minor fixes for iOS 9 and Codea 2.3.2 affecting sliders, orientationChanged, and forcing the plain, non-emoji form of various symbols to display.
+
+![Selectable text](https://puffinturtle.files.wordpress.com/2015/11/image.png)
+
+![Calculator in a draggable window](https://puffinturtle.files.wordpress.com/2015/11/image.jpeg)
+
 ### v0.6
 
 * SubStyles: A new, more powerful way of handling styles. Uses the same palette as iOS9.
@@ -278,13 +292,14 @@ Attributes:
 
 #### `Soda.TextEntry`
 
-A text entry field with a touchable cursor, and scrolling if the input is too long for the field. Additional attributes:
+A text entry field with a draggable cursor, fully selectable text (double tap a word to select it), draggable selection start and end points, a pop-up menu with cut, copy, paste, and 5-level undo, and the ability to scroll the text by dragging and holding the cursor at either end of the selection box. Additional attributes:
 
   + `default` - string. Default text that can be overwritten by the user.
 
   Additional method:
 
   + `:inputString(string)` - in case you need to populate the field with a string
+  + `:output()` - returns the current contents of the box
 
 #### `Soda.TextScroll`, `Soda.TextWindow`
 
@@ -393,13 +408,13 @@ Not all parameters are currently supported by all Soda UI elements.
 
 + Interface designer
 
-+ Improvements to TextEntry:
++ ~~ADDED v0.7Improvements to TextEntry:~~
 
-  + Be able to select a word with a double-tap, or the entire field with a triple-tap.
+  + ~~Be able to select a word with a double-tap.~~
 
-  + Be able to scroll the field leftwards by moving the cursor (currently you can only scroll leftward by deleting)
+  + ~~Be able to scroll the field leftwards by moving the cursor (currently you can only scroll leftward by deleting)~~
 
-+ ~~DONE. Add a factory for easier creation of the drop-down list seen in the demo~~
++ ~~ADDED. Add a factory for easier creation of the drop-down list seen in the demo~~
 
 + Add a rect shape that supports textures and aliased strokes, so that you can have rectangular blurred panels that match the same stroke as the rounded rectangles
 
@@ -409,7 +424,7 @@ Not all parameters are currently supported by all Soda UI elements.
 
 + Add optional filters (eg Codea syntax highlighting, markdown parsing) to TextWindows
 
-+ ~~Make gesture recognition (refusal of swipe-to-scroll gestures) universal across Soda (currently just applies to List classes)~~
++ ~~v0.7 Make gesture recognition (refusal of swipe-to-scroll gestures) universal across Soda (currently just applies to List classes)~~
 
 + ~~Make styles list cascading~~
 

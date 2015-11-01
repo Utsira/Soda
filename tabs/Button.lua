@@ -7,8 +7,15 @@ function Soda.Button:init(t)
     t.subStyle = t.subStyle or {"button"}
     Soda.Frame.init(self, t)
     --table.insert(self.styleList, 2, self.style["button"])
+--
+    -- #################################### <JMV38 changes>
+    self.sensor = Soda.Gesture{parent=self, xywhMode = CENTER}
+    self.sensor:onTap(function(event) self:callback() end)
 end
-
+function Soda.Button:touched(t, tpos)
+    if self.sensor:touched(t, tpos) then return true end
+end
+--[[
 function Soda.Button:touched(t, tpos)
     if t.state == BEGAN then
         if self:pointIn(tpos.x, tpos.y) then
@@ -33,6 +40,8 @@ function Soda.Button:touched(t, tpos)
     end
    -- return Soda.Frame.touched(self, t, tpos) --a button shouldn't have children
 end
+--]]
+    -- #################################### </JMV38 changes>
 
 ----- Some button factories:
 
@@ -119,3 +128,8 @@ function Soda.QueryButton(t)
     t.shape = t.shape or Soda.ellipse
     return Soda.Button(t)
 end
+
+
+
+
+
