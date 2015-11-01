@@ -71,6 +71,8 @@ Forum Discussion: http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerfu
 
 * Windows can now be draggable: add `draggable = true` to the window's constructor to add this. The window can be moved by dragging any part of the window that does not contain interface elements. See the calculator demo for an example of this.
 
+* Various minor fixes for iOS 9 and Codea 2.3.2 affecting sliders, orientationChanged, and forcing the plain, non-emoji form of various symbols to display.
+
 ![Selectable text](https://puffinturtle.files.wordpress.com/2015/11/image.png)
 
 ![Calculator in a draggable window](https://puffinturtle.files.wordpress.com/2015/11/image.jpeg)
@@ -406,13 +408,13 @@ Not all parameters are currently supported by all Soda UI elements.
 
 + Interface designer
 
-+ Improvements to TextEntry:
++ ~~ADDED v0.7Improvements to TextEntry:~~
 
-  + Be able to select a word with a double-tap, or the entire field with a triple-tap.
+  + ~~Be able to select a word with a double-tap.~~
 
-  + Be able to scroll the field leftwards by moving the cursor (currently you can only scroll leftward by deleting)
+  + ~~Be able to scroll the field leftwards by moving the cursor (currently you can only scroll leftward by deleting)~~
 
-+ ~~DONE. Add a factory for easier creation of the drop-down list seen in the demo~~
++ ~~ADDED. Add a factory for easier creation of the drop-down list seen in the demo~~
 
 + Add a rect shape that supports textures and aliased strokes, so that you can have rectangular blurred panels that match the same stroke as the rounded rectangles
 
@@ -422,7 +424,7 @@ Not all parameters are currently supported by all Soda UI elements.
 
 + Add optional filters (eg Codea syntax highlighting, markdown parsing) to TextWindows
 
-+ ~~Make gesture recognition (refusal of swipe-to-scroll gestures) universal across Soda (currently just applies to List classes)~~
++ ~~v0.7 Make gesture recognition (refusal of swipe-to-scroll gestures) universal across Soda (currently just applies to List classes)~~
 
 + ~~Make styles list cascading~~
 
