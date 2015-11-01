@@ -1811,7 +1811,7 @@ Soda.style.default = {
     textBox = {font = "Inconsolata", fill = "black", fontSize = 1},
 }
 
-Soda.symbol = {menu = "\u{2630}", back = "\u{ff1c}", forward = "\u{ff1e}", close = "\u{2715}", down = "\u{25bc}", gear = "\u{2699}", add = "\u{FF0B}", delete = "\u{232B}", widen = "\u{2194}"} 
+Soda.symbol = {menu = "\u{2630}", back = "\u{ff1c}", forward = "\u{ff1e}", close = "\u{2715}", down = "\u{25bc}", gear = "\u{2699}", add = "\u{FF0B}", delete = "\u{232B}", widen = "\u{2194}", undo = "\u{21ba}"} 
 
 for k,v in pairs(Soda.symbol) do
     Soda.symbol[k] = v.."\u{fe0e}" --an escape code which forces preceding character to display as a symbol, not an emoji
@@ -3312,7 +3312,7 @@ function TextEditor:selectionMenuInit()
         parent = self.parent, 
         x = 0.5, y = 50, w = 0.5, h = 40,
         subStyle = {"popUp"},
-        text = {"undo","del","cut", "copy", "paste", Soda.symbol.widen, "close"},
+        text = {Soda.symbol.delete,"undo","cut", "copy", "paste", Soda.symbol.widen},
         default = 0, 
     }
     for i, child in ipairs(self.selectionMenu.child) do
@@ -3331,10 +3331,13 @@ end
 function TextEditor:selectionAction(action)
     local start = self.selector.infCursor.index
     local stop = self.selector.supCursor.index
-    if action=="close" then 
-        self:enterInputMode()
-    elseif action=="del" then 
+
+    if action==Soda.symbol.delete then 
         self:delete(start,stop)
+    --[[
+    elseif action==Soda.symbol.close then 
+        self:enterInputMode()
+          ]]
     elseif action=="undo" then 
         self:undo()
     elseif action=="cut" then 
@@ -3980,11 +3983,6 @@ function Soda.TextScroll:drawContent()
   popMatrix()
     
 end
-
-
-
-
-
 
 --# List
 Soda.List = class(Soda.ScrollShape)

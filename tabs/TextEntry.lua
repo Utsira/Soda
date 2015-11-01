@@ -417,7 +417,7 @@ function TextEditor:selectionMenuInit()
         parent = self.parent, 
         x = 0.5, y = 50, w = 0.5, h = 40,
         subStyle = {"popUp"},
-        text = {"undo","del","cut", "copy", "paste", Soda.symbol.widen, "close"},
+        text = {Soda.symbol.delete,"undo","cut", "copy", "paste", Soda.symbol.widen},
         default = 0, 
     }
     for i, child in ipairs(self.selectionMenu.child) do
@@ -436,10 +436,13 @@ end
 function TextEditor:selectionAction(action)
     local start = self.selector.infCursor.index
     local stop = self.selector.supCursor.index
-    if action=="close" then 
-        self:enterInputMode()
-    elseif action=="del" then 
+
+    if action==Soda.symbol.delete then 
         self:delete(start,stop)
+    --[[
+    elseif action==Soda.symbol.close then 
+        self:enterInputMode()
+          ]]
     elseif action=="undo" then 
         self:undo()
     elseif action=="cut" then 

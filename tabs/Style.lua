@@ -120,7 +120,7 @@ Soda.style.default = {
     textBox = {font = "Inconsolata", fill = "black", fontSize = 1},
 }
 
-Soda.symbol = {menu = "\u{2630}", back = "\u{ff1c}", forward = "\u{ff1e}", close = "\u{2715}", down = "\u{25bc}", gear = "\u{2699}", add = "\u{FF0B}", delete = "\u{232B}", widen = "\u{2194}"} 
+Soda.symbol = {menu = "\u{2630}", back = "\u{ff1c}", forward = "\u{ff1e}", close = "\u{2715}", down = "\u{25bc}", gear = "\u{2699}", add = "\u{FF0B}", delete = "\u{232B}", widen = "\u{2194}", undo = "\u{21ba}"} 
 
 for k,v in pairs(Soda.symbol) do
     Soda.symbol[k] = v.."\u{fe0e}" --an escape code which forces preceding character to display as a symbol, not an emoji

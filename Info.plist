@@ -32,5 +32,7 @@
 	<string>2015-10-28 08:31:01 +0000</string>
 	<key>Description</key>
 	<string>Soda v0.6</string>
+	<key>Icon</key>
+	<string>Icon.png</string>
 </dict>
 </plist>
