@@ -8,7 +8,7 @@ Soda.Window = class(Soda.Frame)
 function Soda.Window:init(t)
     t.shape = t.shape or Soda.RoundedRectangle
     t.shapeArgs = t.shapeArgs or {}
-    t.shapeArgs.radius = 25
+    t.shapeArgs.radius = t.shapeArgs.radius or 25
     t.label = t.label or {x=0.5, y=-15}
     t.content = t.content or ""
     local callback = t.callback or null
@@ -17,7 +17,10 @@ function Soda.Window:init(t)
     if t.ok then
         local title = "OK"
         if type(t.ok)=="string" then title = t.ok end
-        Soda.Button{parent = self, title = title, x = -10, y = 10, w = 0.3, h = 40, callback = function() self:closeAction() callback() end} --style = Soda.style.transparent,blurred = t.blurred,
+        Soda.Button{parent = self, title = title, x = -10, y = 10, w = 0.3, h = 40, 
+        callback = function() 
+           if callback() then self:closeAction() end
+        end} --style = Soda.style.transparent,blurred = t.blurred,
     end
     
     if t.cancel then
@@ -130,6 +133,8 @@ function Soda.Alert2(t)
     
     return this
 end
+
+Soda.Confirm = Soda.Alert2
 
 function Soda.Alert(t)
     t.shape = t.shape or Soda.RoundedRectangle

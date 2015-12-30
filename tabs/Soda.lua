@@ -68,10 +68,13 @@ function Soda.keyboard(key)
 end
 
 function Soda.orientationChanged()
-    for i,v in ipairs(Soda.items) do
-        v:orientationChanged()
+    if WIDTH ~= Soda.previousWIDTH then
+        for i,v in ipairs(Soda.items) do
+            v:orientationChanged()
+        end
+        collectgarbage()
     end
-    collectgarbage()
+    Soda.previousWIDTH = WIDTH
 end
 
 --assume everything is rectMode centre (cos of mesh rect)

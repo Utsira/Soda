@@ -47,9 +47,16 @@ Soda.DropdownList = class()
 function Soda.DropdownList:init(t)
     local parent = t.parent or nil
     self.default = t.default or ""
+    local title 
+    if t.noSymbols then
+        title = t.title.." "
+    else
+        title = "\u{25bc} "..t.title..": "
+    end
+    
     self.button = Soda.Button{
         parent = parent, x = t.x, y = t.y, w = t.w, h = t.h,
-        title = "\u{25bc} "..t.title..": "..self.default,
+        title = title..self.default,
         subStyle = {"listItem"},
         label = {x = 10, y = 0.5}
     }
@@ -67,7 +74,7 @@ function Soda.DropdownList:init(t)
         default = t.default,  
         enumerate = t.enumerate,
         callback = function(this, selected, txt) 
-            self.button.title = "\u{25bc} "..t.title..": "..txt
+            self.button.title = title..txt
             self.button:setPosition() --to recalculate left-justified label
             this:hide() 
             callback(this, selected, txt)

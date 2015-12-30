@@ -300,7 +300,7 @@ function TextEditor:closeEdition()
     if self.inputMode then self:leaveInputMode() end
     if self.selectionMode then self:leaveSelectionMode() end
     -- fire a callback when edition finished, with a delay in case the order comes from draw
-    tween.delay(0.001, function() self.parent.callback(self.parent.text) end ) 
+    tween.delay(0.001, function() self.parent:callback(self.parent.text) end ) 
     self:endTextInput()
 end
 -- a stack of undo's

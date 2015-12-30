@@ -5,7 +5,6 @@ function Soda.ScrollShape:init(t)
     t.shape = Soda.RoundedRectangle 
   --  self:storeParameters(t)
   --  self:setPosition()
-
     Soda.Scroll.init(self, t)
     
     self.image = image(self.w, self.h)
