@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Author</key>
+	<string>Unknown</string>
+	<key>Buffer Order</key>
+	<array>
+		<string>Demo</string>
+		<string>Overview</string>
+		<string>Soda</string>
+		<string>Main</string>
+		<string>Gesture</string>
+		<string>Style</string>
+		<string>RoundRect</string>
+		<string>Blur</string>
+		<string>FRAME</string>
+		<string>Button</string>
+		<string>Toggle</string>
+		<string>Switch</string>
+		<string>TextEntry</string>
+		<string>Slider</string>
+		<string>Selector</string>
+		<string>Segment</string>
+		<string>Scroll</string>
+		<string>ScrollShape</string>
+		<string>TextScroll</string>
+		<string>List</string>
+		<string>Windows</string>
+	</array>
+	<key>Created</key>
+	<string>2015-10-28 08:31:01 +0000</string>
+	<key>Description</key>
+	<string>Soda v0.7</string>
+	<key>Icon</key>
+	<string>Icon.png</string>
+</dict>
+</plist>
