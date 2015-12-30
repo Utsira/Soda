@@ -63,6 +63,17 @@ Forum Discussion: http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerfu
 
 ## Version Notes
 
+### v0.7.1
+
+* As the orientationChanged function can in fact be called up to 3 times per device change, Soda makes sure all the elements only get resized once (not 3 times), making for much smoother orientation changes.
+
+* The `Soda.drawing` function where you put all of your drawing (needed for the blurred panels to work) is now just called `drawing`. This will need to be changed in your projects using Soda. Sorry about that!
+ 
+* New compact installer (created by the WorkingCopyCodeaClient).
+
+* Minor fixes.
+
+
 ###  v0.7
 
 * Big changes underneath the hood: all touch logic is now handled by Jmv38's *Sensor* engine (renamed Gesture in Soda), making for a more modular architecture that will be easier to maintain and expand in future.
