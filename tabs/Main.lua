@@ -1,12 +1,11 @@
 -- Soda
 
-saveProjectInfo("Description", "Soda v"..Soda.version)
-
 displayMode(OVERLAY)
 displayMode(FULLSCREEN)
 -- Use this as a template for your projects that have Soda as a dependency. 
 
 function setup()
+    saveProjectInfo("Description", "Soda v"..Soda.version) 
     profiler.init()
     Soda.setup()
     parameter.watch("Soda.focus.title")
@@ -18,12 +17,12 @@ function draw()
     --do your updating here
     pushMatrix()
     Soda.camera()
-    Soda.drawing()
+    drawing()
     popMatrix()
     profiler.draw()
 end
 
-function Soda.drawing(breakPoint) 
+function drawing(breakPoint) 
     --in order for gaussian blur to work, do all your drawing here
     background(40, 40, 50)
     sprite("Cargo Bot:Game Area", WIDTH*0.5, HEIGHT*0.5, WIDTH, HEIGHT)

@@ -6,10 +6,10 @@
 	<string>Unknown</string>
 	<key>Buffer Order</key>
 	<array>
+		<string>Main</string>
 		<string>Demo</string>
 		<string>Overview</string>
 		<string>Soda</string>
-		<string>Main</string>
 		<string>Gesture</string>
 		<string>Style</string>
 		<string>RoundRect</string>
