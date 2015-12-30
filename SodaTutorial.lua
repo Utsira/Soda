@@ -803,11 +803,11 @@ function draw()
     
     pushMatrix()
     Soda.camera() --this scrolls the screen to stop the keyboard covering textEntry fields
-    Soda.drawing()
+    drawing()
     popMatrix()
 end
 
-function Soda.drawing(breakPoint) --the breakPoint variable stops a blurred window itself from being incorporated into the blurred effect: it ensure only things under the blurred area get drawn.
+function drawing(breakPoint) --the breakPoint variable stops a blurred window itself from being incorporated into the blurred effect: it ensure only things under the blurred area get drawn.
     
     --in order for gaussian blur to work, do all your drawing here
     background(40, 40, 50)
@@ -897,3 +897,4 @@ function tutorial()
         end
     }
 end
+
