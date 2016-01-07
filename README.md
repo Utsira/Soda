@@ -161,7 +161,7 @@ Forum Discussion: http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerfu
 
 ### Installation
 
-Copy the contents of /SodaInstaller.lua. It is easiest to do this from the RAW page. In Codea, press "+ Add New Project", and name the new project "Soda". Overwrite the contents of the Main tab by selecting it all and pasting the installer code over it. The first time you run the project, the installer will overwrite itself with the latest version of Soda.
+Copy the contents of /SodaInstaller.lua. It is easiest to do this from the RAW page. In the Codea project selector, tap "+ Add New Project", and name the new project "Soda". Overwrite the contents of the Main tab by selecting it all and pasting the installer code over it. The first time you run the project, the installer will overwrite itself with the latest version of Soda.
 
 ### Connecting Soda to your project
 
