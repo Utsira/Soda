@@ -32,7 +32,8 @@ end
 --user inputs:
 
 function touched(touch)
-    Soda.touched(touch)
+   if Soda.touched(touch) then return end
+    --your touch code goes here
 end
 
 function keyboard(key)

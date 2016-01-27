@@ -57,7 +57,7 @@ function Soda.touched(t)
     local tpos = vec2(t.x, t.y-Soda.UIoffset)
     for i = #Soda.items, 1, -1 do --test most recent item first
         local v = Soda.items[i] 
-        if v:touched(t, tpos) then return end
+        if v:touched(t, tpos) then return true end
     end
 end
 

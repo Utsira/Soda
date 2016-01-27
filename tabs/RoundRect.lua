@@ -1,7 +1,7 @@
 local __RRects = {}
 --[[
-true mesh rounded rectangle. Original by @LoopSpace
-with anti-aliasing, optional fill and stroke components, optional texture that preserves aspect ratio of original image, automatic mesh caching
+true mesh rounded rectangle. Original by @LoopSpace, with mesh caching
+I added anti-aliasing, optional fill and stroke components, optional texture that preserves aspect ratio of original image
 usage: RoundedRectangle{key = arg, key2 = arg2}
 required: x;y;w;h:  dimensions of the rectangle
 optional: radius:   corner rounding radius, defaults to 6; 
