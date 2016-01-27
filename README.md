@@ -161,7 +161,7 @@ Forum Discussion: http://codea.io/talk/discussion/6847/soda-gorgeous-and-powerfu
 
 ### Installation
 
-Copy the contents of /SodaInstaller.lua. It is easiest to do this from the RAW page. In Codea, long-press "+ Add New Project", and select "Paste into project".
+Copy the contents of /SodaInstaller.lua. It is easiest to do this from the RAW page. In the Codea project selector, tap "+ Add New Project", and name the new project "Soda". Overwrite the contents of the Main tab by selecting it all and pasting the installer code over it. The first time you run the project, the installer will overwrite itself with the latest version of Soda.
 
 ### Connecting Soda to your project
 
@@ -183,12 +183,12 @@ function draw()
     --do your updating here
     pushMatrix()
     Soda.camera()
-    Soda.drawing()
+    drawing()
     popMatrix()
     profiler.draw()
 end
 
-function Soda.drawing(breakPoint)
+function drawing(breakPoint)
     --in order for gaussian blur to work, do all your drawing here
     background(40, 40, 50)
     sprite("Cargo Bot:Game Area", WIDTH*0.5, HEIGHT*0.5, WIDTH, HEIGHT)
@@ -214,9 +214,9 @@ end
 
 You can copy this Main tab and use it as a template for your projects that use Soda.
 
-#### About `Soda.drawing`
+#### About `drawing`
 
-If you want blurry panels to blur elements that lie beneath the interface, you will need to place this drawing in a function in your own project titled `Soda.drawing(breakPoint)`. When a new blurred panel is created, `Soda.drawing` is run twice, once to be output to the screen as normal, and a second pass with the gaussian blur effect applied. There needs to be a breakpoint variable in order to prevent the blurred window itself being incorporated into the blurred effect. For best results, separate your drawing from all other code that may be in your draw loop (updating positions etc), and place just the drawing in `Soda.drawing`.
+If you want blurry panels to blur elements that lie beneath the interface, you will need to place this drawing in a function in your own project titled `drawing(breakPoint)`. When a new blurred panel is created, `drawing` is run twice, once to be output to the screen as normal, and a second pass with the gaussian blur effect applied. There needs to be a breakpoint variable in order to prevent the blurred window itself being incorporated into the blurred effect. For best results, separate your drawing from all other code that may be in your draw loop (updating positions etc), and place just the drawing in `drawing`.
 
 NB for performance reasons, currently the blurred panels do not have live updating of the underlying image being blurred. The blurred image is only generated when the panel is first declared, or the orientation changes. They therefore look best if the underlying image is not moving.
 
